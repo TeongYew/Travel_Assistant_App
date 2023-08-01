@@ -13,8 +13,46 @@
         android:theme="@style/Theme.Travel_Assistant"
         tools:targetApi="31">
         <activity
+            android:name=".DestAnalyticsPage"
+            android:exported="false" />
+        <activity
+            android:name=".BookingPage"
+            android:exported="false" />
+        <activity
+            android:name=".HotelPage"
+            android:exported="false" />
+        <activity
+            android:name=".HotelList"
+            android:exported="false" />
+        <activity
+            android:name=".FlightPage"
+            android:exported="false" />
+        <activity
+            android:name=".FlightList"
+            android:exported="false" />
+        <activity
+            android:name=".DateDestSelectPage"
+            android:exported="false" />
+        <activity
+            android:name=".ItineraryPage"
+            android:exported="false" />
+        <activity
+            android:name=".ItineraryList"
+            android:exported="false" />
+        <activity
+            android:name=".MainMenu"
+            android:exported="false" />
+        <activity
+            android:name=".Register"
+            android:exported="false"
+            android:label="@string/title_activity_register"
+            android:theme="@style/Theme.Travel_Assistant" />
+        <activity
+            android:name=".Login"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
-            android:exported="true"
+            android:exported="false"
             android:label="@string/app_name"
             android:theme="@style/Theme.Travel_Assistant">
             <intent-filter>
