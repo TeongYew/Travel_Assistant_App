@@ -4,33 +4,17 @@
     android:id="@+id/toolbar"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#FFCC00">
+    android:background="@color/dark_grey"
+    android:navigationIcon="@drawable/menu_nav">
 
 
-<ImageView
-    android:layout_width="20dp"
-    android:layout_height="20dp"
-    android:background="@drawable/ic_backward_arrow"/>
-
-
-<customfonts.MyTextView_Bold
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="Dream"
-    android:textColor="#fff"
-    android:textSize="16dp"
-    android:layout_gravity="center"/>
-
-
-    <customfonts.MyTextView_Bold
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Filters"
-        android:textColor="#fff"
+        android:text="Travel"
+        android:textColor="@color/white"
         android:textSize="16dp"
-        android:layout_marginRight="20dp"
-        android:layout_gravity="right"/>
-
+        android:layout_gravity="center"/>
 
 
 </Toolbar>
