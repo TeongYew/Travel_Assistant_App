@@ -4,15 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".FlightList"
+    tools:context=".ListView"
     android:orientation="vertical">
 
-    <ListView
-        android:id="@+id/simpleListView"
+    <TextView
+        android:id="@+id/textView"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:divider="@color/material_blue_grey_800"
-        android:dividerHeight="1dp"
-        android:footerDividersEnabled="false" />
+        android:layout_gravity="center"
+        android:padding="2dp"
+        android:textColor="@color/black" />
 
 </LinearLayout>
