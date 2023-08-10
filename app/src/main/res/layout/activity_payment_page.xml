@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".BookingPage"
+    android:orientation="vertical"
+    android:background="@color/grey">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:id="@+id/paymentLL"
+        android:background="@color/white"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginBottom="20dp">
+
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/Mastercard_logo"
+            android:layout_margin="10dp"/>
+
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/Visa_logo"
+            android:layout_margin="10dp"/>
+
+    </LinearLayout>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/cardNumET"
+        android:background="@drawable/custom_edittext2"
+        android:hint="Card Number"
+        android:padding="15dp"
+        android:layout_margin="10dp"
+        android:layout_below="@+id/paymentLL"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/cardNameET"
+        android:background="@drawable/custom_edittext2"
+        android:hint="Name on Card"
+        android:padding="15dp"
+        android:layout_margin="10dp"
+        android:layout_below="@+id/cardNumET"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@+id/cardNameET"
+        android:weightSum="5">
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/custom_edittext2"
+            android:hint="Exp. Month"
+            android:padding="15dp"
+            android:layout_margin="10dp"
+            android:layout_weight="2"/>
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/custom_edittext2"
+            android:hint="Exp. Year"
+            android:padding="15dp"
+            android:layout_margin="10dp"
+            android:layout_weight="2"/>
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/custom_edittext2"
+            android:hint="CVC"
+            android:padding="15dp"
+            android:layout_margin="10dp"
+            android:layout_weight="1"/>
+
+    </LinearLayout>
+
+
+
+
+
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Make Payment"
+        android:textSize="18sp"
+        android:background="@drawable/round_btn"
+        android:layout_alignParentBottom="true"/>
+
+</RelativeLayout>

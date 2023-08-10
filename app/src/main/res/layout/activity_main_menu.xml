@@ -24,6 +24,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:id="@+id/searchDestLL"
                 android:orientation="horizontal"
                 android:layout_margin="10dp">
 
@@ -44,7 +45,8 @@
                     android:layout_marginBottom="40dp"
                     android:padding="10dp"
                     android:background="@drawable/round_search_btn"
-                    android:src="@drawable/search"/>
+                    android:src="@drawable/search"
+                    android:contentDescription="search"/>
 
 
             </LinearLayout>
@@ -52,6 +54,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:id="@+id/selectDateLL"
                 android:orientation="horizontal"
                 android:weightSum="10"
                 android:background="@color/dark_grey">
@@ -121,28 +124,31 @@
                             android:layout_height="wrap_content"
                             android:background="@drawable/circle_button"
                             android:src="@drawable/add"
-                            android:layout_margin="10dp"/>
+                            android:layout_margin="10dp"
+                            android:padding="4dp"
+                            android:contentDescription="Add"/>
 
                         <EditText
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="0"
                             android:inputType="number"
-                            android:layout_margin="10dp"/>
+                            android:layout_margin="10dp"
+                            android:padding="10dp"/>
 
                         <ImageButton
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:background="@drawable/circle_button"
                             android:src="@drawable/remove"
-                            android:layout_margin="10dp"/>
+                            android:layout_margin="10dp"
+                            android:padding="4dp"
+                            android:contentDescription="Remove"/>
 
                     </LinearLayout>
 
-
-
-
                 </LinearLayout>
+
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -171,28 +177,31 @@
                             android:layout_height="wrap_content"
                             android:background="@drawable/circle_button"
                             android:src="@drawable/add"
-                            android:layout_margin="10dp"/>
+                            android:layout_margin="10dp"
+                            android:padding="4dp"
+                            android:contentDescription="Add"/>
 
                         <EditText
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="0"
                             android:inputType="number"
-                            android:layout_margin="10dp"/>
+                            android:layout_margin="10dp"
+                            android:padding="10dp"/>
 
                         <ImageButton
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:background="@drawable/circle_button"
                             android:src="@drawable/remove"
-                            android:layout_margin="10dp"/>
+                            android:layout_margin="10dp"
+                            android:padding="4dp"
+                            android:contentDescription="Remove"/>
 
                     </LinearLayout>
 
-
-
-
                 </LinearLayout>
+
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -222,28 +231,31 @@
                             android:layout_height="wrap_content"
                             android:background="@drawable/circle_button"
                             android:src="@drawable/add"
-                            android:layout_margin="10dp"/>
+                            android:layout_margin="10dp"
+                            android:padding="4dp"
+                            android:contentDescription="Add"/>
 
                         <EditText
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="0"
                             android:inputType="number"
-                            android:layout_margin="10dp"/>
+                            android:layout_margin="10dp"
+                            android:padding="10dp"/>
 
                         <ImageButton
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:background="@drawable/circle_button"
                             android:src="@drawable/remove"
-                            android:layout_margin="10dp"/>
+                            android:layout_margin="10dp"
+                            android:padding="4dp"
+                            android:contentDescription="remove"/>
 
                     </LinearLayout>
 
-
-
-
                 </LinearLayout>
+
 
             </LinearLayout>
 
