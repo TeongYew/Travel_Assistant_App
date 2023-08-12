@@ -50,22 +50,24 @@
             android:exported="false" />
         <activity
             android:name=".Register"
-            android:exported="false"
-            android:label="@string/title_activity_register"
-            android:theme="@style/Theme.Travel_Assistant" />
+            android:exported="false"/>
         <activity
             android:name=".PreLoginRegPage"
-            android:exported="false" />
-        <activity
-            android:name=".MainActivity"
             android:exported="true"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.Travel_Assistant">
+            android:theme="@style/Theme.AppCompat">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+        </activity>
+        <activity
+            android:name=".MainActivity"
+            android:exported="false"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.Travel_Assistant">
+
         </activity>
 
         <meta-data

@@ -20,13 +20,13 @@
         <ImageView
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:src="@drawable/Mastercard_logo"
+            android:src="@drawable/mastercard_logo"
             android:layout_margin="10dp"/>
 
         <ImageView
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:src="@drawable/Visa_logo"
+            android:src="@drawable/visa_logo"
             android:layout_margin="10dp"/>
 
     </LinearLayout>

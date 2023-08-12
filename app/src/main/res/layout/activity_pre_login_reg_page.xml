@@ -50,6 +50,7 @@
         android:layout_weight="1">
 
         <Button
+            android:id="@+id/signInBtn"
             android:layout_width="120dp"
             android:layout_height="wrap_content"
             android:text="Sign In"
@@ -57,6 +58,7 @@
             android:layout_marginBottom="10dp" />
 
         <Button
+            android:id="@+id/signUpBtn"
             android:layout_width="120dp"
             android:layout_height="wrap_content"
             android:text="Sign Up"

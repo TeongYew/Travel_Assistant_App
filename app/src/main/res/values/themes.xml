@@ -2,4 +2,5 @@
 <resources>
 
     <style name="Theme.Travel_Assistant" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.AppCompat.NoActionBar"/>
 </resources>

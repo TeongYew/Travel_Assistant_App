@@ -34,7 +34,7 @@
                 <customfonts.MyTextView_Medium
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/title"
+                    android:text="Title"
                     android:textColor="#2f2f2f"
                     android:layout_marginTop="15dp"
                     android:layout_marginBottom="15dp"
