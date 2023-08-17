@@ -30,11 +30,11 @@
         <EditText
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:id="@+id/username"
+            android:id="@+id/emailLoginET"
             android:background="@drawable/custom_edittext"
             android:drawableLeft="@drawable/person_outline"
             android:drawablePadding="8dp"
-            android:hint="Username..."
+            android:hint="Email..."
             android:padding="8dp"
             android:textColor="@color/black"
             android:textColorHighlight="@color/cardview_dark_background"
@@ -43,7 +43,7 @@
         <EditText
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:id="@+id/password"
+            android:id="@+id/passwordLoginET"
             android:background="@drawable/custom_edittext"
             android:drawableLeft="@drawable/password"
             android:drawablePadding="8dp"
@@ -57,7 +57,7 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/loginButton"
+            android:id="@+id/loginBtn"
             android:text="Login"
             android:layout_marginTop="30dp"
             android:layout_gravity="center"

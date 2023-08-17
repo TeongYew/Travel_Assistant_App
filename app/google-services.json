@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "760530191338",
+    "project_id": "travel-assistant-app-4b593",
+    "storage_bucket": "travel-assistant-app-4b593.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:760530191338:android:e9f1cc187b674a1218a893",
+        "android_client_info": {
+          "package_name": "com.example.travel_assistant"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "760530191338-s7u7n8vo0kvleh3irk2r4q4mfbd2es6b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8NY5cM95OITjjfoZE_9UNBPRr6lMMSFE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "760530191338-s7u7n8vo0kvleh3irk2r4q4mfbd2es6b.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

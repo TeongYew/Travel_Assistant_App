@@ -3,6 +3,7 @@ package com.example.travel_assistant;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -16,7 +17,7 @@ import android.view.MotionEvent;
 
 public class PreLoginRegPage extends AppCompatActivity {
 
-    Button login, register;
+    Button loginBtn, registerBtn;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -24,51 +25,57 @@ public class PreLoginRegPage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pre_login_reg_page);
 
-        login = findViewById(R.id.signInBtn);
-        register = findViewById(R.id.signUpBtn);
+        loginBtn = findViewById(R.id.signInBtn);
+        registerBtn = findViewById(R.id.signUpBtn);
 
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
 
-        login.setOnClickListener(new View.OnClickListener() {
+        loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                View popUpView = layoutInflater.inflate(R.layout.activity_login_page, null);
+                startActivity(new Intent(PreLoginRegPage.this, LoginPage.class));
 
-                //Specify the length and width through constants
-                int width = LinearLayout.LayoutParams.WRAP_CONTENT;
-                int height = LinearLayout.LayoutParams.WRAP_CONTENT;
-
-                //Make Inactive Items Outside Of PopupWindow
-                boolean focusable = true;
-
-                //Create a window with our parameters
-                final PopupWindow popupWindow = new PopupWindow(popUpView, width, height, focusable);
-
-                //Set the location of the window on the screen
-                popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
+//                View popUpView = layoutInflater.inflate(R.layout.activity_login_page, null);
+//
+//                //Specify the length and width through constants
+//                int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+//                int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+//
+//                //Make Inactive Items Outside Of PopupWindow
+//                boolean focusable = true;
+//
+//                //Create a window with our parameters
+//                final PopupWindow popupWindow = new PopupWindow(popUpView, width, height, focusable);
+//                popupWindow.setTouchable(true);
+//
+//                //Set the location of the window on the screen
+//                popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
 
             }
         });
 
-        register.setOnClickListener(new View.OnClickListener() {
+        registerBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                View popUpView = layoutInflater.inflate(R.layout.activity_register, null);
+                startActivity(new Intent(PreLoginRegPage.this, Register.class));
 
-                //Specify the length and width through constants
-                int width = LinearLayout.LayoutParams.WRAP_CONTENT;
-                int height = LinearLayout.LayoutParams.WRAP_CONTENT;
-
-                //Make Inactive Items Outside Of PopupWindow
-                boolean focusable = true;
-
-                //Create a window with our parameters
-                final PopupWindow popupWindow = new PopupWindow(popUpView, width, height, focusable);
-
-                //Set the location of the window on the screen
-                popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
+//                View popUpView = layoutInflater.inflate(R.layout.activity_register, null);
+//
+//                //Specify the length and width through constants
+//                int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+//                int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+//
+//                //Make Inactive Items Outside Of PopupWindow
+//                boolean focusable = true;
+//
+//                //Create a window with our parameters
+//                final PopupWindow popupWindow = new PopupWindow(popUpView, width, height, focusable);
+//                popupWindow.setTouchable(true);
+//
+//                //Set the location of the window on the screen
+//                popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
 
             }
         });
