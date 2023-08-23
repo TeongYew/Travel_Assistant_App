@@ -1,14 +1,16 @@
-package com.example.travel_assistant;
+package com.example.travel_assistant.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
-public class MainMenu extends AppCompatActivity {
+import com.example.travel_assistant.R;
+
+public class HotelPage extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_menu);
+        setContentView(R.layout.activity_hotel_page);
     }
 }

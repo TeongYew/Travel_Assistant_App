@@ -1,14 +1,16 @@
-package com.example.travel_assistant;
+package com.example.travel_assistant.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
-public class ListView extends AppCompatActivity {
+import com.example.travel_assistant.R;
+
+public class FlightList extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_flight_list_view);
+        setContentView(R.layout.activity_flight_list);
     }
 }

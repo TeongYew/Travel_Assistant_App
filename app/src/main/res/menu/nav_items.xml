@@ -1,21 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn = "navigation_view">
     <group android:checkableBehavior="single">
         <!--
                 Add menu items here
                 Menu items with icon and Title
         -->
         <item
-            android:id="@+id/first"
+            android:id="@+id/navItinerary"
             android:icon="@mipmap/ic_launcher"
-            android:title="First Menu" />
+            android:title="Itineraries" />
         <item
-            android:id="@+id/second"
+            android:id="@+id/navHistory"
             android:icon="@mipmap/ic_launcher"
-            android:title="Second Menu" />
+            android:title="History" />
         <item
-            android:id="@+id/third"
+            android:id="@+id/navAnalytics"
             android:icon="@mipmap/ic_launcher"
-            android:title="Third Menu" />
+            android:title="Analytics" />
+        <item
+            android:id="@+id/signOut"
+            android:icon="@mipmap/ic_launcher"
+            android:title="Sign Out" />
+
     </group>
 </menu>

@@ -13,58 +13,58 @@
         android:theme="@style/Theme.Travel_Assistant"
         tools:targetApi="31">
         <activity
-            android:name=".PaymentPage"
+            android:name=".activity.PaymentPage"
             android:exported="false"
             android:theme="@style/Theme.AppCompat"/>
         <activity
-            android:name=".ListView"
+            android:name=".activity.ListView"
             android:exported="false" />
         <activity
-            android:name=".LoginPage"
+            android:name=".activity.LoginPage"
             android:exported="false"
             android:theme="@style/Theme.AppCompat"/>
         <activity
-            android:name=".DestAnalyticsPage"
+            android:name=".activity.DestAnalyticsPage"
             android:exported="false"
             android:theme="@style/Theme.AppCompat"/>
         <activity
-            android:name=".BookingPage"
+            android:name=".activity.BookingPage"
             android:exported="false"
             android:theme="@style/Theme.AppCompat"/>
         <activity
-            android:name=".HotelPage"
+            android:name=".activity.HotelPage"
             android:exported="false"
             android:theme="@style/Theme.AppCompat"/>
         <activity
-            android:name=".HotelList"
+            android:name=".activity.HotelList"
             android:exported="false"
             android:theme="@style/Theme.AppCompat"/>
         <activity
-            android:name=".FlightPage"
+            android:name=".activity.FlightPage"
             android:exported="false"
             android:theme="@style/Theme.AppCompat"/>
         <activity
-            android:name=".FlightList"
+            android:name=".activity.FlightList"
             android:exported="false"
             android:theme="@style/Theme.AppCompat"/>
         <activity
-            android:name=".ItineraryPage"
+            android:name=".activity.ItineraryPage"
             android:exported="false"
             android:theme="@style/Theme.AppCompat"/>
         <activity
-            android:name=".ItineraryList"
+            android:name=".activity.ItineraryList"
             android:exported="false"
             android:theme="@style/Theme.AppCompat"/>
         <activity
-            android:name=".MainMenu"
+            android:name=".activity.MainMenu"
+            android:exported="false"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+        <activity
+            android:name=".activity.Register"
             android:exported="false"
             android:theme="@style/Theme.AppCompat"/>
         <activity
-            android:name=".Register"
-            android:exported="false"
-            android:theme="@style/Theme.AppCompat"/>
-        <activity
-            android:name=".PreLoginRegPage"
+            android:name=".activity.PreLoginRegPage"
             android:exported="true"
             android:theme="@style/Theme.AppCompat">
             <intent-filter>

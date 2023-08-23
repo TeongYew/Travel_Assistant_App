@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ItineraryList"
+    tools:context=".activity.ItineraryList"
     android:orientation="vertical">
 
     <LinearLayout
@@ -12,13 +12,19 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <ListView
-            android:id="@+id/simpleListView"
-            android:layout_width="fill_parent"
+        <TextView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:divider="@color/material_blue_grey_800"
-            android:dividerHeight="1dp"
-            android:footerDividersEnabled="false" />
+            android:text="My Itineraries"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:padding="15dp"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/itineraryRV"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
 
     </LinearLayout>
 

@@ -1,14 +1,16 @@
-package com.example.travel_assistant;
+package com.example.travel_assistant.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
-public class DestAnalyticsPage extends AppCompatActivity {
+import com.example.travel_assistant.R;
+
+public class ItineraryPage extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_dest_analytics_page);
+        setContentView(R.layout.activity_itinerary_page);
     }
 }
