@@ -23,7 +23,7 @@ public class LoginPage extends AppCompatActivity {
     private Button loginBtn;
     private FirebaseAuth auth;
 
-    @SuppressLint("MissingInflatedId")
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

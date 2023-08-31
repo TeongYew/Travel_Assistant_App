@@ -15,7 +15,7 @@ public class PreLoginRegPage extends AppCompatActivity {
 
     Button loginBtn, registerBtn;
 
-    @SuppressLint("MissingInflatedId")
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

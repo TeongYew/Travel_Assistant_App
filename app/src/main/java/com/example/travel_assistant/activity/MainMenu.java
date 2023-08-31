@@ -10,6 +10,8 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.example.travel_assistant.R;
@@ -21,12 +23,27 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
     DrawerLayout dLayout;
     FirebaseAuth auth;
 
+    EditText destSearchET, bedNumET, adultNumET, childNumET;
+    ImageButton destSearchBtn, bedAddBtn, bedRemoveBtn, adultAddBtn, adultRemovebtn, childAddBtn, childRemoveBtn;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
 
         auth = FirebaseAuth.getInstance();
+
+        destSearchET = findViewById(R.id.destSearchET);
+        bedNumET = findViewById(R.id.bedNumET);
+        adultNumET = findViewById(R.id.adultNumET);
+        childNumET = findViewById(R.id.childNumET);
+        destSearchBtn = findViewById(R.id.destSearchBtn);
+        bedAddBtn = findViewById(R.id.bedAddBtn);
+        bedRemoveBtn = findViewById(R.id.bedRemoveBtn);
+        adultAddBtn = findViewById(R.id.adultAddBtn);
+        adultRemovebtn = findViewById(R.id.adultRemoveBtn);
+        childAddBtn = findViewById(R.id.childAddBtn);
+        childRemoveBtn = findViewById(R.id.childRemoveBtn);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -41,9 +58,6 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
 
         toggle.syncState();
 
-        if(savedInstanceState == null){
-
-        }
 
     }
 

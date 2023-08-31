@@ -54,6 +54,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/cardExpireLL"
         android:orientation="horizontal"
         android:layout_below="@+id/cardNameET"
         android:weightSum="5">
@@ -61,6 +62,7 @@
         <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:id="@+id/cardMonthET"
             android:background="@drawable/custom_edittext2"
             android:hint="Exp. Month"
             android:padding="15dp"
@@ -70,6 +72,7 @@
         <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:id="@+id/cardYearET"
             android:background="@drawable/custom_edittext2"
             android:hint="Exp. Year"
             android:padding="15dp"
@@ -79,6 +82,7 @@
         <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:id="@+id/cardCVCET"
             android:background="@drawable/custom_edittext2"
             android:hint="CVC"
             android:padding="15dp"
@@ -89,12 +93,10 @@
 
 
 
-
-
-
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/paymentBtn"
         android:text="Make Payment"
         android:textSize="18sp"
         android:background="@drawable/round_btn"

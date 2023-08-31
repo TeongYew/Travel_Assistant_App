@@ -39,6 +39,7 @@
                 <EditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:id="@+id/destSearchET"
                     android:hint="Search Destination"
                     android:layout_marginLeft="40dp"
                     android:layout_marginTop="40dp"
@@ -48,6 +49,7 @@
                 <ImageButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:id="@+id/destSearchBtn"
                     android:layout_marginRight="40dp"
                     android:layout_marginTop="40dp"
                     android:layout_marginBottom="40dp"
@@ -130,6 +132,7 @@
                         <ImageButton
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:id="@+id/bedAddBtn"
                             android:background="@drawable/circle_button"
                             android:src="@drawable/add"
                             android:layout_margin="10dp"
@@ -139,6 +142,7 @@
                         <EditText
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:id="@+id/bedNumET"
                             android:text="0"
                             android:inputType="number"
                             android:layout_margin="10dp"
@@ -147,6 +151,7 @@
                         <ImageButton
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:id="@+id/bedRemoveBtn"
                             android:background="@drawable/circle_button"
                             android:src="@drawable/remove"
                             android:layout_margin="10dp"
@@ -183,6 +188,7 @@
                         <ImageButton
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:id="@+id/adultAddBtn"
                             android:background="@drawable/circle_button"
                             android:src="@drawable/add"
                             android:layout_margin="10dp"
@@ -192,6 +198,7 @@
                         <EditText
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:id="@+id/adultNumET"
                             android:text="0"
                             android:inputType="number"
                             android:layout_margin="10dp"
@@ -200,6 +207,7 @@
                         <ImageButton
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:id="@+id/adultRemoveBtn"
                             android:background="@drawable/circle_button"
                             android:src="@drawable/remove"
                             android:layout_margin="10dp"
@@ -237,6 +245,7 @@
                         <ImageButton
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:id="@+id/childAddBtn"
                             android:background="@drawable/circle_button"
                             android:src="@drawable/add"
                             android:layout_margin="10dp"
@@ -246,6 +255,7 @@
                         <EditText
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:id="@+id/childNumET"
                             android:text="0"
                             android:inputType="number"
                             android:layout_margin="10dp"
@@ -254,6 +264,7 @@
                         <ImageButton
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:id="@+id/childRemoveBtn"
                             android:background="@drawable/circle_button"
                             android:src="@drawable/remove"
                             android:layout_margin="10dp"

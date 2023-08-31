@@ -27,7 +27,6 @@ public class Register extends AppCompatActivity {
     private FirebaseAuth auth;
 
 
-    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

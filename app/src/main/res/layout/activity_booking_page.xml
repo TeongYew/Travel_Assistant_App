@@ -146,6 +146,7 @@
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:id="@+id/bookingNameET"
                 android:background="@drawable/custom_edittext2"
                 android:hint="Full Name"
                 android:padding="10dp"
@@ -155,6 +156,7 @@
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:id="@+id/bookingEmailET"
                 android:background="@drawable/custom_edittext2"
                 android:hint="Email"
                 android:padding="10dp"
@@ -164,6 +166,7 @@
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:id="@+id/bookingPhoneET"
                 android:background="@drawable/custom_edittext2"
                 android:hint="Phone Number"
                 android:padding="10dp"
@@ -177,6 +180,7 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/bookingBtn"
         android:text="Make Payment"
         android:textSize="18sp"
         android:background="@drawable/round_btn"
