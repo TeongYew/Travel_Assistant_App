@@ -70,7 +70,7 @@ dependencies {
     implementation("com.google.firebase:firebase-auth-ktx")
     // Add the dependencies for any other desired Firebase products
     // https://firebase.google.com/docs/android/setup#available-libraries
-    implementation ("com.amadeus:amadeus-android:1.2.1")
+    implementation ("com.amadeus:amadeus-java:1.1.2")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

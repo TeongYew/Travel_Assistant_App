@@ -10,40 +10,45 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.example.travel_assistant.R;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
+
+import com.amadeus.Amadeus;
 
 public class MainMenu extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     DrawerLayout dLayout;
+    TabLayout flightTL;
     FirebaseAuth auth;
+    RelativeLayout fromRl, toRL, departureArrivalRL, passengersRL;
 
-    EditText destSearchET, bedNumET, adultNumET, childNumET;
-    ImageButton destSearchBtn, bedAddBtn, bedRemoveBtn, adultAddBtn, adultRemovebtn, childAddBtn, childRemoveBtn;
+    Amadeus amadeus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
 
+        flightTL = findViewById(R.id.flightTL);
+        fromRl = findViewById(R.id.fromRL);
+        toRL = findViewById(R.id.toRL);
+        departureArrivalRL = findViewById(R.id.departureArrivalRL);
+        passengersRL = findViewById(R.id.passengersRL);
+
         auth = FirebaseAuth.getInstance();
 
-        destSearchET = findViewById(R.id.destSearchET);
-        bedNumET = findViewById(R.id.bedNumET);
-        adultNumET = findViewById(R.id.adultNumET);
-        childNumET = findViewById(R.id.childNumET);
-        destSearchBtn = findViewById(R.id.destSearchBtn);
-        bedAddBtn = findViewById(R.id.bedAddBtn);
-        bedRemoveBtn = findViewById(R.id.bedRemoveBtn);
-        adultAddBtn = findViewById(R.id.adultAddBtn);
-        adultRemovebtn = findViewById(R.id.adultRemoveBtn);
-        childAddBtn = findViewById(R.id.childAddBtn);
-        childRemoveBtn = findViewById(R.id.childRemoveBtn);
+        amadeus = Amadeus
+                .builder("trhahLtZ7pxfkVK2EyFygDsDJDYfJBSC","kBCYVD40NAdKBef4")
+                .build();
+
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -57,6 +62,63 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
         dLayout.addDrawerListener(toggle);
 
         toggle.syncState();
+
+        flightTL.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                switch (tab.getPosition()){
+                    case 0:
+                        //round trip
+
+                        break;
+                    case 1:
+                        //one way
+
+                        break;
+                    default:
+
+                        break;
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+
+        fromRl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
+        toRL.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
+        departureArrivalRL.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
+        passengersRL.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
 
 
     }

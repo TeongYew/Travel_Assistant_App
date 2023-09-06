@@ -24,7 +24,7 @@
             android:layout_margin="10dp"
             android:contentDescription="@string/app_name"
             android:padding="5dp"
-            android:src="" />
+            android:src="@drawable/more" />
 
         <!-- Text View to display Course Name -->
         <TextView
@@ -51,7 +51,7 @@
             android:layout_toEndOf="@id/hotelIV"
             android:drawablePadding="2dp"
             android:text=""
-            app:drawableStartCompat="" />
+            app:drawableStartCompat="@drawable/more" />
     </RelativeLayout>
 
 </androidx.cardview.widget.CardView>
