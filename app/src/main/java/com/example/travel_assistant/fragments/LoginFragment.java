@@ -1,4 +1,4 @@
-package com.example.travel_assistant.activity;
+package com.example.travel_assistant.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.travel_assistant.R;
+import com.example.travel_assistant.activity.MainMenu;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -49,6 +50,8 @@ public class LoginFragment extends Fragment {
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                //startActivity(new Intent(getActivity(), MainMenu.class));
 
                 String email, password;
 

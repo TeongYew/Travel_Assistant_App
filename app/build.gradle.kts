@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.travel_assistant"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 33
         versionCode = 1
         versionName = "1.0"
@@ -70,7 +70,8 @@ dependencies {
     implementation("com.google.firebase:firebase-auth-ktx")
     // Add the dependencies for any other desired Firebase products
     // https://firebase.google.com/docs/android/setup#available-libraries
-    implementation ("com.amadeus:amadeus-java:1.1.2")
+    implementation ("com.amadeus:amadeus-java:8.0.0")
+    implementation("com.google.code.gson:gson:2.8.5")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

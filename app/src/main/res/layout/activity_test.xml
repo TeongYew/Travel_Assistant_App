@@ -44,7 +44,7 @@
 
 
         <ListView
-            android:id="@+id/flightFromLV"
+            android:id="@+id/flightFromLVTest"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:divider="@color/grey"

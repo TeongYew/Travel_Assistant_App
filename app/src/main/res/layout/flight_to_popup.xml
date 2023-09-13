@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/translucent_black"
-    android:id="@+id/fromPopupRL">
+    android:id="@+id/toPopupRL">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -16,22 +16,21 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:id="@+id/flightFromLL">
+            android:orientation="horizontal">
 
             <EditText
+                android:id="@+id/flightToET"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/flightFromET"
-                android:hint="Search Location"
+                android:hint="Search Destination"
                 android:layout_marginLeft="40dp"
                 android:layout_marginTop="40dp"
                 android:layout_marginBottom="30dp"
                 android:layout_weight="1"/>
             <ImageButton
+                android:id="@+id/flightToIB"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/flightFromIB"
                 android:layout_marginRight="40dp"
                 android:layout_marginTop="40dp"
                 android:layout_marginBottom="30dp"
@@ -42,17 +41,15 @@
 
         </LinearLayout>
 
-
         <ListView
-            android:id="@+id/flightFromLV"
+            android:id="@+id/flightToLV"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:divider="@color/grey"
-            android:dividerHeight="1dp"
             android:layout_marginLeft="40dp"
             android:layout_marginRight="40dp"
             android:layout_marginBottom="40dp"/>
 
     </LinearLayout>
+
 
 </RelativeLayout>

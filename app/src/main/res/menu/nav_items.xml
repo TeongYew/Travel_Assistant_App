@@ -16,9 +16,9 @@
             android:icon="@mipmap/ic_launcher"
             android:title="History" />
         <item
-            android:id="@+id/navAnalytics"
+            android:id="@+id/navReviews"
             android:icon="@mipmap/ic_launcher"
-            android:title="Analytics" />
+            android:title="Reviews" />
         <item
             android:id="@+id/signOut"
             android:icon="@mipmap/ic_launcher"

@@ -9,7 +9,7 @@
     <androidx.fragment.app.FragmentContainerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:name="com.example.travel_assistant.activity.PreLoginFragment"
+        android:name="com.example.travel_assistant.fragments.PreLoginFragment"
         android:id="@+id/fragmentContainer"/>
 
 

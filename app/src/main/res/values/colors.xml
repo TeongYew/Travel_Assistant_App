@@ -11,4 +11,5 @@
     <color name="light_grey">#c2c2c2</color>
     <color name="dark_grey">#282829</color>
     <color name="beige">#ffcda2</color>
+    <color name="translucent_black">#55000000</color>
 </resources>

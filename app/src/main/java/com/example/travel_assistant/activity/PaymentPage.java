@@ -43,7 +43,7 @@ public class PaymentPage extends AppCompatActivity {
                     Toast.makeText(PaymentPage.this, "Please make sure all the necessary fields are filled", Toast.LENGTH_SHORT).show();
                 }
                 else{
-
+                    Toast.makeText(PaymentPage.this, "Redirecting", Toast.LENGTH_SHORT).show();
 
                 }
 

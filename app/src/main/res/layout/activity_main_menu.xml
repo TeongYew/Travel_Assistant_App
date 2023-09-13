@@ -9,6 +9,7 @@
     tools:context=".activity.MainMenu">
 
     <RelativeLayout
+        android:id="@+id/mainMenuRL"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/grey">
@@ -20,7 +21,9 @@
             android:layout_height="wrap_content"
             android:background="@color/dark_grey"
             android:navigationIcon="@drawable/menu_nav"
+            android:theme="@style/ToolbarColoredNavIcon"
             app:title="Travel"
+            app:titleTextColor="@color/white"
             android:layout_alignParentTop="true"/>
 
         <com.google.android.material.tabs.TabLayout
@@ -45,6 +48,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:id="@+id/flightDetailsLL"
             android:orientation="vertical"
             android:layout_below="@id/flightTL">
 
@@ -88,7 +92,7 @@
                         android:text="From (Location)"
                         android:textColor="@color/grey"
                         android:textSize="16sp"
-                         />
+                        />
 
                     <!-- Text VIew to display Course Rating -->
                     <!-- Image used in present in drawable folder -->
@@ -150,7 +154,7 @@
                     <!-- Text VIew to display Course Rating -->
                     <!-- Image used in present in drawable folder -->
                     <TextView
-                        android:id="@+id/arrivalTV"
+                        android:id="@+id/arrivalNameTV"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/arrivalLabelTV"
@@ -264,7 +268,7 @@
                     <!-- Text VIew to display Course Rating -->
                     <!-- Image used in present in drawable folder -->
                     <TextView
-                        android:id="@+id/passengerTV"
+                        android:id="@+id/passengersTV"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/passengerLabelTV"
@@ -281,14 +285,26 @@
 
         </LinearLayout>
 
+        <CheckBox
+            android:id="@+id/simpleCheckBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/flightDetailsLL"
+            android:text="Direct-Flights Only"
+            android:textColor="@color/white"
+            android:layout_marginLeft="20dp"/>
+
         <Button
             android:id="@+id/bookFlightBtn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_margin="15dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginBottom="15dp"
             android:background="@drawable/round_btn"
-            android:text="Book Flight"
+            android:text="Search Flight"
             android:textColor="@color/black" />
 
     </RelativeLayout>
@@ -301,7 +317,6 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         app:menu="@menu/nav_items" />
-
 
 
 </androidx.drawerlayout.widget.DrawerLayout>

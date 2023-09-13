@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -13,56 +15,60 @@
         android:theme="@style/Theme.Travel_Assistant"
         tools:targetApi="31">
         <activity
-            android:name=".activity.PaymentPage"
+            android:name=".activity.TestActivity"
             android:exported="false"
             android:theme="@style/Theme.AppCompat"/>
+        <activity
+            android:name=".activity.PaymentPage"
+            android:exported="false"
+            android:theme="@style/Theme.AppCompat" />
         <activity
             android:name=".activity.ListView"
             android:exported="false" />
         <activity
             android:name=".activity.LoginPage"
             android:exported="false"
-            android:theme="@style/Theme.AppCompat"/>
+            android:theme="@style/Theme.AppCompat" />
         <activity
             android:name=".activity.DestAnalyticsPage"
             android:exported="false"
-            android:theme="@style/Theme.AppCompat"/>
+            android:theme="@style/Theme.AppCompat" />
         <activity
             android:name=".activity.BookingPage"
             android:exported="false"
-            android:theme="@style/Theme.AppCompat"/>
+            android:theme="@style/Theme.AppCompat" />
         <activity
             android:name=".activity.HotelPage"
             android:exported="false"
-            android:theme="@style/Theme.AppCompat"/>
+            android:theme="@style/Theme.AppCompat" />
         <activity
             android:name=".activity.HotelList"
             android:exported="false"
-            android:theme="@style/Theme.AppCompat"/>
+            android:theme="@style/Theme.AppCompat" />
         <activity
             android:name=".activity.FlightPage"
             android:exported="false"
-            android:theme="@style/Theme.AppCompat"/>
+            android:theme="@style/Theme.AppCompat" />
         <activity
             android:name=".activity.FlightList"
             android:exported="false"
-            android:theme="@style/Theme.AppCompat"/>
+            android:theme="@style/Theme.AppCompat" />
         <activity
             android:name=".activity.ItineraryPage"
             android:exported="false"
-            android:theme="@style/Theme.AppCompat"/>
+            android:theme="@style/Theme.AppCompat" />
         <activity
             android:name=".activity.ItineraryList"
             android:exported="false"
-            android:theme="@style/Theme.AppCompat"/>
+            android:theme="@style/Theme.AppCompat" />
         <activity
             android:name=".activity.MainMenu"
             android:exported="false"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
             android:name=".activity.Register"
             android:exported="false"
-            android:theme="@style/Theme.AppCompat"/>
+            android:theme="@style/Theme.AppCompat" />
         <activity
             android:name=".activity.PreLoginRegPage"
             android:exported="true"
@@ -72,15 +78,12 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
         <activity
             android:name=".MainActivity"
             android:exported="false"
             android:label="@string/app_name"
-            android:theme="@style/Theme.Travel_Assistant">
-
-        </activity>
+            android:theme="@style/Theme.Travel_Assistant" />
 
         <meta-data
             android:name="preloaded_fonts"

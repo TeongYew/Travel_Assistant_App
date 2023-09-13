@@ -1,5 +1,6 @@
-package com.example.travel_assistant.activity;
+package com.example.travel_assistant.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -11,6 +12,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.example.travel_assistant.R;
+import com.example.travel_assistant.activity.MainMenu;
+import com.example.travel_assistant.activity.PaymentPage;
+import com.example.travel_assistant.activity.TestActivity;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -36,11 +40,12 @@ public class PreLoginFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-                fragmentManager.beginTransaction()
-                        .replace(R.id.fragmentContainer, LoginFragment.class, null)
-                        .setReorderingAllowed(true)
-                        .addToBackStack("loginFragment") // Name can be null
-                        .commit();
+                startActivity(new Intent(getActivity(), MainMenu.class));
+//                fragmentManager.beginTransaction()
+//                        .replace(R.id.fragmentContainer, LoginFragment.class, null)
+//                        .setReorderingAllowed(true)
+//                        .addToBackStack("loginFragment") // Name can be null
+//                        .commit();
 
             }
         });

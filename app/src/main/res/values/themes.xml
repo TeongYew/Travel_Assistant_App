@@ -3,4 +3,7 @@
 
     <style name="Theme.Travel_Assistant" parent="android:Theme.Material.Light.NoActionBar" />
     <style name="Theme.AppCompat.NoActionBar"/>
+    <style name="ToolbarColoredNavIcon" parent="Theme.Travel_Assistant">
+        <item name="android:textColorSecondary">@color/white</item>
+    </style>
 </resources>
