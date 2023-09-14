@@ -7,10 +7,12 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -19,6 +21,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.PopupWindow;
@@ -36,10 +41,14 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 
 import com.amadeus.Amadeus;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+
+import org.json.JSONArray;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -50,6 +59,8 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
     FirebaseAuth auth;
     RelativeLayout fromRl, toRL, departureArrivalRL, passengersRL, mainMenuRL;
     TextView departureNameTV, arrivalNameTV, dateTV, passengersTV;
+    Button searchFlightBtn;
+    CheckBox directFlightCB;
     private final String TAG = "MainMenu";
     private Executor executor = Executors.newSingleThreadExecutor();
     private Handler handler = new Handler(Looper.getMainLooper());
@@ -62,6 +73,16 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
     PopupWindow popupWindow;
     View fromPopupView;
     View toPopupView;
+
+    String flightLocation = "";
+    String flightDestination = "";
+    String fromDate = "";
+    String toDate = "";
+    String adultCount = "0";
+    String kidCount = "0";
+    String roundOrOneWayTrip = "round";
+    boolean directFlightsOnly = false;
+    int year,month,day;
 
     Amadeus amadeus = Amadeus
             .builder("htHGvYM2OB3wmAqVykNHAbGPuTlSBV1m","0hiGWqr3KQSGXION")
@@ -82,6 +103,8 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
         arrivalNameTV = findViewById(R.id.arrivalNameTV);
         dateTV = findViewById(R.id.dateTV);
         passengersTV = findViewById(R.id.passengersTV);
+        searchFlightBtn = findViewById(R.id.searchFlightBtn);
+        directFlightCB = findViewById(R.id.directFlightCB);
         layoutInflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
 
         auth = FirebaseAuth.getInstance();
@@ -107,11 +130,11 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
                 switch (tab.getPosition()){
                     case 0:
                         //round trip
-
+                        roundOrOneWayTrip = "round";
                         break;
                     case 1:
                         //one way
-
+                        roundOrOneWayTrip = "oneway";
                         break;
                     default:
 
@@ -149,6 +172,56 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
             @Override
             public void onClick(View view) {
 
+                // on below line we are getting
+                // the instance of our calendar.
+                final Calendar c = Calendar.getInstance();
+
+                // on below line we are getting
+                // our day, month and year.
+                year = c.get(Calendar.YEAR);
+                month = c.get(Calendar.MONTH);
+                day = c.get(Calendar.DAY_OF_MONTH);
+
+                // on below line we are creating a variable for date picker dialog.
+                DatePickerDialog fromDatePickerDialog = new DatePickerDialog(
+                        // on below line we are passing context.
+                        MainMenu.this,
+                        new DatePickerDialog.OnDateSetListener() {
+                            @Override
+                            public void onDateSet(DatePicker view, int year,
+                                                  int monthOfYear, int dayOfMonth) {
+                                // on below line we are setting date to our text view.
+                                fromDate = dayOfMonth + "-" + (monthOfYear + 1) + "-" + year;
+
+                                DatePickerDialog toDatePickerDialog = new DatePickerDialog(
+                                        // on below line we are passing context.
+                                        MainMenu.this,
+                                        new DatePickerDialog.OnDateSetListener() {
+                                            @Override
+                                            public void onDateSet(DatePicker view, int year,
+                                                                  int monthOfYear, int dayOfMonth) {
+                                                // on below line we are setting date to our text view.
+                                                toDate = dayOfMonth + "-" + (monthOfYear + 1) + "-" + year;
+
+                                                dateTV.setText(fromDate + " - " + toDate);
+
+                                            }
+                                        },
+                                        // on below line we are passing year,
+                                        // month and day for selected date in our date picker.
+                                        year, monthOfYear, dayOfMonth);
+
+                                toDatePickerDialog.show();
+
+                            }
+                        },
+                        // on below line we are passing year,
+                        // month and day for selected date in our date picker.
+                        year, month, day);
+                // at last we are calling show to
+                // display our date picker dialog.
+                fromDatePickerDialog.show();
+
             }
         });
 
@@ -159,6 +232,47 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
             }
         });
 
+        directFlightCB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (directFlightCB.isChecked()){
+                    directFlightsOnly = true;
+                }
+                else if (!directFlightCB.isChecked()) {
+                    directFlightsOnly = false;
+                }
+
+            }
+        });
+
+        searchFlightBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Log.d(TAG, "onClick: info before flight search: " + flightLocation + ", " + flightDestination + ", " + fromDate + ", " + toDate + ", " + adultCount + ", " + kidCount + ", " + directFlightsOnly + ", " + roundOrOneWayTrip);
+
+                if(TextUtils.isEmpty(flightLocation) || TextUtils.isEmpty(flightDestination) || TextUtils.isEmpty(fromDate) || TextUtils.isEmpty(toDate) || adultCount.equals("0")){
+                    Toast.makeText(MainMenu.this, "Please make sure all the necessary details for your flight have been provided.", Toast.LENGTH_SHORT).show();
+                }
+                else {
+
+                    Intent toFlightList = new Intent(getApplicationContext(), FlightList.class);
+                    toFlightList.putExtra("location", flightLocation);
+                    toFlightList.putExtra("destination", flightDestination);
+                    toFlightList.putExtra("fromDate", fromDate);
+                    toFlightList.putExtra("toDate", toDate);
+                    toFlightList.putExtra("adultCount", adultCount);
+                    toFlightList.putExtra("kidCount", kidCount);
+                    toFlightList.putExtra("directFlightsOnly", directFlightsOnly);
+                    toFlightList.putExtra("roundOrOneWayTrip", roundOrOneWayTrip);
+
+                    startActivity(toFlightList);
+
+                }
+
+            }
+        });
 
     }
 
@@ -285,8 +399,72 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
                     }
                 });
 
-                break;
+                EditText adultCountET, kidCountET;
+                ImageButton addAdultIB, removeAdultIB, addKidIB, removeKidIB;
 
+                adultCountET = passengersPopupView.findViewById(R.id.adultCountET);
+                kidCountET = passengersPopupView.findViewById(R.id.kidCountET);
+                addAdultIB = passengersPopupView.findViewById(R.id.addAdultIB);
+                removeAdultIB = passengersPopupView.findViewById(R.id.removeAdultIB);
+                addKidIB = passengersPopupView.findViewById(R.id.addKidIB);
+                removeKidIB = passengersPopupView.findViewById(R.id.removeKidIB);
+
+                adultCountET.setText(adultCount);
+                kidCountET.setText(kidCount);
+
+                addAdultIB.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        String adultCountStr = adultCountET.getText().toString();
+                        int updateCount = Integer.parseInt(adultCountStr) + 1;
+                        adultCountET.setText(String.valueOf(updateCount));
+                    }
+                });
+
+                removeAdultIB.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        String adultCountStr = adultCountET.getText().toString();
+                        int updateCount = Integer.parseInt(adultCountStr) - 1;
+                        adultCountET.setText(String.valueOf(updateCount));
+                    }
+                });
+
+                addKidIB.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        String kidCountStr = kidCountET.getText().toString();
+                        int updateCount = Integer.parseInt(kidCountStr) + 1;
+                        kidCountET.setText(String.valueOf(updateCount));
+                    }
+                });
+
+                removeKidIB.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        String kidCountStr = kidCountET.getText().toString();
+                        int updateCount = Integer.parseInt(kidCountStr) - 1;
+                        kidCountET.setText(String.valueOf(updateCount));
+                    }
+                });
+
+                RelativeLayout passengersPopupRL = passengersPopupView.findViewById(R.id.passengersPopupRL);
+                passengersPopupRL.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View view, MotionEvent motionEvent) {
+                        adultCount = adultCountET.getText().toString();
+                        kidCount = kidCountET.getText().toString();
+                        passengersTV.setText(adultCount + " Adult(s), " + kidCount + " Kid(s)");
+                        popupWindow.dismiss();
+                        return true;
+                    }
+                });
+
+                break;
             default:
                 Toast.makeText(this, "Something went wrong!", Toast.LENGTH_SHORT).show();
                 break;
@@ -305,8 +483,8 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
                     Log.d(TAG, "run: got into before setting flight offers");
 
                     FlightOfferSearch[] flightOffers = amadeus.shopping.flightOffersSearch.get(
-                            Params.with("originLocationCode","SYD")
-                                    .and("destinationLocationCode", "BKK")
+                            Params.with("originLocationCode","LON")
+                                    .and("destinationLocationCode", "SYD")
                                     .and("departureDate", "2023-11-02")
                                     .and("adults", 1));
 
@@ -332,18 +510,42 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
                         Log.d(TAG, "run: json meta: " + jsonObject.get("data").getAsJsonArray().get(0).getAsJsonObject().get("itineraries").getAsJsonArray().get(0).getAsJsonObject().get("duration"));
                         Log.d(TAG, "run: json meta: " + jsonObject.get("data").getAsJsonArray().get(0).getAsJsonObject().get("itineraries").getAsJsonArray().get(0).getAsJsonObject().get("segments").getAsJsonArray().get(0).getAsJsonObject().get("departure").getAsJsonObject().get("iataCode"));
 
+                        JsonArray flightsData = flightOffers[0].getResponse().getResult().get("data").getAsJsonArray();
+
+                        for(int i = 0; i < flightsData.size(); i++){
+
+
+//                            for(int x = 0; x < itineraries.size(); x++){
+//
+//
+//                            }
+
+                        }
+
+                        JsonArray itineraries = flightsData.get(0).getAsJsonObject().get("itineraries").getAsJsonArray();
+
+                        String duration = itineraries.get(0).getAsJsonObject().get("duration").toString();
+                        String departureIata = itineraries.get(0).getAsJsonObject().get("segments").getAsJsonArray().get(0).getAsJsonObject().get("departure").getAsJsonObject().get("iataCode").toString();
+                        String departureTerminal = itineraries.get(0).getAsJsonObject().get("segments").getAsJsonArray().get(0).getAsJsonObject().get("departure").getAsJsonObject().get("terminal").toString();
+                        String departureTime = itineraries.get(0).getAsJsonObject().get("segments").getAsJsonArray().get(0).getAsJsonObject().get("departure").getAsJsonObject().get("at").toString();
+                        String arrivalIata = itineraries.get(0).getAsJsonObject().get("segments").getAsJsonArray().get(0).getAsJsonObject().get("arrival").getAsJsonObject().get("iataCode").toString();
+                        String arrivalTime = itineraries.get(0).getAsJsonObject().get("segments").getAsJsonArray().get(0).getAsJsonObject().get("arrival").getAsJsonObject().get("at").toString();
+
+                        Log.d(TAG, "run: this is itinerary departure plan" + duration + ", " + departureIata + ", " + departureTerminal + ", " + departureTime);
+                        Log.d(TAG, "run: this is itinerary arrival plan" + duration + ", " + arrivalIata + ", " + arrivalTime);
+
                         String flightDuration = jsonObject.get("data").
                                 getAsJsonArray().get(0).getAsJsonObject().get("itineraries").
                                 getAsJsonArray().get(0).getAsJsonObject().get("duration").toString();
 
-                        String departureIata = jsonObject.get("data").
+                        String departureIata1 = jsonObject.get("data").
                                 getAsJsonArray().get(0).getAsJsonObject().get("itineraries").
                                 getAsJsonArray().get(0).getAsJsonObject().get("segments").
                                 getAsJsonArray().get(0).getAsJsonObject().get("departure").
                                 getAsJsonObject().get("iataCode").toString();
 
                         Log.d(TAG, "run: duration: " + flightDuration);
-                        Log.d(TAG, "run: iata: " + departureIata);
+                        Log.d(TAG, "run: iata: " + departureIata1);
 
                         for(int i = 0; i < Arrays.stream(flightOffers).count(); i++){
 
@@ -433,7 +635,9 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
                                     @Override
                                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                                         TextView location = view.findViewById(R.id.locationTV);
+                                        TextView iata = view.findViewById(R.id.iataTV);
                                         String loc = location.getText().toString();
+                                        flightLocation = iata.getText().toString();
                                         Toast.makeText(MainMenu.this, "dis is loc: " + loc, Toast.LENGTH_SHORT).show();
                                         departureNameTV.setText(loc);
                                         popupWindow.dismiss();
@@ -450,7 +654,9 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
                                     @Override
                                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                                         TextView location = view.findViewById(R.id.locationTV);
+                                        TextView iata = view.findViewById(R.id.iataTV);
                                         String loc = location.getText().toString();
+                                        flightDestination = iata.getText().toString();
                                         Toast.makeText(MainMenu.this, "dis is loc: " + loc, Toast.LENGTH_SHORT).show();
                                         arrivalNameTV.setText(loc);
                                         popupWindow.dismiss();
@@ -459,10 +665,6 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
                                 });
 
                             }
-
-//                            android.widget.ListView flightFromLV = fromPopupView.findViewById(R.id.flightFromLV);
-//                            Log.d(TAG, "run: getapplicationcontext: " + getApplicationContext().toString());
-//                            Log.d(TAG, "run: getapplicationcontext: " + fromPopupView.getContext().toString());
 
 
                         }

@@ -34,6 +34,7 @@
                 android:gravity="center"
                 android:layout_weight="1">
                 <ImageButton
+                    android:id="@+id/addAdultIB"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/circle_button"
@@ -42,6 +43,7 @@
                     android:padding="4dp"
                     android:contentDescription="Add"/>
                 <EditText
+                    android:id="@+id/adultCountET"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="0"
@@ -49,6 +51,7 @@
                     android:layout_margin="10dp"
                     android:padding="10dp"/>
                 <ImageButton
+                    android:id="@+id/removeAdultIB"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/circle_button"
@@ -80,6 +83,7 @@
                 android:gravity="center"
                 android:layout_weight="1">
                 <ImageButton
+                    android:id="@+id/addKidIB"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/circle_button"
@@ -88,6 +92,7 @@
                     android:padding="4dp"
                     android:contentDescription="Add"/>
                 <EditText
+                    android:id="@+id/kidCountET"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="0"
@@ -95,6 +100,7 @@
                     android:layout_margin="10dp"
                     android:padding="10dp"/>
                 <ImageButton
+                    android:id="@+id/removeKidIB"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/circle_button"

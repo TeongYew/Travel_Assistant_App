@@ -286,7 +286,7 @@
         </LinearLayout>
 
         <CheckBox
-            android:id="@+id/simpleCheckBox"
+            android:id="@+id/directFlightCB"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/flightDetailsLL"
@@ -295,7 +295,7 @@
             android:layout_marginLeft="20dp"/>
 
         <Button
-            android:id="@+id/bookFlightBtn"
+            android:id="@+id/searchFlightBtn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
