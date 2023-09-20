@@ -26,7 +26,7 @@ public class TestActivity extends AppCompatActivity {
     private Executor executor = Executors.newSingleThreadExecutor();
     private Handler handler = new Handler(Looper.getMainLooper());
     private final String TAG = "TestActivity";
-    LocationListData locationListData;
+    LocationModel locationListData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +49,7 @@ public class TestActivity extends AppCompatActivity {
 
         String location = "london";
 
-        ArrayList<LocationListData> locationArrayList = new ArrayList<>();
+        ArrayList<LocationModel> locationArrayList = new ArrayList<>();
 
         executor.execute(new Runnable() {
             @Override
@@ -90,7 +90,7 @@ public class TestActivity extends AppCompatActivity {
                         Log.d(TAG, "run: dis is the " + i + " location data: " + location);
                         Log.d(TAG, "run: dis is the " + i + " iata data: " + iata);
 
-                        locationListData = new LocationListData(iata, location);
+                        locationListData = new LocationModel(iata, location);
                         locationArrayList.add(locationListData);
 
                     }

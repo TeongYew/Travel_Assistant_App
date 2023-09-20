@@ -11,6 +11,6 @@ public class ListView extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_flight_list_view);
+        setContentView(R.layout.flight_list_listview);
     }
 }

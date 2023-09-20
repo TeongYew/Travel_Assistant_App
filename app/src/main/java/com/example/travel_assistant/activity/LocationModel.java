@@ -1,9 +1,9 @@
 package com.example.travel_assistant.activity;
 
-public class LocationListData {
+public class LocationModel {
     String iata, location;
 
-    public LocationListData(String iata, String location) {
+    public LocationModel(String iata, String location) {
         this.iata = iata;
         this.location = location;
     }

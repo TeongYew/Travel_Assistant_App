@@ -12,15 +12,15 @@ import com.example.travel_assistant.R;
 
 import java.util.ArrayList;
 
-public class LocationSearchAdapter extends BaseAdapter {
+public class FlightListAdapter extends BaseAdapter {
 
     Context context;
-    ArrayList<LocationModel> locationArrayList;
+    ArrayList<FlightListModel> flightArrayList;
     LayoutInflater inflater;
 
-    public LocationSearchAdapter(Context context, ArrayList<LocationModel> locationArrayList) {
+    public FlightListAdapter(Context context, ArrayList<FlightListModel> flightArrayList) {
         this.context = context;
-        this.locationArrayList = locationArrayList;
+        this.flightArrayList = flightArrayList;
         Log.d("TAG", "getView: got in the adapter constructor");
         //inflater = (LayoutInflater.from(context));
         inflater = (LayoutInflater) context
@@ -29,12 +29,12 @@ public class LocationSearchAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return locationArrayList.size();
+        return flightArrayList.size();
     }
 
     @Override
-    public LocationModel getItem(int i) {
-        return locationArrayList.get(i);
+    public FlightListModel getItem(int i) {
+        return flightArrayList.get(i);
     }
 
     @Override
@@ -49,12 +49,17 @@ public class LocationSearchAdapter extends BaseAdapter {
 //        if(vi == null){
 //            vi = inflater.inflate(R.layout.location_search_listview, null);
 //        }
-        view = inflater.inflate(R.layout.location_search_listview, null);
-        TextView iata = view.findViewById(R.id.iataTV);
-        TextView location = view.findViewById(R.id.locationTV);
-        iata.setText(locationArrayList.get(i).iata);
-        location.setText(locationArrayList.get(i).location);
+        view = inflater.inflate(R.layout.flight_list_listview, null);
+        TextView departureIATA = view.findViewById(R.id.departureIATATV);
+        TextView arrivalIATA = view.findViewById(R.id.arrivalIATATV);
+        TextView price = view.findViewById(R.id.priceTV);
+        TextView airline = view.findViewById(R.id.airlineTV);
+        departureIATA.setText(flightArrayList.get(i).departureIATA.replaceAll("\"", ""));
+        arrivalIATA.setText(flightArrayList.get(i).arrivalIATA.replaceAll("\"", ""));
+        price.append(flightArrayList.get(i).priceCurrency.replaceAll("\"", "") + " " + flightArrayList.get(i).priceTotal.replaceAll("\"", ""));
+        airline.setText(flightArrayList.get(i).airline + " Airline");
         Log.d("TAG", "getView: got in the end of getView");
         return view;
     }
+
 }
