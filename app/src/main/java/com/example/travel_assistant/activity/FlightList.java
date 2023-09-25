@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.amadeus.Amadeus;
 import com.amadeus.Params;
@@ -111,7 +112,7 @@ public class FlightList extends AppCompatActivity {
                                         .and("returnDate", toDate)
                                         .and("adults", adultCount)
                                         .and("children", kidCount)
-                                        );
+                                        .and("max", 20));
                     }
                     else if(roundOrOneWayTrip.equals("oneway")){
                         flightOffers = amadeus.shopping.flightOffersSearch.get(
@@ -120,7 +121,8 @@ public class FlightList extends AppCompatActivity {
                                         .and("departureDate", fromDate)
                                         .and("adults", adultCount)
                                         .and("children", kidCount)
-                                        .and("nonstop", String.valueOf(directFlightsOnly)));
+                                        .and("nonstop", String.valueOf(directFlightsOnly))
+                                        .and("max", 20));
                     }
                     else{
                         flightOffers = amadeus.shopping.flightOffersSearch.get(
@@ -129,7 +131,8 @@ public class FlightList extends AppCompatActivity {
                                         .and("departureDate", fromDate)
                                         .and("adults", adultCount)
                                         .and("children", kidCount)
-                                        .and("nonstop", String.valueOf(directFlightsOnly)));
+                                        .and("nonstop", String.valueOf(directFlightsOnly))
+                                        .and("max", 20));
                     }
 
 
@@ -153,17 +156,17 @@ public class FlightList extends AppCompatActivity {
 
                         Log.d(TAG, "run: this is itinerary duration: " + duration);
 
-                        String firstdepartureIata = itinerarySegments.get(0).getAsJsonObject().get("departure").getAsJsonObject().get("iataCode").toString();
-                        String firstdepartureAt = itinerarySegments.get(0).getAsJsonObject().get("departure").getAsJsonObject().get("at").toString();
-                        String lastArrivalIata = itinerarySegments.get(itinerarySegments.size() - 1).getAsJsonObject().get("arrival").getAsJsonObject().get("iataCode").toString();
-                        String lastArrivalAt = itinerarySegments.get(itinerarySegments.size() - 1).getAsJsonObject().get("arrival").getAsJsonObject().get("at").toString();
-                        String priceCurrency = flightsData.get(i).getAsJsonObject().get("travelerPricings").getAsJsonArray().get(0).getAsJsonObject().get("price").getAsJsonObject().get("currency").toString();
-                        String priceTotal = flightsData.get(i).getAsJsonObject().get("travelerPricings").getAsJsonArray().get(0).getAsJsonObject().get("price").getAsJsonObject().get("total").toString();
-                        Log.d(TAG, "run: got here: " + duration);
-                        String cabin = flightsData.get(i).getAsJsonObject().get("travelerPricings").getAsJsonArray().get(0).getAsJsonObject().get("fareDetailsBySegment").getAsJsonArray().get(0).getAsJsonObject().get("cabin").toString();
-                        //String airline = flightsData.get(i).getAsJsonObject().get("validatingAirlineCodes").getAsJsonArray().get(0).toString();
-                        String airline = "MF";
+                        String firstdepartureIata = itinerarySegments.get(0).getAsJsonObject().get("departure").getAsJsonObject().get("iataCode").toString().replaceAll("\"", "");
+                        String firstdepartureAt = itinerarySegments.get(0).getAsJsonObject().get("departure").getAsJsonObject().get("at").toString().replaceAll("\"", "");
+                        String lastArrivalIata = itinerarySegments.get(itinerarySegments.size() - 1).getAsJsonObject().get("arrival").getAsJsonObject().get("iataCode").toString().replaceAll("\"", "");
+                        String lastArrivalAt = itinerarySegments.get(itinerarySegments.size() - 1).getAsJsonObject().get("arrival").getAsJsonObject().get("at").toString().replaceAll("\"", "");
+                        String priceCurrency = flightsData.get(i).getAsJsonObject().get("travelerPricings").getAsJsonArray().get(0).getAsJsonObject().get("price").getAsJsonObject().get("currency").toString().replaceAll("\"", "");
+                        String priceTotal = flightsData.get(i).getAsJsonObject().get("travelerPricings").getAsJsonArray().get(0).getAsJsonObject().get("price").getAsJsonObject().get("total").toString().replaceAll("\"", "");
+                        String cabin = flightsData.get(i).getAsJsonObject().get("travelerPricings").getAsJsonArray().get(0).getAsJsonObject().get("fareDetailsBySegment").getAsJsonArray().get(0).getAsJsonObject().get("cabin").toString().replaceAll("\"", "");
+                        String airline = flightsData.get(i).getAsJsonObject().get("validatingAirlineCodes").getAsJsonArray().get(0).toString().replaceAll("\"", "");
                         JsonArray flightItinerary = flightsData.get(i).getAsJsonObject().get("itineraries").getAsJsonArray();
+
+
 
                         Log.d(TAG, "run: this is itinerary first departure and final arrival: " + firstdepartureIata + ", " + lastArrivalIata);
 
@@ -236,16 +239,37 @@ public class FlightList extends AppCompatActivity {
 
                                     for(int x = 0; x < itinerary.size(); x++){
 
-                                        String departureIATA = itinerary.get(x).getAsJsonObject().get("segments").getAsJsonArray().get(0).getAsJsonObject().get("departure").getAsJsonObject().get("iataCode").toString();
-                                        String arrivalIATA = itinerary.get(x).getAsJsonObject().get("segments").getAsJsonArray().get(0).getAsJsonObject().get("arrival").getAsJsonObject().get("iataCode").toString();
-                                        String departureAt = itinerary.get(x).getAsJsonObject().get("segments").getAsJsonArray().get(0).getAsJsonObject().get("departure").getAsJsonObject().get("at").toString();
-                                        String arrivalAt = itinerary.get(x).getAsJsonObject().get("segments").getAsJsonArray().get(0).getAsJsonObject().get("arrival").getAsJsonObject().get("at").toString();
-                                        String carrierCode = itinerary.get(x).getAsJsonObject().get("segments").getAsJsonArray().get(0).getAsJsonObject().get("carrierCode").toString();
-                                        String number = itinerary.get(x).getAsJsonObject().get("segments").getAsJsonArray().get(0).getAsJsonObject().get("number").toString();
-                                        String aircraftCode = itinerary.get(x).getAsJsonObject().get("segments").getAsJsonArray().get(0).getAsJsonObject().get("aircraft").getAsJsonObject().get("code").toString();
-                                        String duration = itinerary.get(x).getAsJsonObject().get("segments").getAsJsonArray().get(0).getAsJsonObject().get("duration").toString();
+                                        String departureIATA = itinerary.get(x).getAsJsonObject().get("segments").getAsJsonArray().get(0).getAsJsonObject().get("departure").getAsJsonObject().get("iataCode").toString().replaceAll("\"", "");
+                                        String arrivalIATA = itinerary.get(x).getAsJsonObject().get("segments").getAsJsonArray().get(0).getAsJsonObject().get("arrival").getAsJsonObject().get("iataCode").toString().replaceAll("\"", "");
+                                        String departureAt = itinerary.get(x).getAsJsonObject().get("segments").getAsJsonArray().get(0).getAsJsonObject().get("departure").getAsJsonObject().get("at").toString().replaceAll("\"", "");
+                                        String arrivalAt = itinerary.get(x).getAsJsonObject().get("segments").getAsJsonArray().get(0).getAsJsonObject().get("arrival").getAsJsonObject().get("at").toString().replaceAll("\"", "");
+                                        String carrierCode = itinerary.get(x).getAsJsonObject().get("segments").getAsJsonArray().get(0).getAsJsonObject().get("carrierCode").toString().replaceAll("\"", "");
+                                        String number = itinerary.get(x).getAsJsonObject().get("segments").getAsJsonArray().get(0).getAsJsonObject().get("number").toString().replaceAll("\"", "");
+                                        String aircraftCode = itinerary.get(x).getAsJsonObject().get("segments").getAsJsonArray().get(0).getAsJsonObject().get("aircraft").getAsJsonObject().get("code").toString().replaceAll("\"", "");
+                                        String duration = itinerary.get(x).getAsJsonObject().get("segments").getAsJsonArray().get(0).getAsJsonObject().get("duration").toString().replaceAll("\"", "");
 
-                                        ItineraryListModel itineraryListModel = new ItineraryListModel(departureIATA, arrivalIATA, departureAt, arrivalAt, carrierCode,number, aircraftCode, duration);
+                                        String departureTerminal = "-";
+                                        String arrivalTerminal = "-";
+
+                                        try {
+                                            departureTerminal = itinerary.get(x).getAsJsonObject().get("segments").getAsJsonArray().get(0).getAsJsonObject().get("departure").getAsJsonObject().get("terminal").toString().replaceAll("\"", "");
+                                            Log.d(TAG, "run: departure terminal: " + departureTerminal);
+                                        }
+                                        catch (NullPointerException e){
+                                            Log.d(TAG, "run: departure nullpointerexception terminal: " + e);
+                                            departureTerminal = "-";
+                                        }
+
+                                        try {
+                                            arrivalTerminal = itinerary.get(x).getAsJsonObject().get("segments").getAsJsonArray().get(0).getAsJsonObject().get("arrival").getAsJsonObject().get("terminal").toString().replaceAll("\"", "");
+                                            Log.d(TAG, "run: arrival terminal: " + arrivalTerminal);
+                                        }
+                                        catch (NullPointerException e){
+                                            Log.d(TAG, "run: arrival nullpointerexception terminal: " + e);
+                                            arrivalTerminal = "-";
+                                        }
+
+                                        ItineraryListModel itineraryListModel = new ItineraryListModel(departureIATA, arrivalIATA, departureAt, arrivalAt, departureTerminal, arrivalTerminal, carrierCode,number, aircraftCode, duration);
 
                                         itineraryArrayList.add(itineraryListModel);
 
@@ -267,14 +291,24 @@ public class FlightList extends AppCompatActivity {
                                         public void onClick(View view) {
 
                                             Intent toFlightPage = new Intent(getApplicationContext(), FlightPage.class);
-                                            toFlightPage.putExtra("location", flightLocation);
-                                            toFlightPage.putExtra("destination", flightDestination);
-                                            toFlightPage.putExtra("fromDate", fromDate);
-                                            toFlightPage.putExtra("toDate", toDate);
+                                            //toFlightPage.putExtra("location", flightLocation);
+                                            //toFlightPage.putExtra("destination", flightDestination);
+                                            toFlightPage.putExtra("location", itineraryArrayList.get(0).departureIATA);
+                                            toFlightPage.putExtra("destination", itineraryArrayList.get(0).arrivalIATA);
+                                            toFlightPage.putExtra("fromDate", itineraryArrayList.get(0).departureAt);
+                                            toFlightPage.putExtra("toDate", itineraryArrayList.get(0).arrivalAt);
+                                            toFlightPage.putExtra("depTerminal", itineraryArrayList.get(0).departureTerminal);
+                                            toFlightPage.putExtra("arrTerminal", itineraryArrayList.get(0).arrivalTerminal);
                                             toFlightPage.putExtra("adultCount", adultCount);
                                             toFlightPage.putExtra("kidCount", kidCount);
                                             toFlightPage.putExtra("directFlightsOnly", directFlightsOnly);
                                             toFlightPage.putExtra("roundOrOneWayTrip", roundOrOneWayTrip);
+                                            toFlightPage.putExtra("class", flightArrayList.get(i).cabin);
+                                            toFlightPage.putExtra("airline", flightArrayList.get(i).airline);
+                                            toFlightPage.putExtra("price", flightArrayList.get(i).priceCurrency + " " + flightArrayList.get(i).priceTotal);
+                                            toFlightPage.putExtra("flight", itineraryArrayList.get(0).aircraftCode + itineraryArrayList.get(0).number);
+                                            //toFlightPage.putExtra("flightData", flightArrayList.get(i));
+                                            toFlightPage.putExtra("flightItinerary", itineraryArrayList);
                                             startActivity(toFlightPage);
 
                                         }

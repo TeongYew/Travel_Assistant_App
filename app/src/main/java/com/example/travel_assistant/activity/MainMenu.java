@@ -637,17 +637,27 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
                                 .getAsJsonObject().get("data")
                                 .getAsJsonArray().get(i)
                                 .getAsJsonObject().get("name")
-                                .toString();
+                                .toString()
+                                .replaceAll("\"", "");
                         String iata = locations[0].getResponse().getResult()
                                 .getAsJsonObject().get("data")
                                 .getAsJsonArray().get(i)
                                 .getAsJsonObject().get("iataCode")
-                                .toString();
+                                .toString()
+                                .replaceAll("\"", "");
+
+                        String cityName = locations[0].getResponse().getResult()
+                                .getAsJsonObject().get("data")
+                                .getAsJsonArray().get(i)
+                                .getAsJsonObject().get("address")
+                                .getAsJsonObject().get("cityName")
+                                .toString()
+                                .replaceAll("\"", "");
 
                         Log.d(TAG, "run: dis is the " + i + " location data: " + location);
                         Log.d(TAG, "run: dis is the " + i + " iata data: " + iata);
 
-                        locationListData = new LocationModel(iata, location);
+                        locationListData = new LocationModel(iata, location, cityName);
                         locationArrayList.add(locationListData);
 
                     }

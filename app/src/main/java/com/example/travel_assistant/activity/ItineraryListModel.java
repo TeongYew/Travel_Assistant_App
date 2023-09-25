@@ -1,14 +1,18 @@
 package com.example.travel_assistant.activity;
 
-public class ItineraryListModel {
+import java.io.Serializable;
 
-    String departureIATA, arrivalIATA, departureAt, arrivalAt, carrierCode, number, aircraftCode, duration;
+public class ItineraryListModel implements Serializable {
 
-    public ItineraryListModel(String departureIATA, String arrivalIATA, String departureAt, String arrivalAt, String carrierCode, String number, String aircraftCode, String duration) {
+    String departureIATA, arrivalIATA, departureAt, arrivalAt, departureTerminal, arrivalTerminal, carrierCode, number, aircraftCode, duration;
+
+    public ItineraryListModel(String departureIATA, String arrivalIATA, String departureAt, String arrivalAt, String departureTerminal, String arrivalTerminal, String carrierCode, String number, String aircraftCode, String duration) {
         this.departureIATA = departureIATA;
         this.arrivalIATA = arrivalIATA;
         this.departureAt = departureAt;
         this.arrivalAt = arrivalAt;
+        this.departureTerminal = departureTerminal;
+        this.arrivalTerminal = arrivalTerminal;
         this.carrierCode = carrierCode;
         this.number = number;
         this.aircraftCode = aircraftCode;
@@ -77,5 +81,21 @@ public class ItineraryListModel {
 
     public void setDuration(String duration) {
         this.duration = duration;
+    }
+
+    public String getDepartureTerminal() {
+        return departureTerminal;
+    }
+
+    public void setDepartureTerminal(String departureTerminal) {
+        this.departureTerminal = departureTerminal;
+    }
+
+    public String getArrivalTerminal() {
+        return arrivalTerminal;
+    }
+
+    public void setArrivalTerminal(String arrivalTerminal) {
+        this.arrivalTerminal = arrivalTerminal;
     }
 }

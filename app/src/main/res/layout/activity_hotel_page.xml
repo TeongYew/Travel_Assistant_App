@@ -21,19 +21,21 @@
             android:scaleType="centerCrop"/>
 
         <TextView
-            android:id="@+id/myImageViewText"
+            android:id="@+id/hotelNameTV"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignLeft="@+id/myImageView"
             android:layout_alignBottom="@+id/myImageView"
-            android:layout_margin="5dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/custom_textview"
             android:gravity="center"
+            android:padding="10dp"
             android:text="Awesome Villa"
             android:textColor="@color/light_grey"
-            android:textSize="20sp"
-            android:padding="10dp"
-            android:background="@drawable/custom_textview"
-            />
+            android:textSize="20sp" />
     </RelativeLayout>
 
 
@@ -249,6 +251,7 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/toPaymentBtn"
         android:text="Make Booking"
         android:textSize="18sp"
         android:background="@drawable/round_btn"/>

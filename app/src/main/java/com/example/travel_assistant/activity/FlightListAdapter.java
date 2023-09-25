@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.example.travel_assistant.R;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 public class FlightListAdapter extends BaseAdapter {

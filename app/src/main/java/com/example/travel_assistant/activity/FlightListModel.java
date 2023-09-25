@@ -2,7 +2,9 @@ package com.example.travel_assistant.activity;
 
 import com.google.gson.JsonArray;
 
-public class FlightListModel {
+import java.io.Serializable;
+
+public class FlightListModel implements Serializable {
 
     String departureIATA, departureName, arrivalIATA, arrivalName, departureAt, arrivalAt, priceCurrency, priceTotal, cabin, airline;
     JsonArray flightItinerary;
