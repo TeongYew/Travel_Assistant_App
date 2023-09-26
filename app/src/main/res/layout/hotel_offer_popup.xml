@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/translucent_black"
+    android:id="@+id/hotelPopupRL">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        android:layout_margin="10dp"
+        android:orientation="vertical"
+        android:background="@drawable/rounded_popup_outline"
+        android:layout_centerInParent="true"
+        android:weightSum="4">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/hotelNameTV"
+            android:text="ALOFT MANHATTAN DOWNTOWNWOHGFW"
+            android:layout_alignParentLeft="true"
+            android:layout_margin="10dp"
+            android:textSize="30sp"
+            android:textColor="@color/black"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"/>
+
+        <ListView
+            android:id="@+id/itineraryLV"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
+            android:layout_marginBottom="10dp" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/toFlightPageBtn"
+            android:text="Go to flight page"
+            android:textSize="16sp"
+            android:layout_gravity="center_horizontal"
+            android:padding="10dp"
+            android:background="@drawable/round_btn"/>
+
+    </LinearLayout>
+
+
+
+
+</RelativeLayout>

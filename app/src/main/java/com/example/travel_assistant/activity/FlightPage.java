@@ -122,6 +122,11 @@ public class FlightPage extends AppCompatActivity {
             public void onClick(View view) {
                 Intent toHotelList = new Intent(getApplicationContext(), HotelList.class);
                 toHotelList.putExtra("location", flightDestination);
+                toHotelList.putExtra("fromDate", fromDate);
+                toHotelList.putExtra("toDate", toDate);
+                toHotelList.putExtra("adultCount", adultCount);
+                toHotelList.putExtra("kidCount", kidCount);
+                toHotelList.putExtra("flightPrice", price);
                 startActivity(toHotelList);
             }
         });
