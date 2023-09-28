@@ -6,12 +6,12 @@ plugins {
 
 android {
     namespace = "com.example.travel_assistant"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.example.travel_assistant"
         minSdk = 26
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -72,6 +72,9 @@ dependencies {
     // https://firebase.google.com/docs/android/setup#available-libraries
     implementation ("com.amadeus:amadeus-java:8.0.0")
     implementation("com.google.code.gson:gson:2.8.5")
+    // Stripe Android SDK
+    implementation ("com.stripe:stripe-android:20.32.0")
+    implementation ("com.android.volley:volley:1.2.1")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
