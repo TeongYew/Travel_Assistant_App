@@ -1,4 +1,4 @@
-package com.example.travel_assistant.activity;
+package com.example.travel_assistant.adapter;
 
 import android.content.Context;
 import android.util.Log;
@@ -8,18 +8,18 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.amadeus.resources.TransferOffersPost;
 import com.example.travel_assistant.R;
+import com.example.travel_assistant.model.FlightItineraryListModel;
 
 import java.util.ArrayList;
 
-public class ItineraryListAdapter extends BaseAdapter {
+public class FlightItineraryListAdapter extends BaseAdapter {
 
     Context context;
-    ArrayList<ItineraryListModel> itineraryArrayList;
+    ArrayList<FlightItineraryListModel> itineraryArrayList;
     LayoutInflater inflater;
 
-    public ItineraryListAdapter(Context context, ArrayList<ItineraryListModel> itineraryArrayList) {
+    public FlightItineraryListAdapter(Context context, ArrayList<FlightItineraryListModel> itineraryArrayList) {
         this.context = context;
         this.itineraryArrayList = itineraryArrayList;
         Log.d("TAG", "getView: got in the adapter constructor");
@@ -34,7 +34,7 @@ public class ItineraryListAdapter extends BaseAdapter {
     }
 
     @Override
-    public ItineraryListModel getItem(int i) {
+    public FlightItineraryListModel getItem(int i) {
         return itineraryArrayList.get(i);
     }
 
@@ -50,7 +50,7 @@ public class ItineraryListAdapter extends BaseAdapter {
 //        if(vi == null){
 //            vi = inflater.inflate(R.layout.location_search_listview, null);
 //        }
-        view = inflater.inflate(R.layout.itinerary_list_listview, null);
+        view = inflater.inflate(R.layout.flight_itinerary_list_listview, null);
         TextView departureIATA = view.findViewById(R.id.departureIATATV);
         TextView arrivalIATA = view.findViewById(R.id.arrivalIATATV);
         TextView departureAt = view.findViewById(R.id.departureAtTV);

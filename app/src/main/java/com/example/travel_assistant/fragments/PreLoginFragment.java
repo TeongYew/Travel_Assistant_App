@@ -14,6 +14,7 @@ import android.widget.Button;
 import com.example.travel_assistant.R;
 import com.example.travel_assistant.activity.FlightList;
 import com.example.travel_assistant.activity.HotelList;
+import com.example.travel_assistant.activity.ItineraryList;
 import com.example.travel_assistant.activity.MainMenu;
 import com.example.travel_assistant.activity.PaymentPage;
 
@@ -41,7 +42,7 @@ public class PreLoginFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-                startActivity(new Intent(getActivity(), HotelList.class));
+                startActivity(new Intent(getActivity(), ItineraryList.class));
 //                fragmentManager.beginTransaction()
 //                        .replace(R.id.fragmentContainer, LoginFragment.class, null)
 //                        .setReorderingAllowed(true)

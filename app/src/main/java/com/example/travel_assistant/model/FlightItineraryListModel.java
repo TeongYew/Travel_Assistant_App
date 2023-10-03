@@ -1,12 +1,12 @@
-package com.example.travel_assistant.activity;
+package com.example.travel_assistant.model;
 
 import java.io.Serializable;
 
-public class ItineraryListModel implements Serializable {
+public class FlightItineraryListModel implements Serializable {
 
-    String departureIATA, arrivalIATA, departureAt, arrivalAt, departureTerminal, arrivalTerminal, carrierCode, number, aircraftCode, duration;
+    public String departureIATA, arrivalIATA, departureAt, arrivalAt, departureTerminal, arrivalTerminal, carrierCode, number, aircraftCode, duration;
 
-    public ItineraryListModel(String departureIATA, String arrivalIATA, String departureAt, String arrivalAt, String departureTerminal, String arrivalTerminal, String carrierCode, String number, String aircraftCode, String duration) {
+    public FlightItineraryListModel(String departureIATA, String arrivalIATA, String departureAt, String arrivalAt, String departureTerminal, String arrivalTerminal, String carrierCode, String number, String aircraftCode, String duration) {
         this.departureIATA = departureIATA;
         this.arrivalIATA = arrivalIATA;
         this.departureAt = departureAt;

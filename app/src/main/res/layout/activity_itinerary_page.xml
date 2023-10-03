@@ -128,7 +128,7 @@
     </LinearLayout>
 
     <ListView
-        android:id="@+id/simpleListView"
+        android:id="@+id/itineraryLocationLV"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/dateCardsLL"
@@ -137,7 +137,7 @@
         android:footerDividersEnabled="false" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab"
+        android:id="@+id/addFAB"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"

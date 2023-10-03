@@ -1,7 +1,7 @@
-package com.example.travel_assistant.activity;
+package com.example.travel_assistant.model;
 
 public class LocationModel {
-    String iata, location, cityName;
+    public String iata, location, cityName;
 
     public LocationModel(String iata, String location, String cityName) {
         this.iata = iata;

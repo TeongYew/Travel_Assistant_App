@@ -1,19 +1,22 @@
 package com.example.travel_assistant.model;
 
+import java.util.ArrayList;
+
 public class ItineraryModel {
 
-    private String itineraryName;
-    private int itineraryRating;
-    private int itineraryImage;
+    public String itineraryName, itineraryLocation, itineraryDateFrom, itineraryDateTo;
+    public int itineraryDaysCount;
+    public ArrayList<ItineraryDayModel> itineraryDays;
 
-    // Constructor
-    public ItineraryModel(String itineraryName, int itineraryRating, int itineraryImage) {
+    public ItineraryModel(String itineraryName, String itineraryLocation, String itineraryDateFrom, String itineraryDateTo, int itineraryDaysCount, ArrayList<ItineraryDayModel> itineraryDays) {
         this.itineraryName = itineraryName;
-        this.itineraryRating = itineraryRating;
-        this.itineraryImage = itineraryImage;
+        this.itineraryLocation = itineraryLocation;
+        this.itineraryDateFrom = itineraryDateFrom;
+        this.itineraryDateTo = itineraryDateTo;
+        this.itineraryDaysCount = itineraryDaysCount;
+        this.itineraryDays = itineraryDays;
     }
 
-    // Getter and Setter
     public String getItineraryName() {
         return itineraryName;
     }
@@ -22,19 +25,43 @@ public class ItineraryModel {
         this.itineraryName = itineraryName;
     }
 
-    public int getItineraryRating() {
-        return itineraryRating;
+    public String getItineraryDateFrom() {
+        return itineraryDateFrom;
     }
 
-    public void setItineraryRating(int itineraryRating) {
-        this.itineraryRating = itineraryRating;
+    public void setItineraryDateFrom(String itineraryDateFrom) {
+        this.itineraryDateFrom = itineraryDateFrom;
     }
 
-    public int getItineraryImage() {
-        return itineraryImage;
+    public String getItineraryDateTo() {
+        return itineraryDateTo;
     }
 
-    public void setItineraryImage(int itineraryImage) {
-        this.itineraryImage = itineraryImage;
+    public void setItineraryDateTo(String itineraryDateTo) {
+        this.itineraryDateTo = itineraryDateTo;
+    }
+
+    public int getItineraryDaysCount() {
+        return itineraryDaysCount;
+    }
+
+    public void setItineraryDaysCount(int itineraryDaysCount) {
+        this.itineraryDaysCount = itineraryDaysCount;
+    }
+
+    public ArrayList<ItineraryDayModel> getItineraryDays() {
+        return itineraryDays;
+    }
+
+    public void setItineraryDays(ArrayList<ItineraryDayModel> itineraryDays) {
+        this.itineraryDays = itineraryDays;
+    }
+
+    public String getItineraryLocation() {
+        return itineraryLocation;
+    }
+
+    public void setItineraryLocation(String itineraryLocation) {
+        this.itineraryLocation = itineraryLocation;
     }
 }

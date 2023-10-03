@@ -2,23 +2,22 @@ package com.example.travel_assistant.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.amadeus.Amadeus;
 import com.amadeus.Params;
 import com.amadeus.referencedata.Locations;
 import com.amadeus.resources.Location;
 import com.example.travel_assistant.R;
+import com.example.travel_assistant.model.FlightItineraryListModel;
+import com.example.travel_assistant.model.LocationModel;
 
 import java.util.ArrayList;
 import java.util.concurrent.Executor;
@@ -48,7 +47,7 @@ public class FlightPage extends AppCompatActivity {
     final String TAG = String.valueOf(FlightPage.this);
 
 
-    ArrayList<ItineraryListModel> flightItinerary = new ArrayList<>();
+    ArrayList<FlightItineraryListModel> flightItinerary = new ArrayList<>();
     LocationModel depLocation;
     LocationModel arrLocation;
     Amadeus amadeus = Amadeus
@@ -95,7 +94,7 @@ public class FlightPage extends AppCompatActivity {
         airline = intent.getStringExtra("airline");
         price = intent.getStringExtra("price");
         flight = intent.getStringExtra("flight");
-        flightItinerary = (ArrayList<ItineraryListModel>) intent.getSerializableExtra("flightItinerary");
+        flightItinerary = (ArrayList<FlightItineraryListModel>) intent.getSerializableExtra("flightItinerary");
 
         departureIATATV.setText(flightLocation);
         arrivalIATATV.setText(flightDestination);

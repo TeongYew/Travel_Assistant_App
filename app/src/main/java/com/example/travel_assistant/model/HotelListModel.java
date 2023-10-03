@@ -1,8 +1,8 @@
-package com.example.travel_assistant.activity;
+package com.example.travel_assistant.model;
 
 public class HotelListModel {
 
-    String hotelName, hotelId;
+    public String hotelName, hotelId;
 
     public HotelListModel(String hotelName, String hotelId) {
         this.hotelName = hotelName;

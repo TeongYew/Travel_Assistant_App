@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".activity.ItineraryList"
-    android:orientation="vertical">
+    android:id="@+id/itineraryListRL">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -20,8 +20,8 @@
             android:textSize="20sp"
             android:padding="15dp"/>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/itineraryRV"
+        <ListView
+            android:id="@+id/itineraryLV"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 
@@ -29,7 +29,7 @@
     </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab"
+        android:id="@+id/optionsFAB"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
@@ -39,5 +39,81 @@
         android:layout_margin="16dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/createItineraryLL"
+        android:orientation="horizontal"
+        android:layout_margin="16dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/createItineraryTV"
+            android:text="Create"
+            android:layout_gravity="center"
+            android:textColor="@color/light_grey"
+            android:textSize="14sp"
+            android:layout_above="@id/optionsFAB"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"
+            android:visibility="gone"/>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/createItineraryFAB"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:src="@drawable/add"
+            android:background="@drawable/round_search_btn"
+            android:padding="10dp"
+            android:visibility="gone"/>
+
+
+    </LinearLayout>
+
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/generateItineraryLL"
+        android:orientation="horizontal"
+        android:layout_margin="16dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/generateItineraryTV"
+            android:layout_gravity="center"
+            android:text="Generate"
+            android:textColor="@color/light_grey"
+            android:textSize="14sp"
+            android:layout_toLeftOf="@id/generateItineraryFAB"
+            android:layout_marginRight="10dp"
+            android:visibility="gone"/>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/generateItineraryFAB"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:src="@drawable/create"
+            android:background="@drawable/round_search_btn"
+            android:padding="10dp"
+            android:visibility="gone"/>
+
+
+
+    </LinearLayout>
+
+
+
+
 
 </RelativeLayout>

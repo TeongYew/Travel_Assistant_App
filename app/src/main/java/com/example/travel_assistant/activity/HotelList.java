@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +20,8 @@ import com.amadeus.Params;
 import com.amadeus.resources.Hotel;
 import com.amadeus.resources.HotelOfferSearch;
 import com.example.travel_assistant.R;
+import com.example.travel_assistant.adapter.HotelListAdapter;
+import com.example.travel_assistant.model.HotelListModel;
 import com.google.gson.JsonArray;
 
 import java.util.ArrayList;

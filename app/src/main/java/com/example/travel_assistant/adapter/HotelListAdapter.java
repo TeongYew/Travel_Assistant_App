@@ -1,4 +1,4 @@
-package com.example.travel_assistant.activity;
+package com.example.travel_assistant.adapter;
 
 import android.content.Context;
 import android.util.Log;
@@ -9,19 +9,19 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.example.travel_assistant.R;
+import com.example.travel_assistant.model.HotelListModel;
 
 import java.util.ArrayList;
 
-public class LocationSearchAdapter extends BaseAdapter {
+public class HotelListAdapter extends BaseAdapter {
 
     Context context;
-    ArrayList<LocationModel> locationArrayList;
+    ArrayList<HotelListModel> hotelArrayList;
     LayoutInflater inflater;
 
-    public LocationSearchAdapter(Context context, ArrayList<LocationModel> locationArrayList) {
+    public HotelListAdapter(Context context, ArrayList<HotelListModel> hotelArrayList) {
         this.context = context;
-        this.locationArrayList = locationArrayList;
-        Log.d("TAG", "getView: got in the adapter constructor");
+        this.hotelArrayList = hotelArrayList;
         //inflater = (LayoutInflater.from(context));
         inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -29,12 +29,12 @@ public class LocationSearchAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return locationArrayList.size();
+        return hotelArrayList.size();
     }
 
     @Override
-    public LocationModel getItem(int i) {
-        return locationArrayList.get(i);
+    public HotelListModel getItem(int i) {
+        return hotelArrayList.get(i);
     }
 
     @Override
@@ -49,12 +49,10 @@ public class LocationSearchAdapter extends BaseAdapter {
 //        if(vi == null){
 //            vi = inflater.inflate(R.layout.location_search_listview, null);
 //        }
-        view = inflater.inflate(R.layout.location_search_listview, null);
-        TextView iata = view.findViewById(R.id.iataTV);
-        TextView location = view.findViewById(R.id.locationTV);
-        iata.setText(locationArrayList.get(i).iata);
-        location.setText(locationArrayList.get(i).location);
-        Log.d("TAG", "getView: got in the end of getView");
+        view = inflater.inflate(R.layout.hotel_list_listview, null);
+        TextView hotelName = view.findViewById(R.id.hotelNameTV);
+        hotelName.setText(hotelArrayList.get(i).hotelName.replaceAll("\"", ""));
         return view;
     }
+
 }

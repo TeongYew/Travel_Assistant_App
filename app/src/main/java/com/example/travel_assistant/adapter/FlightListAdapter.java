@@ -1,4 +1,4 @@
-package com.example.travel_assistant.activity;
+package com.example.travel_assistant.adapter;
 
 import android.content.Context;
 import android.util.Log;
@@ -9,8 +9,8 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.example.travel_assistant.R;
+import com.example.travel_assistant.model.FlightListModel;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 public class FlightListAdapter extends BaseAdapter {

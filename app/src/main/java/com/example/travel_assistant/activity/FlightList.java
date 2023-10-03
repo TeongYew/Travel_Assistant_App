@@ -17,7 +17,6 @@ import android.widget.Button;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.amadeus.Amadeus;
 import com.amadeus.Params;
@@ -25,13 +24,13 @@ import com.amadeus.referencedata.Locations;
 import com.amadeus.resources.FlightOfferSearch;
 import com.amadeus.resources.Location;
 import com.example.travel_assistant.R;
+import com.example.travel_assistant.adapter.FlightItineraryListAdapter;
+import com.example.travel_assistant.adapter.FlightListAdapter;
+import com.example.travel_assistant.model.FlightItineraryListModel;
+import com.example.travel_assistant.model.FlightListModel;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -62,7 +61,7 @@ public class FlightList extends AppCompatActivity {
     PopupWindow popupWindow;
     View itineraryPopupView;
     RelativeLayout flightListRL;
-    ArrayList<ItineraryListModel> itineraryArrayList;
+    ArrayList<FlightItineraryListModel> itineraryArrayList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -269,7 +268,7 @@ public class FlightList extends AppCompatActivity {
                                             arrivalTerminal = "-";
                                         }
 
-                                        ItineraryListModel itineraryListModel = new ItineraryListModel(departureIATA, arrivalIATA, departureAt, arrivalAt, departureTerminal, arrivalTerminal, carrierCode,number, aircraftCode, duration);
+                                        FlightItineraryListModel itineraryListModel = new FlightItineraryListModel(departureIATA, arrivalIATA, departureAt, arrivalAt, departureTerminal, arrivalTerminal, carrierCode,number, aircraftCode, duration);
 
                                         itineraryArrayList.add(itineraryListModel);
 
@@ -283,7 +282,7 @@ public class FlightList extends AppCompatActivity {
 
                                     departureTV.setText(flightArrayList.get(i).departureIATA);
                                     arrivalTV.setText(flightArrayList.get(i).arrivalIATA);
-                                    ItineraryListAdapter itineraryAdapter = new ItineraryListAdapter(getApplicationContext(), itineraryArrayList);
+                                    FlightItineraryListAdapter itineraryAdapter = new FlightItineraryListAdapter(getApplicationContext(), itineraryArrayList);
                                     itineraryLV.setAdapter(itineraryAdapter);
 
                                     toFlightPageBtn.setOnClickListener(new View.OnClickListener() {
