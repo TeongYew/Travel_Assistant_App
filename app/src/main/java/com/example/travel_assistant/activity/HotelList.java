@@ -21,6 +21,7 @@ import com.amadeus.resources.Hotel;
 import com.amadeus.resources.HotelOfferSearch;
 import com.example.travel_assistant.R;
 import com.example.travel_assistant.adapter.HotelListAdapter;
+import com.example.travel_assistant.model.FlightItineraryListModel;
 import com.example.travel_assistant.model.HotelListModel;
 import com.google.gson.JsonArray;
 
@@ -32,14 +33,34 @@ public class HotelList extends AppCompatActivity {
 
     final String TAG = String.valueOf(HotelList.this);
     android.widget.ListView hotelListLV;
-    String location = "NYC";
-    String fromDate = "2023-09-30";
-    String toDate = "2023-10-02";
-    String adultCount = "2";
-    String kidCount = "0";
-    String flightPrice = "";
+
+    //data for hotel search
+    String location = "";
+    String fromDate = "";
+    String toDate = "";
+    //String adultCount = "";
+    //String kidCount = "";
+    //String flightPrice = "";
     HotelListModel hotelListModel;
     ArrayList<HotelListModel> hotelArrayList = new ArrayList<>();
+
+    //data from flight
+    String flightDepartureIATA = "";
+    String flightArrivalIATA = "";
+    String flightDepartureLocation = "";
+    String flightArrivalLocation = "";
+    String flightDepartureDateTime = "";
+    String flightArrivalDateTime = "";
+    String adultCount = "";
+    String kidCount = "";
+    String roundOrOneWayTrip = "";
+    boolean roundTrip = false;
+    String flightClass = "";
+    String airline = "";
+    String flightCode = "";
+    String flightPrice = "";
+    ArrayList<FlightItineraryListModel> flightItinerary = new ArrayList<>();
+
     LayoutInflater layoutInflater;
     int width = ViewGroup.LayoutParams.MATCH_PARENT;
     int height = ViewGroup.LayoutParams.MATCH_PARENT;
@@ -63,13 +84,32 @@ public class HotelList extends AppCompatActivity {
         hotelListRL = findViewById(R.id.hotelListRL);
         layoutInflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
 
-//        Intent fromFlightPage = getIntent();
-//        location = fromFlightPage.getStringExtra("location");
-//        fromDate = fromFlightPage.getStringExtra("fromDate");
-//        toDate = fromFlightPage.getStringExtra("toDate");
-//        adultCount = fromFlightPage.getStringExtra("adultCount");
-//        kidCount = fromFlightPage.getStringExtra("kidCount");
-//        flightPrice = fromFlightPage.getStringExtra("flightPrice");
+        Intent fromFlightPage = getIntent();
+
+        //hotel data
+        location = fromFlightPage.getStringExtra("hotelLocation");
+        fromDate = fromFlightPage.getStringExtra("hotelFromDate");
+        toDate = fromFlightPage.getStringExtra("hotelToDate");
+        //adultCount = fromFlightPage.getStringExtra("adultCount");
+        //kidCount = fromFlightPage.getStringExtra("kidCount");
+        //flightPrice = fromFlightPage.getStringExtra("flightPrice");
+
+        //flight data
+        flightDepartureIATA = fromFlightPage.getStringExtra("flightLocation");
+        flightArrivalIATA = fromFlightPage.getStringExtra("flightDestination");
+        flightDepartureDateTime = fromFlightPage.getStringExtra("flightFromDate");
+        flightArrivalDateTime = fromFlightPage.getStringExtra("flightToDate");
+        flightDepartureLocation = fromFlightPage.getStringExtra("flightLocationName");
+        flightArrivalLocation = fromFlightPage.getStringExtra("flightDestinationName");
+        adultCount = fromFlightPage.getStringExtra("adultCount");
+        kidCount = fromFlightPage.getStringExtra("kidCount");
+        roundOrOneWayTrip = fromFlightPage.getStringExtra("roundOrOneWayTrip");
+        flightClass = fromFlightPage.getStringExtra("class");
+        airline = fromFlightPage.getStringExtra("airline");
+        flightPrice = fromFlightPage.getStringExtra("flightPrice");
+        flightCode = fromFlightPage.getStringExtra("flightCode");
+        flightItinerary = (ArrayList<FlightItineraryListModel>) fromFlightPage.getSerializableExtra("flightItinerary");
+
 
         Log.d(TAG, "onCreate: location: " + location);
 
@@ -121,6 +161,8 @@ public class HotelList extends AppCompatActivity {
 
                                             try{
 
+                                                Log.d(TAG, "from hotel list: fromDate and toDate: " + fromDate + ", " + toDate);
+
                                                 HotelOfferSearch[] hotelOffers = amadeus.shopping.hotelOffersSearch.get(Params
                                                         .with("hotelIds", hotelArrayList.get(i).hotelId)
                                                         .and("checkInDate", fromDate)
@@ -144,16 +186,35 @@ public class HotelList extends AppCompatActivity {
 
                                                 //intent to go to hotel page
                                                 Intent toHotelPage = new Intent(getApplicationContext(), HotelPage.class);
+
+                                                //hotel data
                                                 toHotelPage.putExtra("hotelName", hotelArrayList.get(i).hotelName);
                                                 toHotelPage.putExtra("hotelId", hotelArrayList.get(i).hotelId);
-                                                toHotelPage.putExtra("offerId", offerId);
-                                                toHotelPage.putExtra("checkIn", checkIn);
-                                                toHotelPage.putExtra("checkOut", checkOut);
-                                                toHotelPage.putExtra("numBeds", numBeds);
-                                                toHotelPage.putExtra("bedType", bedType);
-                                                toHotelPage.putExtra("description", description);
-                                                toHotelPage.putExtra("price", priceCurrency + " " + priceTotal);
+                                                toHotelPage.putExtra("hotelOfferId", offerId);
+                                                toHotelPage.putExtra("hotelCheckIn", checkIn);
+                                                toHotelPage.putExtra("hotelCheckOut", checkOut);
+//                                                toHotelPage.putExtra("numBeds", numBeds);
+//                                                toHotelPage.putExtra("bedType", bedType);
+                                                toHotelPage.putExtra("hoteldescription", description);
+                                                toHotelPage.putExtra("hotelPrice", priceCurrency + " " + priceTotal);
+                                                //toHotelPage.putExtra("flightPrice", flightPrice);
+
+                                                //flight data
+                                                toHotelPage.putExtra("flightLocation", flightDepartureIATA);
+                                                toHotelPage.putExtra("flightDestination", flightArrivalIATA);
+                                                toHotelPage.putExtra("flightLocationName", flightDepartureLocation);
+                                                toHotelPage.putExtra("flightDestinationName", flightArrivalLocation);
+                                                toHotelPage.putExtra("flightFromDate", flightDepartureDateTime);
+                                                toHotelPage.putExtra("flightToDate", flightArrivalDateTime);
+                                                toHotelPage.putExtra("adultCount", adultCount);
+                                                toHotelPage.putExtra("kidCount", kidCount);
+                                                toHotelPage.putExtra("roundOrOneWayTrip", roundOrOneWayTrip);
+                                                toHotelPage.putExtra("class", flightClass);
+                                                toHotelPage.putExtra("airline", airline);
                                                 toHotelPage.putExtra("flightPrice", flightPrice);
+                                                toHotelPage.putExtra("flightCode", flightCode);
+                                                toHotelPage.putExtra("flightItinerary", flightItinerary);
+
                                                 startActivity(toHotelPage);
 
 //                                                handler.post(new Runnable() {

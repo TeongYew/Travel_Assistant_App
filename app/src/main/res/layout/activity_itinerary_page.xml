@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".activity.ItineraryPage"
-    android:background="@color/grey">
+    android:background="@color/grey"
+    android:id="@+id/itineraryPageRL">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -13,131 +14,63 @@
         android:id="@+id/titleLL"
         android:orientation="vertical"
         android:padding="10dp"
-        android:background="@color/dark_grey">
+        android:background="@color/dark_grey"
+        android:layout_alignParentLeft="true">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Japan"
+            android:id="@+id/itineraryTitleTV"
+            android:text="Trip to Japan"
             android:textColor="@color/white"
-            android:textSize="20sp"/>
+            android:textSize="24sp"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:id="@+id/itineraryLocationTV"
+            android:text="Tokyo, Japan"
+            android:textColor="@color/light_grey"
+            android:textSize="16sp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/itineraryDateTV"
             android:text="10th March - 17th March"
             android:textColor="@color/light_grey"
             android:textSize="16sp"/>
 
     </LinearLayout>
 
-    <LinearLayout
+    <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/dateCardsLL"
-        android:layout_below="@id/titleLL"
-        android:orientation="horizontal">
+        android:id="@+id/dateCardsHSV"
+        android:layout_below="@id/titleLL">
 
-        <RelativeLayout
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/dateMonthRL1"
-            android:padding="10dp"
-            android:background="@drawable/custom_edittext2"
-            android:layout_margin="10dp">
+            android:id="@+id/dateCardsLL"
+            android:orientation="horizontal">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/dateTV1"
-                android:text="10"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                android:layout_centerHorizontal="true"
-                />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/monthTV1"
-                android:layout_below="@id/dateTV1"
-                android:text="Mar"
-                android:textSize="12sp"
-                android:layout_centerHorizontal="true"
-                />
-        </RelativeLayout>
+        </LinearLayout>
 
-        <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/dateMonthRL2"
-            android:padding="10dp"
-            android:background="@drawable/custom_edittext2"
-            android:layout_margin="10dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/dateTV2"
-                android:text="11"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                android:layout_centerHorizontal="true"
-                />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/monthTV2"
-                android:layout_below="@id/dateTV2"
-                android:text="Mar"
-                android:textSize="12sp"
-                android:layout_centerHorizontal="true"
-                />
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/dateMonthRL3"
-            android:padding="10dp"
-            android:background="@drawable/custom_edittext2"
-            android:layout_margin="10dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/dateTV3"
-                android:text="12"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                android:layout_centerHorizontal="true"
-                />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/monthTV3"
-                android:layout_below="@id/dateTV3"
-                android:text="Mar"
-                android:textSize="12sp"
-                android:layout_centerHorizontal="true"
-                />
-        </RelativeLayout>
-
-    </LinearLayout>
+    </HorizontalScrollView>
 
     <ListView
-        android:id="@+id/itineraryLocationLV"
+        android:id="@+id/itineraryDayLV"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/dateCardsLL"
+        android:layout_below="@id/dateCardsHSV"
         android:divider="@color/material_blue_grey_800"
         android:dividerHeight="1dp"
         android:footerDividersEnabled="false" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/addFAB"
+        android:id="@+id/addItineraryFAB"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
@@ -148,6 +81,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
         android:background="@drawable/round_search_btn"
+        android:backgroundTint="@color/teal_200"
         android:padding="10dp"
         android:src="@drawable/add" />
 

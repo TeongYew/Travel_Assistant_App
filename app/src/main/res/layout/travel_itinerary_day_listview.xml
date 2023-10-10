@@ -8,18 +8,18 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/itineraryNameTV"
-        android:text="JAPAN TRIP"
+        android:id="@+id/itineraryLocationTV"
+        android:text="Tokyo Tower"
         android:textSize="16sp"
-        android:textColor="@color/light_grey"
+        android:textColor="@color/white"
         android:padding="5dp"/>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/itineraryDateTV"
-        android:textSize="12sp"
-        android:text="12 Mar - 15 Mar"
+        android:id="@+id/itineraryTimeTV"
+        android:textSize="16sp"
+        android:text="12.00pm"
         android:textColor="@color/light_grey"
         android:padding="5dp"/>
 

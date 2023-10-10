@@ -38,8 +38,8 @@ public class FlightList extends AppCompatActivity {
 
     String flightLocation = "LON";
     String flightDestination = "NYC";
-    String fromDate = "2023-11-02";
-    String toDate = "2023-11-05";
+    String fromDate = "2023-10-10";
+    String toDate = "2023-10-15";
     String adultCount = "1";
     String kidCount = "0";
     String roundOrOneWayTrip = "round";
@@ -294,8 +294,8 @@ public class FlightList extends AppCompatActivity {
                                             //toFlightPage.putExtra("destination", flightDestination);
                                             toFlightPage.putExtra("location", itineraryArrayList.get(0).departureIATA);
                                             toFlightPage.putExtra("destination", itineraryArrayList.get(0).arrivalIATA);
-                                            toFlightPage.putExtra("fromDate", itineraryArrayList.get(0).departureAt);
-                                            toFlightPage.putExtra("toDate", itineraryArrayList.get(0).arrivalAt);
+                                            toFlightPage.putExtra("fromDate", fromDate);
+                                            toFlightPage.putExtra("toDate", toDate);
                                             toFlightPage.putExtra("depTerminal", itineraryArrayList.get(0).departureTerminal);
                                             toFlightPage.putExtra("arrTerminal", itineraryArrayList.get(0).arrivalTerminal);
                                             toFlightPage.putExtra("adultCount", adultCount);

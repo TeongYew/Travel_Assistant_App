@@ -22,7 +22,7 @@ public class FlightListAdapter extends BaseAdapter {
     public FlightListAdapter(Context context, ArrayList<FlightListModel> flightArrayList) {
         this.context = context;
         this.flightArrayList = flightArrayList;
-        Log.d("TAG", "getView: got in the adapter constructor");
+        //Log.d("TAG", "getView: got in the adapter constructor");
         //inflater = (LayoutInflater.from(context));
         inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -45,7 +45,7 @@ public class FlightListAdapter extends BaseAdapter {
 
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
-        Log.d("TAG", "getView: got in getView");
+        //Log.d("TAG", "getView: got in getView");
 //        View vi = view;
 //        if(vi == null){
 //            vi = inflater.inflate(R.layout.location_search_listview, null);
@@ -59,7 +59,7 @@ public class FlightListAdapter extends BaseAdapter {
         arrivalIATA.setText(flightArrayList.get(i).arrivalIATA.replaceAll("\"", ""));
         price.append(flightArrayList.get(i).priceCurrency.replaceAll("\"", "") + " " + flightArrayList.get(i).priceTotal.replaceAll("\"", ""));
         airline.setText(flightArrayList.get(i).airline + " Airline");
-        Log.d("TAG", "getView: got in the end of getView");
+        //Log.d("TAG", "getView: got in the end of getView");
         return view;
     }
 

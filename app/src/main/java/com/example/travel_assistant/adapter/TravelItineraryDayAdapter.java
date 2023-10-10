@@ -9,19 +9,23 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.example.travel_assistant.R;
-import com.example.travel_assistant.model.LocationModel;
+import com.example.travel_assistant.model.ItineraryDayModel;
+import com.example.travel_assistant.model.ItineraryModel;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
-public class LocationSearchAdapter extends BaseAdapter {
+public class TravelItineraryDayAdapter extends BaseAdapter {
 
     Context context;
-    ArrayList<LocationModel> locationArrayList;
+    ArrayList<ItineraryDayModel> itineraryDayArrayList;
     LayoutInflater inflater;
 
-    public LocationSearchAdapter(Context context, ArrayList<LocationModel> locationArrayList) {
+    public TravelItineraryDayAdapter(Context context, ArrayList<ItineraryDayModel> itineraryDayArrayList) {
         this.context = context;
-        this.locationArrayList = locationArrayList;
+        this.itineraryDayArrayList = itineraryDayArrayList;
         //Log.d("TAG", "getView: got in the adapter constructor");
         //inflater = (LayoutInflater.from(context));
         inflater = (LayoutInflater) context
@@ -30,12 +34,12 @@ public class LocationSearchAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return locationArrayList.size();
+        return itineraryDayArrayList.size();
     }
 
     @Override
-    public LocationModel getItem(int i) {
-        return locationArrayList.get(i);
+    public ItineraryDayModel getItem(int i) {
+        return itineraryDayArrayList.get(i);
     }
 
     @Override
@@ -50,12 +54,15 @@ public class LocationSearchAdapter extends BaseAdapter {
 //        if(vi == null){
 //            vi = inflater.inflate(R.layout.location_search_listview, null);
 //        }
-        view = inflater.inflate(R.layout.location_search_listview, null);
-        TextView iata = view.findViewById(R.id.iataTV);
-        TextView location = view.findViewById(R.id.locationTV);
-        iata.setText(locationArrayList.get(i).iata);
-        location.setText(locationArrayList.get(i).location);
+        view = inflater.inflate(R.layout.travel_itinerary_day_listview, null);
+        TextView itineraryLocationTV = view.findViewById(R.id.itineraryLocationTV);
+        TextView itineraryTimeTV = view.findViewById(R.id.itineraryTimeTV);
+
+        itineraryLocationTV.setText(itineraryDayArrayList.get(i).locationName);
+        itineraryTimeTV.setText(itineraryDayArrayList.get(i).locationTimeFrom);
+
         //Log.d("TAG", "getView: got in the end of getView");
         return view;
     }
+
 }

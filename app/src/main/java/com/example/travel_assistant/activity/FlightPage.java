@@ -18,6 +18,7 @@ import com.amadeus.resources.Location;
 import com.example.travel_assistant.R;
 import com.example.travel_assistant.model.FlightItineraryListModel;
 import com.example.travel_assistant.model.LocationModel;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.concurrent.Executor;
@@ -53,6 +54,7 @@ public class FlightPage extends AppCompatActivity {
     Amadeus amadeus = Amadeus
             .builder("htHGvYM2OB3wmAqVykNHAbGPuTlSBV1m","0hiGWqr3KQSGXION")
             .build();
+
 
     private Executor executor = Executors.newSingleThreadExecutor();
     private Handler handler = new Handler(Looper.getMainLooper());
@@ -111,7 +113,27 @@ public class FlightPage extends AppCompatActivity {
         bookFlightBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                //flight data
                 Intent toPayment = new Intent(getApplicationContext(), PaymentPage.class);
+                toPayment.putExtra("paymentFor", "flightOnly");
+                toPayment.putExtra("flightLocation", flightLocation);
+                toPayment.putExtra("flightDestination", flightDestination);
+                toPayment.putExtra("flightLocationName", depLocation.cityName);
+                toPayment.putExtra("flightDestinationName", arrLocation.cityName);
+                toPayment.putExtra("flightFromDate", fromDate);
+                toPayment.putExtra("flightToDate", toDate);
+                //toPayment.putExtra("depTerminal", depTerminal);
+                //toPayment.putExtra("arrTerminal", arrTerminal);
+                toPayment.putExtra("adultCount", adultCount);
+                toPayment.putExtra("kidCount", kidCount);
+                toPayment.putExtra("roundOrOneWayTrip", roundOrOneWayTrip);
+                toPayment.putExtra("class", flightClass);
+                toPayment.putExtra("airline", airline);
+                toPayment.putExtra("flightPrice", price);
+                toPayment.putExtra("flightCode", flight);
+                toPayment.putExtra("flightItinerary", flightItinerary);
+
                 startActivity(toPayment);
             }
         });
@@ -120,12 +142,32 @@ public class FlightPage extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent toHotelList = new Intent(getApplicationContext(), HotelList.class);
-                toHotelList.putExtra("location", flightDestination);
-                toHotelList.putExtra("fromDate", fromDate);
-                toHotelList.putExtra("toDate", toDate);
+
+                //hotel data
+                toHotelList.putExtra("hotelLocation", flightDestination);
+                toHotelList.putExtra("hotelFromDate", fromDate);
+                toHotelList.putExtra("hotelToDate", toDate);
+                //toHotelList.putExtra("adultCount", adultCount);
+                //toHotelList.putExtra("kidCount", kidCount);
+                //toHotelList.putExtra("flightPrice", price);
+                Log.d(TAG, "onClick: fromDate and toDate: " + fromDate + ", " + toDate);
+
+                //flight data
+                toHotelList.putExtra("flightLocation", flightLocation);
+                toHotelList.putExtra("flightDestination", flightDestination);
+                toHotelList.putExtra("flightLocationName", depLocation.cityName);
+                toHotelList.putExtra("flightDestinationName", arrLocation.cityName);
+                toHotelList.putExtra("flightFromDate", fromDate);
+                toHotelList.putExtra("flightToDate", toDate);
                 toHotelList.putExtra("adultCount", adultCount);
                 toHotelList.putExtra("kidCount", kidCount);
+                toHotelList.putExtra("roundOrOneWayTrip", roundOrOneWayTrip);
+                toHotelList.putExtra("class", flightClass);
+                toHotelList.putExtra("airline", airline);
                 toHotelList.putExtra("flightPrice", price);
+                toHotelList.putExtra("flightCode", flight);
+                toHotelList.putExtra("flightItinerary", flightItinerary);
+
                 startActivity(toHotelList);
             }
         });
@@ -138,16 +180,13 @@ public class FlightPage extends AppCompatActivity {
             @Override
             public void run() {
 
+                //try to get departure location name
                 try {
 
                     //location = "london";
 
                     Location[] departure = amadeus.referenceData.locations.get(Params
                             .with("keyword", dep)
-                            .and("subType", Locations.ANY));
-
-                    Location[] arrival = amadeus.referenceData.locations.get(Params
-                            .with("keyword", arr)
                             .and("subType", Locations.ANY));
 
                     String depName = departure[0].getResponse().getResult()
@@ -171,6 +210,24 @@ public class FlightPage extends AppCompatActivity {
                             .toString()
                             .replaceAll("\"", "");
 
+                    depLocation = new LocationModel(depIata, depName, depCityName);
+
+                }
+                catch (Exception e){
+                    Log.d(TAG, "getLocation: error: " + e);
+                    depLocation = new LocationModel(dep, "-", "-");
+                }
+
+                //try to get arrival location name
+                try {
+
+                    //location = "london";
+
+                    Location[] arrival = amadeus.referenceData.locations.get(Params
+                            .with("keyword", arr)
+                            .and("subType", Locations.ANY));
+
+
                     String arrName = arrival[0].getResponse().getResult()
                             .getAsJsonObject().get("data")
                             .getAsJsonArray().get(0)
@@ -192,27 +249,25 @@ public class FlightPage extends AppCompatActivity {
                             .toString()
                             .replaceAll("\"", "");
 
-
-                    depLocation = new LocationModel(depIata, depName, depCityName);
                     arrLocation = new LocationModel(arrIata, arrName, arrCityName);
-
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-
-                            departureAirportTV.setText(depLocation.location);
-                            departureLocationTV.setText(depLocation.cityName);
-                            arrivalAirportTV.setText(arrLocation.location);
-                            arrivalLocationTV.setText(arrLocation.cityName);
-
-                        }
-                    });
 
                 }
                 catch (Exception e){
                     Log.d(TAG, "getLocation: error: " + e);
+                    arrLocation = new LocationModel(arr, "-", "-");
                 }
 
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        departureAirportTV.setText(depLocation.location);
+                        departureLocationTV.setText(depLocation.cityName);
+                        arrivalAirportTV.setText(arrLocation.location);
+                        arrivalLocationTV.setText(arrLocation.cityName);
+
+                    }
+                });
 
             }
         });

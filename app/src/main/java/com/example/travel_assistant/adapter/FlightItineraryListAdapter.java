@@ -22,7 +22,7 @@ public class FlightItineraryListAdapter extends BaseAdapter {
     public FlightItineraryListAdapter(Context context, ArrayList<FlightItineraryListModel> itineraryArrayList) {
         this.context = context;
         this.itineraryArrayList = itineraryArrayList;
-        Log.d("TAG", "getView: got in the adapter constructor");
+        //Log.d("TAG", "getView: got in the adapter constructor");
         //inflater = (LayoutInflater.from(context));
         inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -61,7 +61,7 @@ public class FlightItineraryListAdapter extends BaseAdapter {
         departureAt.setText(itineraryArrayList.get(i).departureAt);
         arrivalAt.setText(itineraryArrayList.get(i).arrivalAt);
         duration.setText(itineraryArrayList.get(i).duration);
-        Log.d("TAG", "getView: got in the end of getView");
+        //Log.d("TAG", "getView: got in the end of getView");
         return view;
     }
 

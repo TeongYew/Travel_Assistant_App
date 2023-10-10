@@ -2,14 +2,12 @@ package com.example.travel_assistant.activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.animation.ObjectAnimator;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.SystemClock;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -19,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -27,18 +26,20 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.example.travel_assistant.R;
-import com.example.travel_assistant.adapter.ItineraryAdapter;
+import com.example.travel_assistant.adapter.FlightListAdapter;
+import com.example.travel_assistant.adapter.TravelItineraryListAdapter;
+import com.example.travel_assistant.model.ItineraryDayModel;
 import com.example.travel_assistant.model.ItineraryModel;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.stripe.android.PaymentConfiguration;
-import com.stripe.android.paymentsheet.PaymentSheet;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -48,11 +49,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.net.HttpRetryException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executor;
@@ -75,6 +77,7 @@ public class ItineraryList extends AppCompatActivity {
     TextView createItineraryTV, generateItineraryTV;
     boolean optionsSelected = false;
     String gptResponse = "";
+    ArrayList<ItineraryModel> itineraryArrayList = new ArrayList<>();
 
     LayoutInflater layoutInflater;
     int width = ViewGroup.LayoutParams.MATCH_PARENT;
@@ -87,6 +90,8 @@ public class ItineraryList extends AppCompatActivity {
     public static final MediaType JSON
             = MediaType.get("application/json; charset=utf-8");
     OkHttpClient client = new OkHttpClient();
+
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,6 +113,7 @@ public class ItineraryList extends AppCompatActivity {
 
         //Log.d(TAG, "onCreate: chatgpt: " + gptResponse);
         callAPI("How are you?");
+        getUserItinerary();
 
         optionsFAB.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -161,6 +167,58 @@ public class ItineraryList extends AppCompatActivity {
 
             }
         });
+
+    }
+
+    private void getUserItinerary(){
+
+        db.collection("itinerary")
+                .whereEqualTo("user_id", "000001")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                Log.d(TAG, document.getId() + " => " + document.getData());
+                                Log.d(TAG, document.getId() + " => " + document.getData().get("itinerary_day_count"));
+
+                                String itineraryId = document.getData().get("itinerary_id").toString();
+                                String itineraryTitle = document.getData().get("itinerary_title").toString();
+                                String itineraryLocation = document.getData().get("itinerary_location").toString();
+                                String itineraryFrom = document.getData().get("itinerary_from").toString();
+                                String itineraryTo = document.getData().get("itinerary_to").toString();
+                                String itineraryDayCount = document.getData().get("itinerary_day_count").toString();
+
+                                ArrayList<ItineraryDayModel> itineraryDayArrayList = new ArrayList<>();
+
+                                ItineraryModel itineraryModel = new ItineraryModel(itineraryId, itineraryTitle, itineraryLocation, itineraryFrom, itineraryTo, Integer.parseInt(itineraryDayCount), itineraryDayArrayList);
+
+                                itineraryArrayList.add(itineraryModel);
+
+                            }
+
+                            TravelItineraryListAdapter customAdapter = new TravelItineraryListAdapter(getApplicationContext(), itineraryArrayList);
+                            itineraryLV.setAdapter(customAdapter);
+
+                            itineraryLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                @Override
+                                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                                    Intent toItineraryPage = new Intent(getApplicationContext(), ItineraryPage.class);
+                                    toItineraryPage.putExtra("from", "exisiting");
+                                    toItineraryPage.putExtra("itinerary", customAdapter.getItem(i));
+
+                                    startActivity(toItineraryPage);
+
+                                }
+                            });
+
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
 
     }
 
@@ -337,12 +395,74 @@ public class ItineraryList extends AppCompatActivity {
                 }
                 else {
 
+                    Log.d(TAG, "onClick: itinerary from str: " + itineraryFromStr);
+
+                    try {
+
+                        Date itineraryFromDate = new SimpleDateFormat("dd/MM/yyyy").parse(itineraryFromStr);
+                        Date itineraryToDate = new SimpleDateFormat("dd/MM/yyyy").parse(itineraryToStr);
+
+                        Log.d(TAG, "onClick: itinerary from date: " + itineraryFromDate.toString());
+
+                        long difference = Math.abs(itineraryToDate.getTime() - itineraryFromDate.getTime());
+                        long differenceDates = difference / (24 * 60 * 60 * 1000);
+                        //add 1 more day as we want day count
+                        differenceDates++;
+                        String dayCount = Long.toString(differenceDates);
+
+                        Log.d(TAG, "onClick: day count: " + dayCount);
+
+                        ArrayList<ItineraryDayModel> itineraryDayArrayList = new ArrayList<>();
+
+                        ItineraryModel itineraryModel = new ItineraryModel("000002", itineraryTitleStr, itineraryLocationStr, itineraryFromStr, itineraryToStr, Integer.parseInt(dayCount), itineraryDayArrayList);
+
+                        insertItinerary(itineraryModel);
+
+                        Intent toItineraryPage = new Intent(getApplicationContext(), ItineraryPage.class);
+                        toItineraryPage.putExtra("itinerary", itineraryModel);
+
+                        startActivity(toItineraryPage);
+
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
                     //ItineraryModel itineraryModel = new ItineraryModel(itineraryTitleStr, )
 
                 }
 
             }
         });
+
+    }
+
+    public void insertItinerary(ItineraryModel itineraryModel){
+
+        // Create a new itinerary
+        Map<String, Object> itinerary = new HashMap<>();
+        itinerary.put("itinerary_id", itineraryModel.itineraryId);
+        itinerary.put("itinerary_title", itineraryModel.itineraryName);
+        itinerary.put("itinerary_location", itineraryModel.itineraryLocation);
+        itinerary.put("itinerary_from", itineraryModel.itineraryDateFrom);
+        itinerary.put("itinerary_to", itineraryModel.itineraryDateTo);
+        itinerary.put("itinerary_day_count", itineraryModel.itineraryDaysCount);
+        itinerary.put("user_id", "000001");
+
+
+        // Add a new document with a generated ID
+        db.collection("itinerary")
+                .add(itinerary)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        Log.d(TAG, "DocumentSnapshot (itinerary) added with ID: " + documentReference.getId());
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error adding document (itinerary)", e);
+                    }
+                });
 
     }
 

@@ -1,20 +1,30 @@
 package com.example.travel_assistant.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class ItineraryModel {
+public class ItineraryModel implements Serializable {
 
-    public String itineraryName, itineraryLocation, itineraryDateFrom, itineraryDateTo;
+    public String itineraryId, itineraryName, itineraryLocation, itineraryDateFrom, itineraryDateTo;
     public int itineraryDaysCount;
     public ArrayList<ItineraryDayModel> itineraryDays;
 
-    public ItineraryModel(String itineraryName, String itineraryLocation, String itineraryDateFrom, String itineraryDateTo, int itineraryDaysCount, ArrayList<ItineraryDayModel> itineraryDays) {
+    public ItineraryModel(String itineraryId, String itineraryName, String itineraryLocation, String itineraryDateFrom, String itineraryDateTo, int itineraryDaysCount, ArrayList<ItineraryDayModel> itineraryDays) {
+        this.itineraryId = itineraryId;
         this.itineraryName = itineraryName;
         this.itineraryLocation = itineraryLocation;
         this.itineraryDateFrom = itineraryDateFrom;
         this.itineraryDateTo = itineraryDateTo;
         this.itineraryDaysCount = itineraryDaysCount;
         this.itineraryDays = itineraryDays;
+    }
+
+    public String getItineraryId() {
+        return itineraryId;
+    }
+
+    public void setItineraryId(String itineraryId) {
+        this.itineraryId = itineraryId;
     }
 
     public String getItineraryName() {
@@ -64,4 +74,5 @@ public class ItineraryModel {
     public void setItineraryLocation(String itineraryLocation) {
         this.itineraryLocation = itineraryLocation;
     }
+
 }

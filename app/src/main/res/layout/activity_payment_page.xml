@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="150dp"
         android:id="@+id/paymentLL"
-        android:background="@color/white"
+        android:background="@color/green"
         android:orientation="horizontal"
         android:gravity="center"
         android:layout_marginBottom="20dp">
@@ -34,9 +34,9 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/cardNumET"
+        android:id="@+id/usernameET"
         android:background="@drawable/custom_edittext2"
-        android:hint="Card Number"
+        android:hint="Username..."
         android:padding="15dp"
         android:layout_margin="10dp"
         android:layout_below="@+id/paymentLL"/>
@@ -44,52 +44,22 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/cardNameET"
+        android:id="@+id/emailET"
         android:background="@drawable/custom_edittext2"
-        android:hint="Name on Card"
+        android:hint="Email..."
         android:padding="15dp"
         android:layout_margin="10dp"
-        android:layout_below="@+id/cardNumET"/>
+        android:layout_below="@+id/usernameET"/>
 
-    <LinearLayout
+    <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/cardExpireLL"
-        android:orientation="horizontal"
-        android:layout_below="@+id/cardNameET"
-        android:weightSum="5">
-
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/cardMonthET"
-            android:background="@drawable/custom_edittext2"
-            android:hint="Exp. Month"
-            android:padding="15dp"
-            android:layout_margin="10dp"
-            android:layout_weight="2"/>
-
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/cardYearET"
-            android:background="@drawable/custom_edittext2"
-            android:hint="Exp. Year"
-            android:padding="15dp"
-            android:layout_margin="10dp"
-            android:layout_weight="2"/>
-
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/cardCVCET"
-            android:background="@drawable/custom_edittext2"
-            android:hint="CVC"
-            android:padding="15dp"
-            android:layout_margin="10dp"
-            android:layout_weight="1"/>
-
-    </LinearLayout>
+        android:id="@+id/phoneET"
+        android:background="@drawable/custom_edittext2"
+        android:hint="Phone Number..."
+        android:padding="15dp"
+        android:layout_margin="10dp"
+        android:layout_below="@+id/emailET"/>
 
 
 

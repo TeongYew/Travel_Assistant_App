@@ -1,15 +1,30 @@
 package com.example.travel_assistant.model;
 
-public class ItineraryDayModel {
+import java.io.Serializable;
+import java.util.Date;
 
-    public String locationName, locationDate, locationTimeFrom, locationTimeTo, notes;
+public class ItineraryDayModel implements Serializable {
 
-    public ItineraryDayModel(String locationName, String locationDate, String locationTimeFrom, String locationTimeTo, String notes) {
+    public String itineraryId, locationName, locationDate, locationTimeFrom, locationTimeTo, notes;
+    public Date locationFrom, locationTo;
+
+    public ItineraryDayModel(String itineraryId, String locationName, String locationDate, String locationTimeFrom, String locationTimeTo, String notes, Date locationFrom, Date locationTo) {
+        this.itineraryId = itineraryId;
         this.locationName = locationName;
         this.locationDate = locationDate;
         this.locationTimeFrom = locationTimeFrom;
         this.locationTimeTo = locationTimeTo;
         this.notes = notes;
+        this.locationFrom = locationFrom;
+        this.locationTo = locationTo;
+    }
+
+    public String getItineraryId() {
+        return itineraryId;
+    }
+
+    public void setItineraryId(String itineraryId) {
+        this.itineraryId = itineraryId;
     }
 
     public String getLocationName() {
@@ -50,5 +65,21 @@ public class ItineraryDayModel {
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    public Date getLocationFrom() {
+        return locationFrom;
+    }
+
+    public void setLocationFrom(Date locationFrom) {
+        this.locationFrom = locationFrom;
+    }
+
+    public Date getLocationTo() {
+        return locationTo;
+    }
+
+    public void setLocationTo(Date locationTo) {
+        this.locationTo = locationTo;
     }
 }
