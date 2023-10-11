@@ -5,16 +5,17 @@ import java.util.Date;
 
 public class ItineraryDayModel implements Serializable {
 
-    public String itineraryId, locationName, locationDate, locationTimeFrom, locationTimeTo, notes;
+    public String itineraryId, locationName, locationDate, locationTimeFrom, locationTimeTo, notes, docID;
     public Date locationFrom, locationTo;
 
-    public ItineraryDayModel(String itineraryId, String locationName, String locationDate, String locationTimeFrom, String locationTimeTo, String notes, Date locationFrom, Date locationTo) {
+    public ItineraryDayModel(String itineraryId, String locationName, String locationDate, String locationTimeFrom, String locationTimeTo, String notes, String docID, Date locationFrom, Date locationTo) {
         this.itineraryId = itineraryId;
         this.locationName = locationName;
         this.locationDate = locationDate;
         this.locationTimeFrom = locationTimeFrom;
         this.locationTimeTo = locationTimeTo;
         this.notes = notes;
+        this.docID = docID;
         this.locationFrom = locationFrom;
         this.locationTo = locationTo;
     }
@@ -81,5 +82,13 @@ public class ItineraryDayModel implements Serializable {
 
     public void setLocationTo(Date locationTo) {
         this.locationTo = locationTo;
+    }
+
+    public String getDocID() {
+        return docID;
+    }
+
+    public void setDocID(String docID) {
+        this.docID = docID;
     }
 }

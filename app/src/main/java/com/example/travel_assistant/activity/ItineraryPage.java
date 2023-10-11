@@ -5,7 +5,9 @@ import static android.content.ContentValues.TAG;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
 import android.app.TimePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -122,17 +124,108 @@ public class ItineraryPage extends AppCompatActivity {
 
     }
 
-    public void setItineraryDetailsPopupView(){
+    public void deleteItineraryItem(String docID){
 
-        itineraryDetailsPopupView = layoutInflater.inflate(R.layout.add_travel_itinerary_popup, null);
+        db.collection("itinerary_item").document(docID)
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "DocumentSnapshot successfully deleted!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error deleting document", e);
+                    }
+                });
 
-        popupWindow = new PopupWindow(itineraryAddPopupView,width,height,focusable);
+    }
+
+    public void editItineraryItem(String docID, String location, String timeFrom, String timeTo, String notes){
+
+        DocumentReference itineraryItemRef = db.collection("itinerary_item").document(docID);
+
+        if(timeTo.equals("-")){
+            timeTo = "";
+        }
+// Set the "isCapital" field of the city 'DC'
+        itineraryItemRef
+                .update("itinerary_item_location", location,
+                        "itinerary_item_from", timeFrom,
+                        "itinerary_item_to", timeTo,
+                        "itinerary_item_notes", notes)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "DocumentSnapshot successfully updated!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error updating document", e);
+                    }
+                });
+
+    }
+
+    public void setItineraryDetailsPopupView(ItineraryDayModel itineraryDayModel){
+
+        itineraryDetailsPopupView = layoutInflater.inflate(R.layout.edit_travel_itinerary_popup, null);
+
+        popupWindow = new PopupWindow(itineraryDetailsPopupView,width,height,focusable);
 
         itineraryPageRL.post(new Runnable() {
             @Override
             public void run() {
                 popupWindow.showAtLocation(itineraryPageRL, Gravity.CENTER,0,0);
 
+            }
+        });
+
+        RelativeLayout editItineraryRL = itineraryDetailsPopupView.findViewById(R.id.editItineraryRL);
+
+        editItineraryRL.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                popupWindow.dismiss();
+                return true;
+            }
+        });
+
+        EditText itineraryItemLocationET = itineraryDetailsPopupView.findViewById(R.id.itineraryItemLocationET);
+        EditText itineraryItemTimeFromET = itineraryDetailsPopupView.findViewById(R.id.itineraryItemTimeFromET);
+        EditText itineraryItemTimeToET = itineraryDetailsPopupView.findViewById(R.id.itineraryItemTimeToET);
+        EditText itineraryItemNotesET = itineraryDetailsPopupView.findViewById(R.id.itineraryItemNotesET);
+        Button saveItineraryItemBtn = itineraryDetailsPopupView.findViewById(R.id.saveItineraryItemBtn);
+
+        itineraryItemLocationET.setText(itineraryDayModel.locationName);
+        itineraryItemTimeFromET.setText(itineraryDayModel.locationTimeFrom);
+        itineraryItemTimeToET.setText(itineraryDayModel.locationTimeTo);
+        itineraryItemNotesET.setText(itineraryDayModel.notes);
+
+        if(itineraryDayModel.locationTimeTo.equals("")){
+            itineraryItemTimeToET.setText("-");
+        }
+
+        saveItineraryItemBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                String editedLocation = itineraryItemLocationET.getText().toString();
+                String editedTimeFrom = itineraryItemTimeFromET.getText().toString();
+                String editedTimeTo = itineraryItemTimeToET.getText().toString();
+                String editedNotes = itineraryItemNotesET.getText().toString();
+
+                editItineraryItem(itineraryDayModel.docID, editedLocation, editedTimeFrom, editedTimeTo, editedNotes);
+
+                itineraryDayArrayList.clear();
+                customAdapter.notifyDataSetChanged();
+                getItineraryDay();
+
+                popupWindow.dismiss();
             }
         });
 
@@ -195,6 +288,7 @@ public class ItineraryPage extends AppCompatActivity {
                                 String itineraryItemTimeFrom = document.getData().get("itinerary_item_from").toString();
                                 String itineraryItemTimeTo = document.getData().get("itinerary_item_to").toString();
                                 String itineraryItemNotes = document.getData().get("itinerary_item_notes").toString();
+                                String docID = document.getId();
 
                                 //change into date
                                 Date itineraryFromDate, itineraryToDate;
@@ -218,7 +312,7 @@ public class ItineraryPage extends AppCompatActivity {
                                 }
 
 
-                                ItineraryDayModel itineraryDayModel = new ItineraryDayModel(itineraryId, itineraryItemLocation, itineraryItemDate, itineraryItemTimeFrom,itineraryItemTimeTo, itineraryItemNotes, itineraryFromDate, itineraryToDate);
+                                ItineraryDayModel itineraryDayModel = new ItineraryDayModel(itineraryId, itineraryItemLocation, itineraryItemDate, itineraryItemTimeFrom,itineraryItemTimeTo, itineraryItemNotes, docID, itineraryFromDate, itineraryToDate);
                                 itineraryDayArrayList.add(itineraryDayModel);
 
                             }
@@ -230,20 +324,53 @@ public class ItineraryPage extends AppCompatActivity {
                                 @Override
                                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-
+                                    setItineraryDetailsPopupView(itineraryDayArrayList.get(i));
 
                                 }
                             });
 
-                            itineraryDayLV.setOnLongClickListener(new View.OnLongClickListener() {
+                            itineraryDayLV.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
                                 @Override
-                                public boolean onLongClick(View view) {
+                                public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
 
+                                    AlertDialog.Builder builder = new AlertDialog.Builder(ItineraryPage.this);
 
+                                    // Set the message show for the Alert time
+                                    builder.setMessage("Do you want to delete the itinerary item?");
+
+                                    // Set Alert Title
+                                    builder.setTitle("Alert !");
+
+                                    // Set Cancelable false for when the user clicks on the outside the Dialog Box then it will remain show
+                                    builder.setCancelable(false);
+
+                                    // Set the positive button with yes name Lambda OnClickListener method is use of DialogInterface interface.
+                                    builder.setPositiveButton("Yes", (DialogInterface.OnClickListener) (dialog, which) -> {
+
+                                        deleteItineraryItem(itineraryDayArrayList.get(i).docID);
+
+                                        itineraryDayArrayList.clear();
+                                        customAdapter.notifyDataSetChanged();
+                                        getItineraryDay();
+
+                                    });
+
+                                    // Set the Negative button with No name Lambda OnClickListener method is use of DialogInterface interface.
+                                    builder.setNegativeButton("No", (DialogInterface.OnClickListener) (dialog, which) -> {
+                                        // If user click no then dialog box is canceled.
+                                        dialog.cancel();
+                                    });
+
+                                    // Create the Alert dialog
+                                    AlertDialog alertDialog = builder.create();
+                                    // Show the Alert Dialog box
+                                    alertDialog.show();
 
                                     return true;
                                 }
                             });
+
+
 
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
@@ -252,6 +379,8 @@ public class ItineraryPage extends AppCompatActivity {
                 });
 
     }
+
+
 
     public void setItineraryAddPopupView(){
 
@@ -326,7 +455,7 @@ public class ItineraryPage extends AppCompatActivity {
                     }
 
 
-                    ItineraryDayModel itineraryDayModel = new ItineraryDayModel(itineraryModel.itineraryId, itineraryLocation, currentDate, itineraryFrom, itineraryTo, itineraryNotes, itineraryFromDate, itineraryToDate);
+                    ItineraryDayModel itineraryDayModel = new ItineraryDayModel(itineraryModel.itineraryId, itineraryLocation, currentDate, itineraryFrom, itineraryTo, itineraryNotes, "", itineraryFromDate, itineraryToDate);
 
                     addItineraryDays(itineraryDayModel);
                     popupWindow.dismiss();
