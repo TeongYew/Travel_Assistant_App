@@ -37,6 +37,7 @@ import com.amadeus.resources.FlightOfferSearch;
 import com.amadeus.resources.Location;
 import com.example.travel_assistant.R;
 import com.example.travel_assistant.adapter.LocationSearchAdapter;
+import com.example.travel_assistant.fragments.PreLoginFragment;
 import com.example.travel_assistant.model.LocationModel;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
@@ -308,7 +309,7 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
     private void signOut(){
         auth.signOut();
         Toast.makeText(this, "Successfully signed out!", Toast.LENGTH_SHORT).show();
-        startActivity(new Intent(MainMenu.this, PreLoginRegPage.class));
+        startActivity(new Intent(MainMenu.this, PreLoginFragment.class));
     }
 
     public void createPopUpWindow(String popup){

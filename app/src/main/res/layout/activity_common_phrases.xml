@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activity.CommonPhrases"
+    android:background="@color/grey">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/commonPhrasesLabelTV"
+        android:text="Common Phrases"
+        android:layout_alignParentTop="true"
+        android:textSize="24sp"
+        android:textColor="@color/white"
+        android:padding="15dp"
+        android:textStyle="bold"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/languageLL"
+        android:layout_below="@+id/commonPhrasesLabelTV">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/selectLanguageLabelTV"
+            android:text="Select a Language: "
+            android:textSize="18sp"
+            android:textColor="@color/white"
+            android:padding="15dp"/>
+
+        <Spinner
+            android:id="@+id/languageSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:spinnerMode="dropdown" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="10dp"
+        android:layout_below="@id/languageLL">
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/greetingsBtn"
+            android:text="> Greetings"
+            android:onClick="showCategory1"
+            android:gravity="left"/>
+
+        <ListView
+            android:id="@+id/greetingsLV"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/questionsBtn"
+            android:text="> Questions"
+            android:onClick="showCategory2"
+            android:gravity="left"/>
+
+        <ListView
+            android:id="@+id/questionsLV"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/emergenciesBtn"
+            android:text="> Emergencies"
+            android:onClick="showCategory2"
+            android:gravity="left"/>
+
+        <ListView
+            android:id="@+id/emergenciesLV"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/accommodationsBtn"
+            android:text="> Accommodations"
+            android:onClick="showCategory2"
+            android:gravity="left"/>
+
+        <ListView
+            android:id="@+id/accommodationsLV"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+
+</RelativeLayout>

@@ -40,6 +40,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -64,6 +65,7 @@ public class ItineraryPage extends AppCompatActivity {
     TextView itineraryTitleTV, itineraryLocationTV, itineraryDateTV;
     LinearLayout dateCardsLL;
     int firstCardSet = 1;
+    String uid = "";
     ArrayList<ItineraryDayModel> itineraryDayArrayList = new ArrayList<>();
     FloatingActionButton addItineraryFAB;
     android.widget.ListView itineraryDayLV;
@@ -79,6 +81,7 @@ public class ItineraryPage extends AppCompatActivity {
     RelativeLayout itineraryPageRL;
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
+    FirebaseAuth auth = FirebaseAuth.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +96,15 @@ public class ItineraryPage extends AppCompatActivity {
         layoutInflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         itineraryPageRL = findViewById(R.id.itineraryPageRL);
         itineraryDayLV = findViewById(R.id.itineraryDayLV);
+
+        //get the current user's uid
+        try {
+            uid = auth.getCurrentUser().getUid();
+            Log.d(TAG, "uid:" + uid);
+        }
+        catch (Exception e){
+            throw new RuntimeException(e);
+        }
 
         Intent fromItineraryList = getIntent();
         itineraryModel = (ItineraryModel) fromItineraryList.getSerializableExtra("itinerary");
@@ -244,7 +256,7 @@ public class ItineraryPage extends AppCompatActivity {
         itineraryItem.put("itinerary_item_to", itineraryDayModel.locationTimeTo);
         itineraryItem.put("itinerary_item_notes", itineraryDayModel.notes);
         itineraryItem.put("itinerary_date_time", itineraryDayModel.locationFrom);
-        itineraryItem.put("user_id", "000001");
+        itineraryItem.put("user_uid", uid);
 
 
         // Add a new document with a generated ID
@@ -268,7 +280,7 @@ public class ItineraryPage extends AppCompatActivity {
     public void getItineraryDay(){
 
         db.collection("itinerary_item")
-                .whereEqualTo("user_id", "000001")
+                .whereEqualTo("user_uid", uid)
                 .whereEqualTo("itinerary_id", "000002")
                 .whereEqualTo("itinerary_item_date", currentDate)
                 .orderBy("itinerary_date_time")

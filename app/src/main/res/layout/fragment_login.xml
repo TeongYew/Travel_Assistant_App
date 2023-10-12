@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/fragment_login"
-    tools:context=".activity.LoginPage"
+    tools:context=".fragments.LoginFragment"
     android:background="@drawable/pre_login_reg_translucent"
     android:padding="25dp">
 

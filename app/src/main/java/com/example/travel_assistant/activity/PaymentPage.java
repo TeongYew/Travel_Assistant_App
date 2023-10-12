@@ -25,6 +25,7 @@ import com.example.travel_assistant.R;
 import com.example.travel_assistant.model.FlightItineraryListModel;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.stripe.android.PaymentConfiguration;
@@ -46,6 +47,7 @@ public class PaymentPage extends AppCompatActivity {
     PaymentSheet paymentSheet;
     String paymentIntentClientSecret;
     PaymentSheet.CustomerConfiguration configuration;
+    String uid = "";
 
     //data for flight_booking
     String flightDepartureIATA = "";
@@ -76,8 +78,8 @@ public class PaymentPage extends AppCompatActivity {
     String hotelDescription = "";
     String hotelPrice = "";
 
-
     FirebaseFirestore db = FirebaseFirestore.getInstance();
+    FirebaseAuth auth = FirebaseAuth.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +90,15 @@ public class PaymentPage extends AppCompatActivity {
         emailET = findViewById(R.id.emailET);
         phoneET = findViewById(R.id.phoneET);
         paymentBtn = findViewById(R.id.paymentBtn);
+
+        //get the current user's uid
+        try {
+            uid = auth.getCurrentUser().getUid();
+            Log.d(TAG, "uid:" + uid);
+        }
+        catch (Exception e){
+            throw new RuntimeException(e);
+        }
 
         Intent fromBooking = getIntent();
         String paymentFor = fromBooking.getStringExtra("paymentFor");
@@ -171,6 +182,7 @@ public class PaymentPage extends AppCompatActivity {
                 flight.put("airline", airline);
                 flight.put("flight_code", flightCode);
                 flight.put("flight_price", flightPrice);
+                flight.put("user_uid", uid);
 
 
                 // Add a new document with a generated ID
@@ -203,6 +215,7 @@ public class PaymentPage extends AppCompatActivity {
                     flight_itinerary.put("duration", flightItinerary.get(i).duration);
                     flight_itinerary.put("flight_code", flightItinerary.get(i).aircraftCode);
                     flight_itinerary.put("order", i + 1);
+                    flight_itinerary.put("user_uid", uid);
 
 
                     // Add a new document with a generated ID
@@ -224,6 +237,7 @@ public class PaymentPage extends AppCompatActivity {
                 }
 
 
+
                 if(paymentFor.equals("flightAndHotel")){
 
                     // Create a new hotel
@@ -236,6 +250,7 @@ public class PaymentPage extends AppCompatActivity {
                     hotel.put("check_out", hotelCheckOut);
                     hotel.put("description", hotelDescription);
                     hotel.put("hotel_price", hotelPrice);
+                    hotel.put("user_uid", uid);
 
 
                     // Add a new document with a generated ID

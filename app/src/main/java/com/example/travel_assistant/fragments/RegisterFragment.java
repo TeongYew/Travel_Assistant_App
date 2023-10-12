@@ -19,9 +19,16 @@ import android.widget.Toast;
 import com.example.travel_assistant.R;
 import com.example.travel_assistant.activity.MainMenu;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -36,6 +43,7 @@ public class RegisterFragment extends Fragment {
     private Button regBtn;
     private FirebaseAuth auth;
     LinearLayout backFromSignUpLL;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -73,7 +81,7 @@ public class RegisterFragment extends Fragment {
                     Toast.makeText(getActivity(), "Password length needs to be more than 6", Toast.LENGTH_SHORT).show();
                 }
                 else {
-                    registerUser(emailStr, passwordStr);
+                    registerUser(usernameStr, emailStr, passwordStr);
                 }
 
             }
@@ -89,13 +97,16 @@ public class RegisterFragment extends Fragment {
         return view;
     }
 
-    private void registerUser(String email, String password) {
+    private void registerUser(String username, String email, String password) {
 
         auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()){
                     Toast.makeText(getActivity(), "User successfully registered!", Toast.LENGTH_SHORT).show();
+
+                    addNewUser(username, email);
+
                     startActivity(new Intent(getActivity(), MainMenu.class));
                 }
                 else{
@@ -104,6 +115,44 @@ public class RegisterFragment extends Fragment {
 
             }
         });
+
+    }
+
+    public void addNewUser(String username, String email){
+
+        String uid = "";
+
+        try {
+            uid = auth.getCurrentUser().getUid();
+            Log.d(TAG, "addNewUser: uid:" + uid);
+        }
+        catch (Exception e){
+            throw new RuntimeException(e);
+        }
+
+        // Create a new itinerary
+        Map<String, Object> user = new HashMap<>();
+        user.put("user_id", "000002");
+        user.put("user_name", username);
+        user.put("user_email", email);
+        user.put("user_auth_id", uid);
+
+
+        // Add a new document with a generated ID
+        db.collection("user")
+                .add(user)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        Log.d(TAG, "DocumentSnapshot (user) added with ID: " + documentReference.getId());
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error adding document (user)", e);
+                    }
+                });
 
     }
 

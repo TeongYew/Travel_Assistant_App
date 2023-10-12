@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.example.travel_assistant.R;
+import com.example.travel_assistant.activity.CommonPhrases;
 import com.example.travel_assistant.activity.FlightList;
 import com.example.travel_assistant.activity.HotelList;
 import com.example.travel_assistant.activity.ItineraryList;
@@ -42,9 +43,9 @@ public class PreLoginFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-                startActivity(new Intent(getActivity(), ItineraryList.class));
+                startActivity(new Intent(getActivity(), CommonPhrases.class));
 //                fragmentManager.beginTransaction()
-//                        .replace(R.id.fragmentContainer, LoginFragment.class, null)
+//                        .replace(R.id.fragment_pre_login, LoginFragment.class, null)
 //                        .setReorderingAllowed(true)
 //                        .addToBackStack("loginFragment") // Name can be null
 //                        .commit();

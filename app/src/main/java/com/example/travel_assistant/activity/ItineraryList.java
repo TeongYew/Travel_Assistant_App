@@ -36,6 +36,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -77,6 +78,7 @@ public class ItineraryList extends AppCompatActivity {
     TextView createItineraryTV, generateItineraryTV;
     boolean optionsSelected = false;
     String gptResponse = "";
+    String uid = "";
     ArrayList<ItineraryModel> itineraryArrayList = new ArrayList<>();
 
     LayoutInflater layoutInflater;
@@ -92,6 +94,7 @@ public class ItineraryList extends AppCompatActivity {
     OkHttpClient client = new OkHttpClient();
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
+    FirebaseAuth auth = FirebaseAuth.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,6 +111,15 @@ public class ItineraryList extends AppCompatActivity {
         generateItineraryTV = findViewById(R.id.generateItineraryTV);
         itineraryListRL = findViewById(R.id.itineraryListRL);
         layoutInflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+
+        //get the current user's uid
+        try {
+            uid = auth.getCurrentUser().getUid();
+            Log.d(TAG, "uid:" + uid);
+        }
+        catch (Exception e){
+            throw new RuntimeException(e);
+        }
 
         //generateItinerary("Who are you?");
 
@@ -173,7 +185,7 @@ public class ItineraryList extends AppCompatActivity {
     private void getUserItinerary(){
 
         db.collection("itinerary")
-                .whereEqualTo("user_id", "000001")
+                .whereEqualTo("user_uid", uid)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -445,7 +457,7 @@ public class ItineraryList extends AppCompatActivity {
         itinerary.put("itinerary_from", itineraryModel.itineraryDateFrom);
         itinerary.put("itinerary_to", itineraryModel.itineraryDateTo);
         itinerary.put("itinerary_day_count", itineraryModel.itineraryDaysCount);
-        itinerary.put("user_id", "000001");
+        itinerary.put("user_uid", uid);
 
 
         // Add a new document with a generated ID
