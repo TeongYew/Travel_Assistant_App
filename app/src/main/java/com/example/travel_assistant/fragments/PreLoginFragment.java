@@ -43,12 +43,12 @@ public class PreLoginFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-                startActivity(new Intent(getActivity(), CommonPhrases.class));
-//                fragmentManager.beginTransaction()
-//                        .replace(R.id.fragment_pre_login, LoginFragment.class, null)
-//                        .setReorderingAllowed(true)
-//                        .addToBackStack("loginFragment") // Name can be null
-//                        .commit();
+                //startActivity(new Intent(getActivity(), LoginFragment.class));
+                fragmentManager.beginTransaction()
+                        .replace(R.id.fragmentContainer, LoginFragment.class, null)
+                        .setReorderingAllowed(true)
+                        .addToBackStack("loginFragment") // Name can be null
+                        .commit();
 
             }
         });

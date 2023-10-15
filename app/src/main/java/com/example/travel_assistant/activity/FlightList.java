@@ -36,13 +36,13 @@ import java.util.concurrent.Executors;
 
 public class FlightList extends AppCompatActivity {
 
-    String flightLocation = "LON";
-    String flightDestination = "NYC";
-    String fromDate = "2023-10-10";
-    String toDate = "2023-10-15";
-    String adultCount = "1";
-    String kidCount = "0";
-    String roundOrOneWayTrip = "round";
+    String flightLocation = "";
+    String flightDestination = "";
+    String fromDate = "";
+    String toDate = "";
+    String adultCount = "";
+    String kidCount = "";
+    String roundOrOneWayTrip = "";
     boolean directFlightsOnly = false;
     final String TAG = String.valueOf(FlightList.this);
     android.widget.ListView flightListLV;
@@ -68,15 +68,15 @@ public class FlightList extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_flight_list);
 
-//        Intent intent = getIntent();
-//        flightLocation = intent.getStringExtra("location");
-//        flightDestination = intent.getStringExtra("destination");
-//        fromDate = intent.getStringExtra("fromDate");
-//        toDate = intent.getStringExtra("toDate");
-//        adultCount = intent.getStringExtra("adultCount");
-//        kidCount = intent.getStringExtra("kidCount");
-//        directFlightsOnly = intent.getBooleanExtra("directFlightsOnly",false);
-//        roundOrOneWayTrip = intent.getStringExtra("roundOrOneWayTrip");
+        Intent intent = getIntent();
+        flightLocation = intent.getStringExtra("location");
+        flightDestination = intent.getStringExtra("destination");
+        fromDate = intent.getStringExtra("fromDate");
+        toDate = intent.getStringExtra("toDate");
+        adultCount = intent.getStringExtra("adultCount");
+        kidCount = intent.getStringExtra("kidCount");
+        directFlightsOnly = intent.getBooleanExtra("directFlightsOnly",false);
+        roundOrOneWayTrip = intent.getStringExtra("roundOrOneWayTrip");
 
         flightListLV = findViewById(R.id.flightListLV);
         flightListRL = findViewById(R.id.flightListRL);

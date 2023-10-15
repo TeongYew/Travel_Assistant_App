@@ -1,11 +1,15 @@
 package com.example.travel_assistant.fragments;
 
+import static org.apache.commons.lang3.ClassUtils.getPackageName;
+
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +24,14 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+
+import com.opencsv.CSVReader;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -92,5 +104,41 @@ public class LoginFragment extends Fragment {
         });
 
     }
+
+
+
+//    public void readCSVFile(){
+//
+//        try {
+//            Resources resources = getResources();
+//            InputStream inputStream = resources.openRawResource(R.raw.airports_codes); // Replace with the resource name (without file extension)
+//            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+//            String line;
+//            StringBuilder data = new StringBuilder();
+//
+//            while ((line = reader.readLine()) != null) {
+//                // Process the CSV data here (e.g., split by semicolons and format)
+//                String[] parts = line.split(";");
+//                if (parts.length >= 2) {
+//                    String airportCode = parts[0];
+//                    String airportName = parts[1];
+//
+//                    // Format the data as needed
+//                    String formattedData = "<string name = \"" + airportCode + "\">" + airportName + "</string>\n";
+//                    data.append(formattedData);
+//                }
+//            }
+//
+//            // Display or use the formatted data
+//            Log.d("readCSVFile: ", "formattedDate: " + data);
+//
+//            reader.close();
+//            inputStream.close();
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//    }
 
 }

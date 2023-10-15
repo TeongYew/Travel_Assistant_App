@@ -115,6 +115,7 @@ public class ItineraryList extends AppCompatActivity {
         //get the current user's uid
         try {
             uid = auth.getCurrentUser().getUid();
+            uid = "000001";
             Log.d(TAG, "uid:" + uid);
         }
         catch (Exception e){

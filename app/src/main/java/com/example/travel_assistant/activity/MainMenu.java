@@ -191,7 +191,7 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
                             public void onDateSet(DatePicker view, int year,
                                                   int monthOfYear, int dayOfMonth) {
                                 // on below line we are setting date to our text view.
-                                fromDate = dayOfMonth + "-" + (monthOfYear + 1) + "-" + year;
+                                fromDate = year + "-" + (monthOfYear + 1) + "-" + dayOfMonth;
 
                                 DatePickerDialog toDatePickerDialog = new DatePickerDialog(
                                         // on below line we are passing context.
@@ -201,7 +201,7 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
                                             public void onDateSet(DatePicker view, int year,
                                                                   int monthOfYear, int dayOfMonth) {
                                                 // on below line we are setting date to our text view.
-                                                toDate = dayOfMonth + "-" + (monthOfYear + 1) + "-" + year;
+                                                toDate = year + "-" + (monthOfYear + 1) + "-" + dayOfMonth;
 
                                                 dateTV.setText(fromDate + " - " + toDate);
 

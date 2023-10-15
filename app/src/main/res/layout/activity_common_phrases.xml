@@ -52,6 +52,20 @@
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:id="@+id/generalBtn"
+            android:text="> General"
+            android:onClick="showCategory1"
+            android:gravity="left"/>
+
+        <ListView
+            android:id="@+id/generalLV"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:id="@+id/greetingsBtn"
             android:text="> Greetings"
             android:onClick="showCategory1"
@@ -66,13 +80,13 @@
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/questionsBtn"
+            android:id="@+id/navigationsBtn"
             android:text="> Questions"
             android:onClick="showCategory2"
             android:gravity="left"/>
 
         <ListView
-            android:id="@+id/questionsLV"
+            android:id="@+id/navigationsLV"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="gone" />
