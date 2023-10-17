@@ -66,11 +66,11 @@ public class FlightPage extends AppCompatActivity {
 
         departureTimeTV = findViewById(R.id.departureTimeTV);
         departureIATATV = findViewById(R.id.departureIATATV);
-        departureLocationTV = findViewById(R.id.departureLocationTV);
+        //departureLocationTV = findViewById(R.id.departureLocationTV);
         departureAirportTV = findViewById(R.id.departureAirportTV);
         arrivalTimeTV = findViewById(R.id.arrivalTimeTV);
         arrivalIATATV = findViewById(R.id.arrivalIATATV);
-        arrivalLocationTV = findViewById(R.id.arrivalLocationTV);
+        //arrivalLocationTV = findViewById(R.id.arrivalLocationTV);
         arrivalAirportTV = findViewById(R.id.arrivalAirportTV);
         flightAirlineTV = findViewById(R.id.flightAirlineTV);
         flightClassTV = findViewById(R.id.flightClassTV);
@@ -108,7 +108,8 @@ public class FlightPage extends AppCompatActivity {
         flightTerminalTV.setText(depTerminal);
         flightPriceTV.setText(price);
 
-        getLocation(flightLocation, flightDestination);
+        //getLocation(flightLocation, flightDestination);
+        getAirport(flightLocation,flightDestination);
 
         bookFlightBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -171,6 +172,39 @@ public class FlightPage extends AppCompatActivity {
                 startActivity(toHotelList);
             }
         });
+
+    }
+
+    public void getAirport(String depIata, String arrIata){
+
+        String depIataCode = depIata;
+        String arrIataCode = arrIata;
+        int depIataResourceId = getResources().getIdentifier(depIataCode, "string", getPackageName());
+        int arrIataResourceId = getResources().getIdentifier(arrIataCode, "string", getPackageName());
+
+        if (depIataResourceId != 0) {
+            String airportName = getResources().getString(depIataResourceId);
+            // Use the resourceValue as needed
+            Log.d("getString", "dep airportName: " + airportName);
+            departureAirportTV.setText(airportName);
+
+        } else {
+            // Handle the case where the resource is not found
+            Log.d("getString", "can't get dep string ");
+            departureAirportTV.setText("-");
+        }
+
+        if (arrIataResourceId != 0) {
+            String airportName = getResources().getString(arrIataResourceId);
+            // Use the resourceValue as needed
+            Log.d("getString", "arr airportName: " + airportName);
+            arrivalAirportTV.setText(airportName);
+
+        } else {
+            // Handle the case where the resource is not found
+            Log.d("getString", "can't get arr string ");
+            arrivalAirportTV.setText("-");
+        }
 
     }
 
@@ -262,9 +296,9 @@ public class FlightPage extends AppCompatActivity {
                     public void run() {
 
                         departureAirportTV.setText(depLocation.location);
-                        departureLocationTV.setText(depLocation.cityName);
+                        //departureLocationTV.setText(depLocation.cityName);
                         arrivalAirportTV.setText(arrLocation.location);
-                        arrivalLocationTV.setText(arrLocation.cityName);
+                        //arrivalLocationTV.setText(arrLocation.cityName);
 
                     }
                 });

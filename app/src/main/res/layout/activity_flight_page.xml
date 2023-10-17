@@ -104,19 +104,22 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/departureIATATV"
-                    android:text="NYC"
+                    android:text="YXU"
                     android:textSize="24sp"
                     android:textColor="@color/white"
                     android:layout_margin="5dp"/>
 
+                <!--
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/departureLocationTV"
-                    android:text="London"
+                    android:text="London International Airport"
                     android:textSize="16sp"
                     android:textColor="@color/light_grey"
-                    android:layout_marginBottom="10dp"/>
+                    android:layout_marginBottom="10dp"
+                    android:maxEms="8"
+                    android:gravity="center"/>
 
                 <View
                     android:layout_width="match_parent"
@@ -125,12 +128,12 @@
                     android:layout_marginLeft="20dp"
                     android:layout_marginRight="20dp"
                     android:layout_marginBottom="10dp"/>
-
+                -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/departureAirportTV"
-                    android:text="GatWick"
+                    android:text="London International Airport"
                     android:textSize="16sp"
                     android:textColor="@color/light_grey"
                     android:layout_marginBottom="10dp"
@@ -161,19 +164,21 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/arrivalIATATV"
-                    android:text="SFO"
+                    android:text="YWJ"
                     android:textSize="24sp"
                     android:textColor="@color/white"
                     android:layout_margin="5dp"/>
-
+                <!--
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/arrivalLocationTV"
-                    android:text="San Francisco"
+                    android:text="Deline Airport"
                     android:textSize="16sp"
                     android:textColor="@color/light_grey"
-                    android:layout_marginBottom="10dp"/>
+                    android:layout_marginBottom="10dp"
+                    android:maxEms="8"
+                    android:gravity="center"/>
 
                 <View
                     android:layout_width="match_parent"
@@ -182,7 +187,7 @@
                     android:layout_marginLeft="20dp"
                     android:layout_marginRight="20dp"
                     android:layout_marginBottom="10dp"/>
-
+                -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -193,6 +198,7 @@
                     android:layout_marginBottom="10dp"
                     android:maxEms="8"
                     android:gravity="center"/>
+
 
             </LinearLayout>
 

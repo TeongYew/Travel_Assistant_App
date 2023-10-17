@@ -33,12 +33,13 @@ public class AuthFragmentContainer extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth_fragment_container);
 
-        getData();
+        //getData();
+        getString("NYC");
     }
 
-    public void getString(){
+    public void getString(String iata){
 
-        String resourceName = "LON"; // The resource name you want to access
+        String resourceName = iata; // The resource name you want to access
         int resourceId = getResources().getIdentifier(resourceName, "string", getPackageName());
 
         if (resourceId != 0) {
@@ -93,39 +94,6 @@ public class AuthFragmentContainer extends AppCompatActivity {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
-// Define the subfolder name
-//            String subfolderName = "iata";
-//            String fileName = "exported_text.txt";
-//
-//            File directory = new File(getExternalFilesDir(null), subfolderName);
-//            if (!directory.exists()) {
-//                directory.mkdirs(); // Create the subfolder if it doesn't exist
-//            }
-//
-//            File file = new File(directory, fileName);
-//
-//            try {
-//                // Create a FileWriter to write to the file
-//                FileWriter fileWriter = new FileWriter(file);
-//
-//                // Create a BufferedWriter for efficient writing
-//                BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-//
-//                // Write the data to the file
-//                bufferedWriter.write(dataToExport);
-//
-//                // Close the BufferedWriter and FileWriter
-//                bufferedWriter.close();
-//                fileWriter.close();
-//
-//                // The data is now saved to the text file
-//                Log.d("getData", "success");
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//                // Handle any exceptions that may occur during file writing
-//                Log.d("getData", "error");
-//            }
 
 
             reader.close();

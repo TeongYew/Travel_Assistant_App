@@ -9,19 +9,23 @@
         -->
         <item
             android:id="@+id/navItinerary"
-            android:icon="@mipmap/ic_launcher"
+            android:icon="@drawable/edit"
             android:title="Itineraries" />
         <item
+            android:id="@+id/navPhrases"
+            android:icon="@drawable/translate"
+            android:title="Common Phrases" />
+        <item
             android:id="@+id/navHistory"
-            android:icon="@mipmap/ic_launcher"
+            android:icon="@drawable/history"
             android:title="History" />
         <item
             android:id="@+id/navReviews"
-            android:icon="@mipmap/ic_launcher"
+            android:icon="@drawable/reviews"
             android:title="Reviews" />
         <item
             android:id="@+id/signOut"
-            android:icon="@mipmap/ic_launcher"
+            android:icon="@drawable/logout"
             android:title="Sign Out" />
 
     </group>

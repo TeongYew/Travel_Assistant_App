@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/translucent_black"
+    android:id="@+id/translatorPopupRL">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        android:layout_margin="10dp"
+        android:orientation="vertical"
+        android:background="@drawable/rounded_popup_outline"
+        android:layout_centerInParent="true"
+        android:padding="15dp">
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:id="@+id/translateInputET"
+            android:hint="Enter text to translate ..."
+            android:gravity="top|start"
+            android:background="@drawable/custom_edittext3"
+            android:padding="8dp"
+            android:layout_marginTop="5dp"
+            android:textColor="@color/dark_grey"
+            android:textColorHint="@color/grey" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:id="@+id/translateOutputET"
+            android:hint="Translation ..."
+            android:gravity="top|start"
+            android:background="@drawable/custom_edittext3"
+            android:padding="8dp"
+            android:layout_marginTop="5dp"
+            android:textColor="@color/black"
+            android:textColorHint="@color/grey" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/translateBtn"
+            android:text="translate"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/round_btn"
+            android:layout_marginTop="10dp"
+            android:padding="10dp"
+            android:textColor="@color/black"/>
+
+    </LinearLayout>
+
+</RelativeLayout>

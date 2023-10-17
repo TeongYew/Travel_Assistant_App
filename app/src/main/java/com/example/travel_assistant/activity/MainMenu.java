@@ -122,7 +122,7 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
 
         toggle.syncState();
 
-        getFlights();
+        //getFlights();
 
         flightTL.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -282,8 +282,11 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
         if(item.getItemId() == R.id.navItinerary){
             startActivity(new Intent(MainMenu.this, ItineraryList.class));
         }
+        else if (item.getItemId() == R.id.navPhrases) {
+            startActivity(new Intent(MainMenu.this, CommonPhrases.class));
+        }
         else if (item.getItemId() == R.id.navHistory) {
-            //startActivity(new Intent(MainMenu.this, ));
+            startActivity(new Intent(MainMenu.this, BookingHistory.class));
         }
         else if (item.getItemId() == R.id.navReviews) {
 

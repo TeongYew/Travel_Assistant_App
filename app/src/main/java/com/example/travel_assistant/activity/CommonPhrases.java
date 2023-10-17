@@ -4,13 +4,21 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 
 import com.example.travel_assistant.R;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 
@@ -21,6 +29,7 @@ public class CommonPhrases extends AppCompatActivity {
     String currentLanguage = "";
     Button generalBtn, greetingsBtn, navigationsBtn, emergenciesBtn, accommodationsBtn;
     android.widget.ListView generalLV, greetingsLV, navigationsLV, emergenciesLV, accommodationsLV;
+    FloatingActionButton translateFAB;
     boolean generalSelected = false;
     boolean greetingsSelected = false;
     boolean navigationsSelected = false;
@@ -32,6 +41,14 @@ public class CommonPhrases extends AppCompatActivity {
     ArrayList<String> navigationsList = new ArrayList<>();
     ArrayList<String> emergenciesList = new ArrayList<>();
     ArrayList<String> accommodationsList = new ArrayList<>();
+
+    RelativeLayout phrasesRL;
+    LayoutInflater layoutInflater;
+    int width = ViewGroup.LayoutParams.MATCH_PARENT;
+    int height = ViewGroup.LayoutParams.MATCH_PARENT;
+    boolean focusable = true;
+    PopupWindow popupWindow;
+    View translatorPopupView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +66,9 @@ public class CommonPhrases extends AppCompatActivity {
         navigationsLV = findViewById(R.id.navigationsLV);
         emergenciesLV = findViewById(R.id.emergenciesLV);
         accommodationsLV = findViewById(R.id.accommodationsLV);
+        translateFAB = findViewById(R.id.translateFAB);
+        phrasesRL = findViewById(R.id.phrasesRL);
+        layoutInflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
 
         ArrayAdapter<CharSequence> adapter=ArrayAdapter.createFromResource(this, R.array.languages, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
@@ -271,6 +291,46 @@ public class CommonPhrases extends AppCompatActivity {
                 }
             }
         });
+
+        translateFAB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                setupTranslatorPopup();
+
+            }
+        });
+
+    }
+
+    public void setupTranslatorPopup(){
+
+        translatorPopupView = layoutInflater.inflate(R.layout.translator_popup, null);
+
+        popupWindow = new PopupWindow(translatorPopupView,width,height,focusable);
+
+        phrasesRL.post(new Runnable() {
+            @Override
+            public void run() {
+                popupWindow.showAtLocation(phrasesRL, Gravity.CENTER,0,0);
+
+            }
+        });
+
+        RelativeLayout translatePopupRL = translatorPopupView.findViewById(R.id.translatorPopupRL);
+        EditText translateInputET = translatorPopupView.findViewById(R.id.translateInputET);
+        EditText translateOutputET = translatorPopupView.findViewById(R.id.translateOutputET);
+        Button translateBtn = translatorPopupView.findViewById(R.id.translateBtn);
+
+        translatePopupRL.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                popupWindow.dismiss();
+                return true;
+            }
+        });
+
+
 
     }
 
