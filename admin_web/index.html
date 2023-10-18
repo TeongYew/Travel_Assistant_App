@@ -1,0 +1,278 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <!-- Compiled and minified CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <title>TravelAssistantAdminWeb</title>
+</head>
+<body class="grey lighten-3">
+
+  <!-- NAVBAR -->
+  <nav class="z-depth-0 grey lighten-4">
+    <div class="nav-wrapper container">
+        <a href="#" class="brand-logo">
+            <img src="img/airplane.png" style="width: 80px; margin-top: 10px;">
+          </a>
+      <ul id="nav-mobile" class="right hide-on-med-and-down">
+          <li class="logged-in" style="display: none;">
+            <a href="#" class="grey-text modal-trigger" data-target="modal-account">Account</a>
+          </li>
+          <li class="logged-in" style = "display: none;">
+            <a href="#" class="grey-text" id="logout">Logout</a>
+          </li>
+          <li class="logged-in" style = "display: none;">
+            <a href="#" class="grey-text modal-trigger" data-target="modal-create">Create User</a>
+          </li>
+          <li class="logged-out" style = "display: none;">
+            <a href="#" class="grey-text modal-trigger" data-target="modal-login">Login</a>
+          </li>
+          <li class="logged-out" style = "display: none;">
+            <a href="#" class="grey-text modal-trigger" data-target="modal-signup">Sign up</a>
+          </li>
+        </span>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- SIGN UP MODAL -->
+  <div id="modal-signup" class="modal">
+    <div class="modal-content">
+      <h4>Sign up</h4><br />
+      <form id="signup-form">
+        <div class="input-field">
+          <input type="email" id="signup-email" required />
+          <label for="signup-email">Email address</label>
+        </div>
+        <div class="input-field">
+          <input type="password" id="signup-password" required />
+          <label for="signup-password">Choose password</label>
+        </div>
+        <button class="btn yellow darken-2 z-depth-0">Sign up</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- LOGIN MODAL -->
+  <div id="modal-login" class="modal">
+    <div class="modal-content">
+      <h4>Login</h4><br />
+      <form id="login-form">
+        <div class="input-field">
+          <input type="email" id="login-email" required />
+          <label for="login-email">Email address</label>
+        </div>
+        <div class="input-field">
+          <input type="password" id="login-password" required />
+          <label for="login-password">Your password</label>
+        </div>
+        <button class="btn yellow darken-2 z-depth-0">Login</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ACCOUNT MODAL -->
+  <div id="modal-account" class="modal">
+    <div class="modal-content center-align">
+      <h4>Account details</h4><br />
+      <div class="account-details"></div>
+    </div>
+  </div>
+
+  <!-- CREATE USER MODAL -->
+  <div id="modal-create" class="modal">
+    <div class="modal-content">
+      <h4>Create User</h4><br />
+      <form id="create-user">
+        <div class="input-field">
+          <input type="text" id="name" required>
+          <label for="title">User Name</label>
+        </div>
+        <div class="input-field">
+          <textarea id="email" class="materialize-textarea" required></textarea>
+          <label for="content">User Email</label>
+        </div>
+        <button class="btn yellow darken-2 z-depth-0">Create</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- USER LIST -->
+  <div class="container" style="margin-top: 40px;">
+    <ul class="collapsible z-depth-0 user" style="border: none;">
+      <!-- <li>
+        <div class="collapsible-header grey lighten-4">Guide title</div>
+        <div class="collapsible-body white">Lorem ipsum dolor sit amet.</div>
+      </li>
+      <li>
+        <div class="collapsible-header grey lighten-4">Guide title</div>
+        <div class="collapsible-body white"><span>Lorem ipsum dolor sit amet.</span></div>
+      </li>
+      <li>
+        <div class="collapsible-header grey lighten-4">Guide title</div>
+        <div class="collapsible-body white"><span>Lorem ipsum dolor sit amet.</span></div>
+      </li>
+      <li>
+        <div class="collapsible-header grey lighten-4">Guide title</div>
+        <div class="collapsible-body white"><span>Lorem ipsum dolor sit amet.</span></div>
+      </li> -->
+    </ul>
+  </div>
+
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-analytics.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js";
+    import { getFirestore, collection, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+  
+    // Your web app's Firebase configuration
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    const firebaseConfig = {
+      apiKey: "AIzaSyB798vUW1sB8LH4at3MmXkcMQtyJgw_mG4",
+      authDomain: "travel-assistant-app-4b593.firebaseapp.com",
+      databaseURL: "https://travel-assistant-app-4b593-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "travel-assistant-app-4b593",
+      storageBucket: "travel-assistant-app-4b593.appspot.com",
+      messagingSenderId: "760530191338",
+      appId: "1:760530191338:web:1dd8ca6dc4f3ee0b18a893",
+      measurementId: "G-72L8S5WCDL"
+    };
+  
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const loggedOutLinks = document.querySelectorAll('.logged-out');
+    const loggedInLinks = document.querySelectorAll('.logged-in');
+
+    const userList = document.querySelector('.user');
+    let html = '';
+    const querySnapshot = await getDocs(collection(db, "user"));
+    querySnapshot.forEach((doc) => {
+      console.log(`${doc.id} => ${doc.data()}`);
+      const user = doc.data();
+        const li = `
+          <li>
+            <div class="collapsible-header grey lighten-4"> ${user.user_name} </div>
+            <div class="collapsible-body white"> ${user.user_email} </div>
+          </li>
+        `;
+        html += li;
+    });
+    //userList.innerHTML = html
+    //setupUser(querySnapshot.doc);
+
+    // listen for auth status changes
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in, see docs for a list of available properties
+        // https://firebase.google.com/docs/reference/js/auth.user
+        const uid = user.uid;
+        // ...
+        console.log('user logged in: ', uid);
+        userList.innerHTML = html
+        loggedInLinks.forEach(item => item.style.display = 'block');
+        loggedOutLinks.forEach(item => item.style.display = 'none');
+      } else {
+        // User is signed out
+        // ...
+        console.log('user logged out');
+        userList.innerHTML = '<H5 class = "center-align">Login to view user data</h5>';
+        loggedInLinks.forEach(item => item.style.display = 'none');
+        loggedOutLinks.forEach(item => item.style.display = 'block');
+      }
+    });
+
+    // login
+    const loginForm = document.querySelector('#login-form');
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+  
+      // get user info
+      const email = loginForm['login-email'].value;
+      const password = loginForm['login-password'].value;
+
+      signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        // Signed in 
+        const user = userCredential.user;
+        console.log(user);
+        // ...
+        // close the signup modal & reset form
+        const modal = document.querySelector('#modal-login');
+        M.Modal.getInstance(modal).close();
+        loginForm.reset();
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+      });
+
+      // // log the user in
+      // auth.signInWithEmailAndPassword(email, password).then((cred) => {
+      //   console.log(cred.user);
+      //   // close the signup modal & reset form
+      //   const modal = document.querySelector('#modal-login');
+      //   M.Modal.getInstance(modal).close();
+      //   loginForm.reset();
+      // });
+
+    });
+
+    //logout 
+    const logout = document.querySelector('#logout');
+    logout.addEventListener('click', (e) => {
+      e.preventDefault();
+      auth.signOut().then(() => {
+        console.log('user signed out');
+      })
+    });
+
+    //create new user
+    const createUser = document.querySelector('#create-user');
+
+    createUser.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      //create new user in auth
+      const password = "test123"
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          // Signed up 
+          const userUid = userCredential.user.uid;
+
+          //create new user in database
+          try {
+            const docRef = addDoc(collection(db, "user"), {
+              user_name: createUser.name.value,
+              user_email: createUser.email.value,
+              user_uid: userUid,
+            });
+            //console.log("Document written with ID: ", docRef.id);
+            console.log("Document successfully added");
+          } catch (e) {
+            console.error("Error adding document: ", e);
+          }
+        
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // ..
+      });    
+    });
+
+
+  </script>
+
+  <!-- Compiled and minified JavaScript -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Collection</title>
+</head>
+<body>
+    <h2>User Collection</h2>
+    
+    <!-- Search Bar -->
+    <input type="text" id="search" placeholder="Search by username or UID">
+    
+    <!-- Add User Button -->
+    <button id="addUser">Add User</button>
+    
+    <!-- User Table -->
+    <table>
+        <thead>
+            <tr>
+                <th>UID</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="userTable">
+            <!-- User data will be displayed here -->
+        </tbody>
+    </table>
+    
+    <!-- Add User Modal (pop-up) -->
+    <div id="addUserModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeModal">&times;</span>
+            <input type="text" id="newUsername" placeholder="Username">
+            <input type="text" id="newEmail" placeholder="Email">
+            <button id="saveUser">Save</button>
+        </div>
+    </div>
+
+    <script src="your-firebase-configuration.js"></script>
+    <script src="scripts/users_script.js"></script>
+</body>
+</html>

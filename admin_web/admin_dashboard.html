@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        .menu {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px;
+        }
+
+        .menu a {
+            text-decoration: none;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: #fff;
+            border-radius: 5px;
+        }
+
+        .menu a:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h2>Welcome to the Admin Dashboard - Firestore Collection</h2>
+    <div class="menu">
+        <a href="#" id="collection1">User Collection</a>
+        <a href="#" id="collection2">Flight Booking</a>
+        <a href="#" id="collection3">Hotel Booking</a>
+        <a href="#" id="collection4">Flight Itinerary</a>
+    </div>
+
+    <script>
+        // Add event listeners for navigation
+        document.getElementById("collection1").addEventListener("click", function () {
+            // Redirect to the page to monitor Collection 1
+            window.location.href = "users.html";
+        });
+
+        document.getElementById("collection2").addEventListener("click", function () {
+            // Redirect to the page to monitor Collection 2
+            window.location.href = "collection2.html";
+        });
+
+        // Repeat the above code for other collections as needed
+    </script>
+</body>
+</html>
