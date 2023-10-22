@@ -163,7 +163,7 @@ public class ItineraryPage extends AppCompatActivity {
         if(timeTo.equals("-")){
             timeTo = "";
         }
-// Set the "isCapital" field of the city 'DC'
+
         itineraryItemRef
                 .update("itinerary_item_location", location,
                         "itinerary_item_from", timeFrom,
@@ -223,6 +223,78 @@ public class ItineraryPage extends AppCompatActivity {
             itineraryItemTimeToET.setText("-");
         }
 
+        itineraryItemTimeFromET.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                final Calendar c = Calendar.getInstance();
+
+                // on below line we are getting our hour, minute.
+                int hour = c.get(Calendar.HOUR_OF_DAY);
+                int minute = c.get(Calendar.MINUTE);
+
+                // on below line we are initializing our Time Picker Dialog
+                TimePickerDialog timePickerDialog = new TimePickerDialog(ItineraryPage.this,
+                        new TimePickerDialog.OnTimeSetListener() {
+                            @Override
+                            public void onTimeSet(TimePicker view, int hourOfDay,
+                                                  int minute) {
+                                // on below line we are setting selected time
+                                // in our text view.
+                                String hourStr = String.valueOf(hourOfDay);
+                                String minuteStr = String.valueOf(minute);
+                                if(hourStr.length() < 2){
+                                    hourStr = "0" + hourStr;
+                                }
+                                if(minuteStr.length() < 2){
+                                    minuteStr = "0" + minuteStr;
+                                }
+                                itineraryItemTimeFromET.setText(hourStr + ":" + minuteStr);
+                            }
+                        }, hour, minute, false);
+                // at last we are calling show to
+                // display our time picker dialog.
+                timePickerDialog.show();
+
+            }
+        });
+
+        itineraryItemTimeToET.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                final Calendar c = Calendar.getInstance();
+
+                // on below line we are getting our hour, minute.
+                int hour = c.get(Calendar.HOUR_OF_DAY);
+                int minute = c.get(Calendar.MINUTE);
+
+                // on below line we are initializing our Time Picker Dialog
+                TimePickerDialog timePickerDialog = new TimePickerDialog(ItineraryPage.this,
+                        new TimePickerDialog.OnTimeSetListener() {
+                            @Override
+                            public void onTimeSet(TimePicker view, int hourOfDay,
+                                                  int minute) {
+                                // on below line we are setting selected time
+                                // in our text view.
+                                String hourStr = String.valueOf(hourOfDay);
+                                String minuteStr = String.valueOf(minute);
+                                if(hourStr.length() < 2){
+                                    hourStr = "0" + hourStr;
+                                }
+                                if(minuteStr.length() < 2){
+                                    minuteStr = "0" + minuteStr;
+                                }
+                                itineraryItemTimeToET.setText(hourStr + ":" + minuteStr);
+                            }
+                        }, hour, minute, false);
+                // at last we are calling show to
+                // display our time picker dialog.
+                timePickerDialog.show();
+
+            }
+        });
+
         saveItineraryItemBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -250,7 +322,7 @@ public class ItineraryPage extends AppCompatActivity {
         // Create a new itinerary_item
         Map<String, Object> itineraryItem = new HashMap<>();
         itineraryItem.put("itinerary_id", itineraryModel.itineraryId);
-        itineraryItem.put("itinerary_item_id", "000001");
+        //itineraryItem.put("itinerary_item_id", "000001");
         itineraryItem.put("itinerary_item_location", itineraryDayModel.locationName);
         itineraryItem.put("itinerary_item_date", itineraryDayModel.locationDate);
         itineraryItem.put("itinerary_item_from", itineraryDayModel.locationTimeFrom);
@@ -267,6 +339,7 @@ public class ItineraryPage extends AppCompatActivity {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
                         Log.d(TAG, "DocumentSnapshot (itinerary_item) added with ID: " + documentReference.getId());
+
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -282,7 +355,7 @@ public class ItineraryPage extends AppCompatActivity {
 
         db.collection("itinerary_item")
                 .whereEqualTo("user_uid", uid)
-                .whereEqualTo("itinerary_id", "000002")
+                .whereEqualTo("itinerary_id", itineraryModel.itineraryId)
                 .whereEqualTo("itinerary_item_date", currentDate)
                 .orderBy("itinerary_date_time")
                 .get()
@@ -295,7 +368,7 @@ public class ItineraryPage extends AppCompatActivity {
                                 Log.d(TAG, document.getId() + " => " + document.getData());
 
                                 String itineraryId = document.getData().get("itinerary_id").toString();
-                                String itineraryItemId = document.getData().get("itinerary_item_id").toString();
+                                //String itineraryItemId = document.getData().get("itinerary_item_id").toString();
                                 String itineraryItemDate = document.getData().get("itinerary_item_date").toString();
                                 String itineraryItemLocation = document.getData().get("itinerary_item_location").toString();
                                 String itineraryItemTimeFrom = document.getData().get("itinerary_item_from").toString();
@@ -508,6 +581,42 @@ public class ItineraryPage extends AppCompatActivity {
                                     minuteStr = "0" + minuteStr;
                                 }
                                 itineraryFromET.setText(hourStr + ":" + minuteStr);
+                            }
+                        }, hour, minute, false);
+                // at last we are calling show to
+                // display our time picker dialog.
+                timePickerDialog.show();
+
+            }
+        });
+
+        itineraryToET.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                final Calendar c = Calendar.getInstance();
+
+                // on below line we are getting our hour, minute.
+                int hour = c.get(Calendar.HOUR_OF_DAY);
+                int minute = c.get(Calendar.MINUTE);
+
+                // on below line we are initializing our Time Picker Dialog
+                TimePickerDialog timePickerDialog = new TimePickerDialog(ItineraryPage.this,
+                        new TimePickerDialog.OnTimeSetListener() {
+                            @Override
+                            public void onTimeSet(TimePicker view, int hourOfDay,
+                                                  int minute) {
+                                // on below line we are setting selected time
+                                // in our text view.
+                                String hourStr = String.valueOf(hourOfDay);
+                                String minuteStr = String.valueOf(minute);
+                                if(hourStr.length() < 2){
+                                    hourStr = "0" + hourStr;
+                                }
+                                if(minuteStr.length() < 2){
+                                    minuteStr = "0" + minuteStr;
+                                }
+                                itineraryToET.setText(hourStr + ":" + minuteStr);
                             }
                         }, hour, minute, false);
                 // at last we are calling show to

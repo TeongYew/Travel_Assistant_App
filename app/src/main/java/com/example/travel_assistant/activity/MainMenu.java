@@ -39,6 +39,7 @@ import com.example.travel_assistant.R;
 import com.example.travel_assistant.adapter.LocationSearchAdapter;
 import com.example.travel_assistant.fragments.PreLoginFragment;
 import com.example.travel_assistant.model.LocationModel;
+import com.example.travel_assistant.others.LoadingDialog;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -88,6 +89,8 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
             .builder("htHGvYM2OB3wmAqVykNHAbGPuTlSBV1m","0hiGWqr3KQSGXION")
             .build();
 
+    LoadingDialog loadingDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,6 +109,8 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
         searchFlightBtn = findViewById(R.id.searchFlightBtn);
         directFlightCB = findViewById(R.id.directFlightCB);
         layoutInflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+
+        loadingDialog = new LoadingDialog(this);
 
         auth = FirebaseAuth.getInstance();
 
@@ -190,8 +195,22 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
                             @Override
                             public void onDateSet(DatePicker view, int year,
                                                   int monthOfYear, int dayOfMonth) {
-                                // on below line we are setting date to our text view.
-                                fromDate = year + "-" + (monthOfYear + 1) + "-" + dayOfMonth;
+
+                                //check if the month and day string has only 1 number
+                                // if only 1 number, add a 0 in front to avoid formatting errors
+                                String yearStr = String.valueOf(year);
+                                String monthStr = String.valueOf(monthOfYear + 1);
+                                String dayStr = String.valueOf(dayOfMonth);
+
+                                if(monthStr.length() < 2){
+                                    monthStr = "0" + monthStr;
+                                }
+
+                                if (dayStr.length() < 2){
+                                    dayStr = "0" + dayStr;
+                                }
+
+                                fromDate = yearStr + "-" + monthStr + "-" + dayStr;
 
                                 DatePickerDialog toDatePickerDialog = new DatePickerDialog(
                                         // on below line we are passing context.
@@ -200,8 +219,22 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
                                             @Override
                                             public void onDateSet(DatePicker view, int year,
                                                                   int monthOfYear, int dayOfMonth) {
-                                                // on below line we are setting date to our text view.
-                                                toDate = year + "-" + (monthOfYear + 1) + "-" + dayOfMonth;
+
+                                                //check if the month and day string has only 1 number
+                                                // if only 1 number, add a 0 in front to avoid formatting errors
+                                                String yearStr = String.valueOf(year);
+                                                String monthStr = String.valueOf(monthOfYear + 1);
+                                                String dayStr = String.valueOf(dayOfMonth);
+
+                                                if(monthStr.length() < 2){
+                                                    monthStr = "0" + monthStr;
+                                                }
+
+                                                if (dayStr.length() < 2){
+                                                    dayStr = "0" + dayStr;
+                                                }
+
+                                                toDate = yearStr + "-" + monthStr + "-" + dayStr;
 
                                                 dateTV.setText(fromDate + " - " + toDate);
 
@@ -312,7 +345,8 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
     private void signOut(){
         auth.signOut();
         Toast.makeText(this, "Successfully signed out!", Toast.LENGTH_SHORT).show();
-        startActivity(new Intent(MainMenu.this, PreLoginFragment.class));
+        finish();
+        startActivity(new Intent(MainMenu.this, AuthFragmentContainer.class));
     }
 
     public void createPopUpWindow(String popup){
@@ -338,6 +372,7 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
                 flightFromIB.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        loadingDialog.show();
                         getLocation(flightFromET.getText().toString(), popup);
 
                     }
@@ -374,6 +409,7 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
                 flightToIB.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        loadingDialog.show();
                         getLocation(flightToET.getText().toString(), popup);
 
                     }
@@ -667,16 +703,19 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
 
                     }
 
-                    for (int i = 0; i < locationArrayList.size(); i++){
-
-                        Log.d(TAG, "run: dis is the " + i + " location data from arraylist: " + locationArrayList.get(i).location);
-                        Log.d(TAG, "run: dis is the " + i + " iata data from arraylist: " + locationArrayList.get(i).iata);
-
-                    }
+//                    for (int i = 0; i < locationArrayList.size(); i++){
+//
+//                        Log.d(TAG, "run: dis is the " + i + " location data from arraylist: " + locationArrayList.get(i).location);
+//                        Log.d(TAG, "run: dis is the " + i + " iata data from arraylist: " + locationArrayList.get(i).iata);
+//
+//                    }
 
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
+
+                            //stop loading animation
+                            loadingDialog.cancel();
 
                             LocationSearchAdapter customAdapter = new LocationSearchAdapter(getApplicationContext(), locationArrayList);
 
@@ -693,7 +732,7 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
                                         TextView iata = view.findViewById(R.id.iataTV);
                                         String loc = location.getText().toString();
                                         flightLocation = iata.getText().toString();
-                                        Toast.makeText(MainMenu.this, "dis is loc: " + loc, Toast.LENGTH_SHORT).show();
+                                        //Toast.makeText(MainMenu.this, "dis is loc: " + loc, Toast.LENGTH_SHORT).show();
                                         departureNameTV.setText(loc);
                                         popupWindow.dismiss();
 
@@ -712,7 +751,7 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
                                         TextView iata = view.findViewById(R.id.iataTV);
                                         String loc = location.getText().toString();
                                         flightDestination = iata.getText().toString();
-                                        Toast.makeText(MainMenu.this, "dis is loc: " + loc, Toast.LENGTH_SHORT).show();
+                                        //Toast.makeText(MainMenu.this, "dis is loc: " + loc, Toast.LENGTH_SHORT).show();
                                         arrivalNameTV.setText(loc);
                                         popupWindow.dismiss();
 
@@ -727,6 +766,8 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
 
                 }
                 catch (Exception e){
+                    //stop loading animation
+                    loadingDialog.cancel();
                     Log.d(TAG, "getLocation: error: " + e);
                 }
 

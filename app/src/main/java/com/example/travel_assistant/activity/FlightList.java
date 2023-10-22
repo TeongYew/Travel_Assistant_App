@@ -2,6 +2,7 @@ package com.example.travel_assistant.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -12,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.LinearInterpolator;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.PopupWindow;
@@ -28,6 +30,8 @@ import com.example.travel_assistant.adapter.FlightItineraryListAdapter;
 import com.example.travel_assistant.adapter.FlightListAdapter;
 import com.example.travel_assistant.model.FlightItineraryListModel;
 import com.example.travel_assistant.model.FlightListModel;
+import com.example.travel_assistant.others.LoadingDialog;
+import com.example.travel_assistant.others.LoadingView;
 import com.google.gson.JsonArray;
 
 import java.util.ArrayList;
@@ -62,6 +66,7 @@ public class FlightList extends AppCompatActivity {
     View itineraryPopupView;
     RelativeLayout flightListRL;
     ArrayList<FlightItineraryListModel> itineraryArrayList;
+    LoadingDialog loadingDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +83,8 @@ public class FlightList extends AppCompatActivity {
         directFlightsOnly = intent.getBooleanExtra("directFlightsOnly",false);
         roundOrOneWayTrip = intent.getStringExtra("roundOrOneWayTrip");
 
+        loadingDialog = new LoadingDialog(this);
+
         flightListLV = findViewById(R.id.flightListLV);
         flightListRL = findViewById(R.id.flightListRL);
         layoutInflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
@@ -86,9 +93,12 @@ public class FlightList extends AppCompatActivity {
 
         Log.d(TAG, "flightlist, info before flight search: " + flightLocation + ", " + flightDestination + ", " + fromDate + ", " + toDate + ", " + adultCount + ", " + kidCount + ", " + directFlightsOnly + ", " + roundOrOneWayTrip);
 
+        //start the loading animation and getFlights
+        loadingDialog.show();
         getFlights();
 
     }
+
 
     public void getFlights(){
 
@@ -211,6 +221,10 @@ public class FlightList extends AppCompatActivity {
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
+
+                            //stop the loading animation
+                            loadingDialog.cancel();
+
                             //code for initialising the listview
                             FlightListAdapter customAdapter = new FlightListAdapter(getApplicationContext(), flightArrayList);
                             flightListLV.setAdapter(customAdapter);
@@ -332,6 +346,8 @@ public class FlightList extends AppCompatActivity {
 
                 }
                 catch (Exception e){
+                    //stop loading animation
+                    loadingDialog.cancel();
                     Log.d(TAG, "onCreate: Exception(in flight call): " + e.getMessage());
                 }
 

@@ -82,6 +82,7 @@ public class FlightHistoryFragment extends Fragment {
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 Log.d(TAG, document.getId() + " => " + document.getData());
 
+
                                 String flightBookingId = document.getData().get("flight_booking_id").toString();
                                 String flightDepartureIata = document.getData().get("departure_iata").toString();
                                 String flightDepartureName = document.getData().get("departure_location").toString();
@@ -120,6 +121,7 @@ public class FlightHistoryFragment extends Fragment {
                                                         flightHistoryArrayList.add(flightHistoryModel);
 
                                                     }
+                                                    Log.d(TAG, "onComplete: flightArrayList size: " + flightHistoryArrayList.size());
 
                                                     FlightHistoryListAdapter customAdapter = new FlightHistoryListAdapter(getContext(), flightHistoryArrayList);
                                                     flightHistoryLV.setAdapter(customAdapter);

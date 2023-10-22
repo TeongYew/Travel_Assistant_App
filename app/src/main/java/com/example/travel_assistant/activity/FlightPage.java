@@ -51,6 +51,8 @@ public class FlightPage extends AppCompatActivity {
     ArrayList<FlightItineraryListModel> flightItinerary = new ArrayList<>();
     LocationModel depLocation;
     LocationModel arrLocation;
+    String depAirportName = "-";
+    String arrAirportName = "-";
     Amadeus amadeus = Amadeus
             .builder("htHGvYM2OB3wmAqVykNHAbGPuTlSBV1m","0hiGWqr3KQSGXION")
             .build();
@@ -120,8 +122,8 @@ public class FlightPage extends AppCompatActivity {
                 toPayment.putExtra("paymentFor", "flightOnly");
                 toPayment.putExtra("flightLocation", flightLocation);
                 toPayment.putExtra("flightDestination", flightDestination);
-                toPayment.putExtra("flightLocationName", depLocation.cityName);
-                toPayment.putExtra("flightDestinationName", arrLocation.cityName);
+                toPayment.putExtra("flightLocationName", depAirportName);
+                toPayment.putExtra("flightDestinationName", arrAirportName);
                 toPayment.putExtra("flightFromDate", fromDate);
                 toPayment.putExtra("flightToDate", toDate);
                 //toPayment.putExtra("depTerminal", depTerminal);
@@ -156,8 +158,8 @@ public class FlightPage extends AppCompatActivity {
                 //flight data
                 toHotelList.putExtra("flightLocation", flightLocation);
                 toHotelList.putExtra("flightDestination", flightDestination);
-                toHotelList.putExtra("flightLocationName", depLocation.cityName);
-                toHotelList.putExtra("flightDestinationName", arrLocation.cityName);
+                toHotelList.putExtra("flightLocationName", depAirportName);
+                toHotelList.putExtra("flightDestinationName", arrAirportName);
                 toHotelList.putExtra("flightFromDate", fromDate);
                 toHotelList.putExtra("flightToDate", toDate);
                 toHotelList.putExtra("adultCount", adultCount);
@@ -187,6 +189,7 @@ public class FlightPage extends AppCompatActivity {
             // Use the resourceValue as needed
             Log.d("getString", "dep airportName: " + airportName);
             departureAirportTV.setText(airportName);
+            depAirportName = airportName;
 
         } else {
             // Handle the case where the resource is not found
@@ -199,6 +202,7 @@ public class FlightPage extends AppCompatActivity {
             // Use the resourceValue as needed
             Log.d("getString", "arr airportName: " + airportName);
             arrivalAirportTV.setText(airportName);
+            arrAirportName = airportName;
 
         } else {
             // Handle the case where the resource is not found

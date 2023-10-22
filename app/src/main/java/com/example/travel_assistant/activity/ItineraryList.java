@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.animation.ObjectAnimator;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -28,6 +30,7 @@ import android.widget.Toast;
 
 import com.example.travel_assistant.R;
 import com.example.travel_assistant.adapter.FlightListAdapter;
+import com.example.travel_assistant.adapter.TravelItineraryDayAdapter;
 import com.example.travel_assistant.adapter.TravelItineraryListAdapter;
 import com.example.travel_assistant.model.ItineraryDayModel;
 import com.example.travel_assistant.model.ItineraryModel;
@@ -52,6 +55,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -80,6 +85,7 @@ public class ItineraryList extends AppCompatActivity {
     String gptResponse = "";
     String uid = "";
     ArrayList<ItineraryModel> itineraryArrayList = new ArrayList<>();
+    TravelItineraryListAdapter customAdapter;
 
     LayoutInflater layoutInflater;
     int width = ViewGroup.LayoutParams.MATCH_PARENT;
@@ -211,7 +217,7 @@ public class ItineraryList extends AppCompatActivity {
 
                             }
 
-                            TravelItineraryListAdapter customAdapter = new TravelItineraryListAdapter(getApplicationContext(), itineraryArrayList);
+                            customAdapter = new TravelItineraryListAdapter(getApplicationContext(), itineraryArrayList);
                             itineraryLV.setAdapter(customAdapter);
 
                             itineraryLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -219,11 +225,52 @@ public class ItineraryList extends AppCompatActivity {
                                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
                                     Intent toItineraryPage = new Intent(getApplicationContext(), ItineraryPage.class);
-                                    toItineraryPage.putExtra("from", "exisiting");
+                                    toItineraryPage.putExtra("from", "existing");
                                     toItineraryPage.putExtra("itinerary", customAdapter.getItem(i));
 
                                     startActivity(toItineraryPage);
 
+                                }
+                            });
+
+                            itineraryLV.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                                @Override
+                                public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                                    AlertDialog.Builder builder = new AlertDialog.Builder(ItineraryList.this);
+
+                                    // Set the message show for the Alert time
+                                    builder.setMessage("Do you want to delete the itinerary item?");
+
+                                    // Set Alert Title
+                                    builder.setTitle("Alert !");
+
+                                    // Set Cancelable false for when the user clicks on the outside the Dialog Box then it will remain show
+                                    builder.setCancelable(false);
+
+                                    // Set the positive button with yes name Lambda OnClickListener method is use of DialogInterface interface.
+                                    builder.setPositiveButton("Yes", (DialogInterface.OnClickListener) (dialog, which) -> {
+
+                                        deleteItinerary(customAdapter.getItem(i).itineraryId);
+
+                                        itineraryArrayList.clear();
+                                        customAdapter.notifyDataSetChanged();
+                                        getUserItinerary();
+
+                                    });
+
+                                    // Set the Negative button with No name Lambda OnClickListener method is use of DialogInterface interface.
+                                    builder.setNegativeButton("No", (DialogInterface.OnClickListener) (dialog, which) -> {
+                                        // If user click no then dialog box is canceled.
+                                        dialog.cancel();
+                                    });
+
+                                    // Create the Alert dialog
+                                    AlertDialog alertDialog = builder.create();
+                                    // Show the Alert Dialog box
+                                    alertDialog.show();
+
+                                    return true;
                                 }
                             });
 
@@ -427,14 +474,17 @@ public class ItineraryList extends AppCompatActivity {
 
                         ArrayList<ItineraryDayModel> itineraryDayArrayList = new ArrayList<>();
 
-                        ItineraryModel itineraryModel = new ItineraryModel("000002", itineraryTitleStr, itineraryLocationStr, itineraryFromStr, itineraryToStr, Integer.parseInt(dayCount), itineraryDayArrayList);
+                        ItineraryModel itineraryModel = new ItineraryModel("", itineraryTitleStr, itineraryLocationStr, itineraryFromStr, itineraryToStr, Integer.parseInt(dayCount), itineraryDayArrayList);
 
                         insertItinerary(itineraryModel);
 
-                        Intent toItineraryPage = new Intent(getApplicationContext(), ItineraryPage.class);
-                        toItineraryPage.putExtra("itinerary", itineraryModel);
-
-                        startActivity(toItineraryPage);
+//                        popupWindow.dismiss();
+//                        getUserItinerary();
+//
+//                        Intent toItineraryPage = new Intent(getApplicationContext(), ItineraryPage.class);
+//                        toItineraryPage.putExtra("itinerary", itineraryModel);
+//
+//                        startActivity(toItineraryPage);
 
                     } catch (Exception e) {
                         throw new RuntimeException(e);
@@ -468,12 +518,110 @@ public class ItineraryList extends AppCompatActivity {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
                         Log.d(TAG, "DocumentSnapshot (itinerary) added with ID: " + documentReference.getId());
+                        String itineraryDocId = documentReference.getId();
+
+                        //add the doc ref id into the itinerary_id
+                        DocumentReference itineraryRef = db.collection("itinerary").document(itineraryDocId);
+
+                        itineraryRef
+                                .update("itinerary_id", itineraryDocId)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.d(TAG, "DocumentSnapshot successfully updated!");
+
+                                        //dismiss the popup window and reset the listview
+                                        popupWindow.dismiss();
+                                        itineraryArrayList.clear();
+                                        customAdapter.notifyDataSetChanged();
+
+                                        //close the buttons
+                                        optionsSelected = false;
+                                        animateButton(createItineraryLL, 0, 500);
+                                        animateButton(generateItineraryLL, 0, 500);
+                                        createItineraryTV.setVisibility(View.GONE);
+                                        generateItineraryTV.setVisibility(View.GONE);
+
+                                        //get the user's itinerary
+                                        getUserItinerary();
+
+//                                        Intent toItineraryPage = new Intent(getApplicationContext(), ItineraryPage.class);
+//                                        toItineraryPage.putExtra("itinerary", itineraryModel);
+//
+//                                        startActivity(toItineraryPage);
+
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.w(TAG, "Error updating document", e);
+                                    }
+                                });
+
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.w(TAG, "Error adding document (itinerary)", e);
+                    }
+                });
+
+    }
+
+    public void deleteItinerary(String docID){
+
+        db.collection("itinerary").document(docID)
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "DocumentSnapshot successfully deleted!");
+
+                        db.collection("itinerary_item")
+                                .whereEqualTo("user_uid", uid)
+                                .whereEqualTo("itinerary_id", docID)
+                                .get()
+                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                        if (task.isSuccessful()) {
+
+                                            for (QueryDocumentSnapshot document : task.getResult()) {
+
+                                                String docId = document.getId();
+
+                                                db.collection("itinerary_item").document(docId)
+                                                        .delete()
+                                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                            @Override
+                                                            public void onSuccess(Void aVoid) {
+                                                                Log.d(TAG, "DocumentSnapshot successfully deleted!");
+
+                                                            }
+                                                        })
+                                                        .addOnFailureListener(new OnFailureListener() {
+                                                            @Override
+                                                            public void onFailure(@NonNull Exception e) {
+                                                                Log.w(TAG, "Error deleting document", e);
+                                                            }
+                                                        });
+
+                                            }
+
+                                        } else {
+                                            Log.d(TAG, "Error getting documents: ", task.getException());
+                                        }
+                                    }
+                                });
+
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error deleting document", e);
                     }
                 });
 

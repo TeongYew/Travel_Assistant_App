@@ -8,4 +8,28 @@ public class LocationModel {
         this.location = location;
         this.cityName = cityName;
     }
+
+    public String getIata() {
+        return iata;
+    }
+
+    public void setIata(String iata) {
+        this.iata = iata;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getCityName() {
+        return cityName;
+    }
+
+    public void setCityName(String cityName) {
+        this.cityName = cityName;
+    }
 }

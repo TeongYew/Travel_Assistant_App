@@ -23,6 +23,7 @@ import com.example.travel_assistant.R;
 import com.example.travel_assistant.adapter.HotelListAdapter;
 import com.example.travel_assistant.model.FlightItineraryListModel;
 import com.example.travel_assistant.model.HotelListModel;
+import com.example.travel_assistant.others.LoadingDialog;
 import com.google.gson.JsonArray;
 
 import java.util.ArrayList;
@@ -68,6 +69,7 @@ public class HotelList extends AppCompatActivity {
     PopupWindow popupWindow;
     View hotelPopupView;
     RelativeLayout hotelListRL;
+    LoadingDialog loadingDialog;
 
     private Executor executor = Executors.newSingleThreadExecutor();
     private Handler handler = new Handler(Looper.getMainLooper());
@@ -83,6 +85,8 @@ public class HotelList extends AppCompatActivity {
         hotelListLV = findViewById(R.id.hotelListLV);
         hotelListRL = findViewById(R.id.hotelListRL);
         layoutInflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+
+        loadingDialog = new LoadingDialog(this);
 
         Intent fromFlightPage = getIntent();
 
@@ -113,6 +117,8 @@ public class HotelList extends AppCompatActivity {
 
         Log.d(TAG, "onCreate: location: " + location);
 
+        //start loading animation and getHotel
+        loadingDialog.show();
         getHotel();
 
     }
@@ -148,12 +154,18 @@ public class HotelList extends AppCompatActivity {
                         @Override
                         public void run() {
 
+                            //stop loading animation
+                            loadingDialog.cancel();
+
                             HotelListAdapter customAdapter = new HotelListAdapter(getApplicationContext(), hotelArrayList);
                             hotelListLV.setAdapter(customAdapter);
 
                             hotelListLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                 @Override
                                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                                    //start loading animation
+                                    loadingDialog.show();
 
                                     executor.execute(new Runnable() {
                                         @Override
@@ -215,6 +227,9 @@ public class HotelList extends AppCompatActivity {
                                                 toHotelPage.putExtra("flightCode", flightCode);
                                                 toHotelPage.putExtra("flightItinerary", flightItinerary);
 
+                                                //stop loading animation
+                                                loadingDialog.cancel();
+
                                                 startActivity(toHotelPage);
 
 //                                                handler.post(new Runnable() {
@@ -243,6 +258,8 @@ public class HotelList extends AppCompatActivity {
                                                 handler.post(new Runnable() {
                                                     @Override
                                                     public void run() {
+                                                        //stop loading animation and display error toast
+                                                        loadingDialog.cancel();
                                                         Toast.makeText(HotelList.this, "Hotel currently does not have any offers, please select other hotels.", Toast.LENGTH_SHORT).show();
                                                     }
                                                 });
@@ -263,7 +280,9 @@ public class HotelList extends AppCompatActivity {
 
                 }
                 catch (Exception e){
-
+                    //stop loading animation
+                    loadingDialog.cancel();
+                    Log.d(TAG, "run: " + e);
                 }
 
 

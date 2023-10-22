@@ -1,0 +1,60 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px;
+    margin: 0;
+}
+
+#search-container {
+    display: flex;
+    margin-bottom: 10px;
+}
+
+#search-input {
+    flex: 1;
+    padding: 5px;
+}
+
+#search-btn {
+    padding: 5px 10px;
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
+}
+
+#users-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#users-table th, #users-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+#users-table th {
+    background-color: #f2f2f2;
+}
+
+#add-user-container {
+    margin-top: 20px;
+}
+
+#add-user-form label, #add-user-form input {
+    display: block;
+    margin-bottom: 10px;
+}
+
+#add-user-form button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    cursor: pointer;
+}

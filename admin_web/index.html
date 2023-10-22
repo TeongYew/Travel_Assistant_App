@@ -126,7 +126,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-analytics.js";
     import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js";
-    import { getFirestore, collection, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, addDoc, query, where, } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js";
     // TODO: Add SDKs for Firebase products that you want to use
     // https://firebase.google.com/docs/web/setup#available-libraries
   
@@ -149,15 +149,19 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
+    const secondaryApp = initializeApp(firebaseConfig, "Secondary");
+    const secondaryAuth = getAuth(secondaryApp);
+
     const loggedOutLinks = document.querySelectorAll('.logged-out');
     const loggedInLinks = document.querySelectorAll('.logged-in');
 
+    //get user data
     const userList = document.querySelector('.user');
     let html = '';
     const querySnapshot = await getDocs(collection(db, "user"));
     querySnapshot.forEach((doc) => {
-      console.log(`${doc.id} => ${doc.data()}`);
-      const user = doc.data();
+        console.log(`${doc.id} => ${doc.data()}`);
+        const user = doc.data();
         const li = `
           <li>
             <div class="collapsible-header grey lighten-4"> ${user.user_name} </div>
@@ -165,7 +169,7 @@
           </li>
         `;
         html += li;
-    });
+      });
     //userList.innerHTML = html
     //setupUser(querySnapshot.doc);
 
@@ -199,12 +203,39 @@
       const email = loginForm['login-email'].value;
       const password = loginForm['login-password'].value;
 
+      
+
       signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in 
-        const user = userCredential.user;
-        console.log(user);
-        // ...
+        const userUid = userCredential.user.uid;
+        console.log(userUid);
+
+        //check if user is an admin
+
+        const q = query(collection(db, "user"), where("is_admin", "==", true));
+
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+          // doc.data() is never undefined for query doc snapshots
+          console.log(doc.id, " => ", doc.data());
+          try{
+                if(user.is_admin){
+                  console.log("Admin signed in!")
+                }
+                else{
+                  console.log("Not admin!")
+                  auth.signOut().then(() => {
+                    console.log('user signed out');
+                  })
+                }
+              }
+              catch (e) {
+                console.error("Not an admin: ", e);
+              }
+
+        });
+
         // close the signup modal & reset form
         const modal = document.querySelector('#modal-login');
         M.Modal.getInstance(modal).close();
@@ -237,17 +268,15 @@
 
     //create new user
     const createUser = document.querySelector('#create-user');
-
     createUser.addEventListener('submit', (e) => {
       e.preventDefault();
-
       //create new user in auth
       const password = "test123"
-      createUserWithEmailAndPassword(auth, email, password)
+      createUserWithEmailAndPassword(secondaryAuth, createUser.email.value, password)
         .then((userCredential) => {
           // Signed up 
           const userUid = userCredential.user.uid;
-
+        
           //create new user in database
           try {
             const docRef = addDoc(collection(db, "user"), {
@@ -260,7 +289,6 @@
           } catch (e) {
             console.error("Error adding document: ", e);
           }
-        
       })
       .catch((error) => {
         const errorCode = error.code;
@@ -274,5 +302,6 @@
 
   <!-- Compiled and minified JavaScript -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <script src="scripts/index.js"></script>
 </body>
 </html>
