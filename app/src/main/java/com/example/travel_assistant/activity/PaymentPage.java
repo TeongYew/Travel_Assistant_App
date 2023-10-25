@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -63,6 +64,7 @@ public class PaymentPage extends AppCompatActivity {
     String flightClass = "";
     String airline = "";
     String flightCode = "";
+    String flightCurrency = "";
     String flightPrice = "";
 
     ArrayList<FlightItineraryListModel> flightItinerary = new ArrayList<>();
@@ -76,6 +78,7 @@ public class PaymentPage extends AppCompatActivity {
 //    String numBeds = "";
 //    String bedType = "";
     String hotelDescription = "";
+    String hotelCurrency = "";
     String hotelPrice = "";
 
     String paymentFor = "";
@@ -120,6 +123,7 @@ public class PaymentPage extends AppCompatActivity {
             roundOrOneWayTrip = fromBooking.getStringExtra("roundOrOneWayTrip");
             flightClass = fromBooking.getStringExtra("class");
             airline = fromBooking.getStringExtra("airline");
+            flightCurrency = fromBooking.getStringExtra("flightCurrency");
             flightPrice = fromBooking.getStringExtra("flightPrice");
             flightCode = fromBooking.getStringExtra("flightCode");
             flightItinerary = (ArrayList<FlightItineraryListModel>) fromBooking.getSerializableExtra("flightItinerary");
@@ -137,6 +141,7 @@ public class PaymentPage extends AppCompatActivity {
             //bedType = fromBooking.getStringExtra("bedType");
             hotelDescription = fromBooking.getStringExtra("hotelDescription");
             //description = "Marriott Senior Discount, includes\\n1 King, 285sqft/26sqm, Wireless internet, for\\na fee, Coffee/tea maker";
+            hotelCurrency = fromBooking.getStringExtra("hotelCurrency");
             hotelPrice = fromBooking.getStringExtra("hotelPrice");
             //flightPrice = fromBooking.getStringExtra("flightPrice");
 
@@ -154,6 +159,7 @@ public class PaymentPage extends AppCompatActivity {
             roundOrOneWayTrip = fromBooking.getStringExtra("roundOrOneWayTrip");
             flightClass = fromBooking.getStringExtra("class");
             airline = fromBooking.getStringExtra("airline");
+            flightCurrency = fromBooking.getStringExtra("flightCurrency");
             flightPrice = fromBooking.getStringExtra("flightPrice");
             flightCode = fromBooking.getStringExtra("flightCode");
             flightItinerary = (ArrayList<FlightItineraryListModel>) fromBooking.getSerializableExtra("flightItinerary");
@@ -223,6 +229,7 @@ public class PaymentPage extends AppCompatActivity {
         flight.put("class", flightClass);
         flight.put("airline", airline);
         flight.put("flight_code", flightCode);
+        flight.put("flight_currency", flightCurrency);
         flight.put("flight_price", flightPrice);
         flight.put("user_uid", uid);
 
@@ -313,6 +320,7 @@ public class PaymentPage extends AppCompatActivity {
             hotel.put("check_in", hotelCheckIn);
             hotel.put("check_out", hotelCheckOut);
             hotel.put("description", hotelDescription);
+            hotel.put("hotel_currency", hotelCurrency);
             hotel.put("hotel_price", hotelPrice);
             hotel.put("user_uid", uid);
 
@@ -363,7 +371,7 @@ public class PaymentPage extends AppCompatActivity {
     public void fetchStripeAPI(){
 
         RequestQueue queue = Volley.newRequestQueue(this);
-        String url ="http://192.168.0.5/stripeAPI/index.php";
+        String url ="http://192.168.0.3/stripeAPI/index.php";
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
                 new Response.Listener<String>() {
@@ -399,6 +407,13 @@ public class PaymentPage extends AppCompatActivity {
                 return paramV;
             }
         };
+
+        //10000 is the time in milliseconds adn is equal to 10 sec
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                10000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
         queue.add(stringRequest);
 
     }

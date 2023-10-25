@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -27,8 +28,8 @@ public class HotelPage extends AppCompatActivity {
     String numBeds = "";
     String bedType = "";
     String hotelDescription = "";
+    String hotelCurrency = "";
     String hotelPrice = "";
-    String flightPrice = "";
 
     //flight data
     String flightDepartureIATA = "";
@@ -44,7 +45,8 @@ public class HotelPage extends AppCompatActivity {
     String flightClass = "";
     String airline = "";
     String flightCode = "";
-    //String flightPrice = "";
+    String flightCurrency = "";
+    String flightPrice = "";
     ArrayList<FlightItineraryListModel> flightItinerary = new ArrayList<>();
 
     TextView hotelNameTV, priceTV, checkInTV, checkOutTV, numBedsTV, bedTypeTV, descriptionTV;
@@ -76,6 +78,7 @@ public class HotelPage extends AppCompatActivity {
         //bedType = fromHotelList.getStringExtra("bedType");
         hotelDescription = fromHotelList.getStringExtra("hotelDescription");
         //description = "Marriott Senior Discount, includes\\n1 King, 285sqft/26sqm, Wireless internet, for\\na fee, Coffee/tea maker";
+        hotelCurrency = fromHotelList.getStringExtra("hotelCurrency");
         hotelPrice = fromHotelList.getStringExtra("hotelPrice");
         //flightPrice = fromHotelList.getStringExtra("flightPrice");
 
@@ -91,6 +94,7 @@ public class HotelPage extends AppCompatActivity {
         roundOrOneWayTrip = fromHotelList.getStringExtra("roundOrOneWayTrip");
         flightClass = fromHotelList.getStringExtra("class");
         airline = fromHotelList.getStringExtra("airline");
+        flightCurrency = fromHotelList.getStringExtra("flightCurrency");
         flightPrice = fromHotelList.getStringExtra("flightPrice");
         flightCode = fromHotelList.getStringExtra("flightCode");
         flightItinerary = (ArrayList<FlightItineraryListModel>) fromHotelList.getSerializableExtra("flightItinerary");
@@ -101,12 +105,13 @@ public class HotelPage extends AppCompatActivity {
         //Log.d(TAG, "onCreate: hotel name and id: " + hotelName + ", " + hotelId);
 
         hotelNameTV.setText(hotelName);
-        priceTV.setText(hotelPrice);
+        priceTV.setText(hotelCurrency + hotelPrice);
         checkInTV.setText(hotelCheckIn);
         checkOutTV.setText(hotelCheckOut);
         //bedTypeTV.setText(bedType + " Bed");
         //numBedsTV.setText(numBeds + " Bed(s)");
         descriptionTV.setText(hotelDescription);
+        descriptionTV.setMovementMethod(new ScrollingMovementMethod());
 
         toPaymentBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -122,6 +127,7 @@ public class HotelPage extends AppCompatActivity {
                 toPaymentPage.putExtra("hotelCheckIn", hotelCheckIn);
                 toPaymentPage.putExtra("hotelCheckOut", hotelCheckOut);
                 toPaymentPage.putExtra("hotelDescription", hotelDescription);
+                toPaymentPage.putExtra("hotelCurrency", hotelCurrency);
                 toPaymentPage.putExtra("hotelPrice", hotelPrice);
 
                 //flight data
@@ -136,6 +142,7 @@ public class HotelPage extends AppCompatActivity {
                 toPaymentPage.putExtra("roundOrOneWayTrip", roundOrOneWayTrip);
                 toPaymentPage.putExtra("class", flightClass);
                 toPaymentPage.putExtra("airline", airline);
+                toPaymentPage.putExtra("flightCurrency", flightCurrency);
                 toPaymentPage.putExtra("flightPrice", flightPrice);
                 toPaymentPage.putExtra("flightCode", flightCode);
                 toPaymentPage.putExtra("flightItinerary", flightItinerary);

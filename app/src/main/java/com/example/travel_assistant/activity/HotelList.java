@@ -1,5 +1,6 @@
 package com.example.travel_assistant.activity;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -7,10 +8,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -25,10 +30,22 @@ import com.example.travel_assistant.model.FlightItineraryListModel;
 import com.example.travel_assistant.model.HotelListModel;
 import com.example.travel_assistant.others.LoadingDialog;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonParser;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class HotelList extends AppCompatActivity {
 
@@ -59,6 +76,7 @@ public class HotelList extends AppCompatActivity {
     String flightClass = "";
     String airline = "";
     String flightCode = "";
+    String flightCurrency = "";
     String flightPrice = "";
     ArrayList<FlightItineraryListModel> flightItinerary = new ArrayList<>();
 
@@ -67,8 +85,9 @@ public class HotelList extends AppCompatActivity {
     int height = ViewGroup.LayoutParams.MATCH_PARENT;
     boolean focusable = true;
     PopupWindow popupWindow;
-    View hotelPopupView;
+    View setCityPopupView;
     RelativeLayout hotelListRL;
+    String city = "";
     LoadingDialog loadingDialog;
 
     private Executor executor = Executors.newSingleThreadExecutor();
@@ -76,6 +95,7 @@ public class HotelList extends AppCompatActivity {
     Amadeus amadeus = Amadeus
             .builder("htHGvYM2OB3wmAqVykNHAbGPuTlSBV1m","0hiGWqr3KQSGXION")
             .build();
+    OkHttpClient client = new OkHttpClient();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,6 +130,7 @@ public class HotelList extends AppCompatActivity {
         roundOrOneWayTrip = fromFlightPage.getStringExtra("roundOrOneWayTrip");
         flightClass = fromFlightPage.getStringExtra("class");
         airline = fromFlightPage.getStringExtra("airline");
+        flightCurrency = fromFlightPage.getStringExtra("flightCurrency");
         flightPrice = fromFlightPage.getStringExtra("flightPrice");
         flightCode = fromFlightPage.getStringExtra("flightCode");
         flightItinerary = (ArrayList<FlightItineraryListModel>) fromFlightPage.getSerializableExtra("flightItinerary");
@@ -117,9 +138,278 @@ public class HotelList extends AppCompatActivity {
 
         Log.d(TAG, "onCreate: location: " + location);
 
-        //start loading animation and getHotel
-        loadingDialog.show();
-        getHotel();
+//        //start loading animation and getHotel
+//        loadingDialog.show();
+//        //getHotel();
+//        getHotel2();
+        setCityPopup();
+
+    }
+
+    public void getHotel2(){
+
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+
+                try{
+
+                    Request request = new Request.Builder()
+                            .url("https://apidojo-booking-v1.p.rapidapi.com/locations/auto-complete?text=" + city + "&languagecode=en-us")
+                            .get()
+                            .addHeader("X-RapidAPI-Key", "b34ecf7a0fmsh5cbb7c353f899abp1c8c15jsn43d3583a9734")
+                            .addHeader("X-RapidAPI-Host", "apidojo-booking-v1.p.rapidapi.com")
+                            .build();
+
+                    Response response = client.newCall(request).execute();
+
+
+                    client.newCall(request).enqueue(new Callback() {
+                        @Override
+                        public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                            Log.d(TAG, "onFailure: Failed to load response due to: " + e.getMessage());
+                        }
+
+                        @Override
+                        public void onResponse(@NonNull Call call, @NonNull okhttp3.Response response) throws IOException {
+
+                            if(response.isSuccessful()){
+
+
+                                String responseStr = response.body().string();
+
+                                Log.d(TAG, "run: response: " + response);
+                                Log.d(TAG, "onResponse: response body: " + responseStr);
+
+                                try {
+                                    JSONArray jsonArray = new JSONArray(responseStr);
+
+
+                                    //get first dest_id
+                                    JSONObject locationJS = jsonArray.getJSONObject(0);
+                                    String destID = locationJS.get("dest_id").toString();
+
+                                    Request request1 = new Request.Builder()
+                                            .url("https://apidojo-booking-v1.p.rapidapi.com/properties/list?offset=0&arrival_date=" + fromDate +"&departure_date=" + toDate + "&guest_qty=" + adultCount +"&dest_ids=" + destID +"&room_qty=1&search_type=city&children_qty=" + kidCount + "&search_id=111&price_filter_currencycode=USD&order_by=popularity&languagecode=en-us&travel_purpose=leisure")
+                                            .get()
+                                            .addHeader("X-RapidAPI-Key", "b34ecf7a0fmsh5cbb7c353f899abp1c8c15jsn43d3583a9734")
+                                            .addHeader("X-RapidAPI-Host", "apidojo-booking-v1.p.rapidapi.com")
+                                            .build();
+
+                                    Response response1 = client.newCall(request1).execute();
+
+                                    client.newCall(request1).enqueue(new Callback() {
+                                        @Override
+                                        public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                                            Log.d(TAG, "onFailure: Failed to load response due to: " + e.getMessage());
+                                        }
+
+                                        @Override
+                                        public void onResponse(@NonNull Call call, @NonNull okhttp3.Response response) throws IOException {
+
+                                            if(response.isSuccessful()){
+
+                                                String responseStr = response.body().string();
+
+                                                Log.d(TAG, "run: response2: " + response);
+                                                Log.d(TAG, "onResponse: response body2: " + responseStr);
+
+                                                try{
+
+                                                    JSONObject jsonObject = new JSONObject(responseStr);
+                                                    JSONArray jsonArray = new JSONArray(jsonObject.get("result").toString());
+//
+                                                    for (int i=0; i<jsonArray.length(); i++){
+
+                                                        JSONObject curJSON = jsonArray.getJSONObject(i);
+
+                                                        //String hotelName = "";
+                                                        String hotelName = curJSON.get("hotel_name").toString();
+                                                        String hotelId = curJSON.get("hotel_id").toString();
+                                                        JSONObject priceBreakdown = new JSONObject(curJSON.get("price_breakdown").toString());
+                                                        String hotelCurrency = priceBreakdown.getString("currency").toString();
+                                                        String hotelPrice = priceBreakdown.getString("gross_price").toString();
+                                                        String address = curJSON.get("address_trans").toString();
+                                                        String accomType = curJSON.get("accommodation_type_name").toString();
+
+//
+                                                        hotelListModel = new HotelListModel(hotelName, hotelId, hotelCurrency, hotelPrice);
+
+                                                        hotelArrayList.add(hotelListModel);
+
+
+                                                        Log.d(TAG, "onResponse: hotel name: " + hotelName);
+                                                        Log.d(TAG, "onResponse: hotel id: " + hotelId);
+                                                        Log.d(TAG, "onResponse: hotel currency: " + hotelCurrency);
+                                                        Log.d(TAG, "onResponse: hotel price: " + hotelPrice);
+
+                                                    }
+
+                                                    handler.post(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+
+                                                            //stop loading animation
+                                                            loadingDialog.cancel();
+
+                                                            HotelListAdapter customAdapter = new HotelListAdapter(getApplicationContext(), hotelArrayList);
+                                                            hotelListLV.setAdapter(customAdapter);
+
+                                                            hotelListLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                                                @Override
+                                                                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                                                                    //start loading animation
+                                                                    loadingDialog.show();
+
+                                                                    Request request2 = new Request.Builder()
+                                                                            .url("https://apidojo-booking-v1.p.rapidapi.com/properties/get-description?hotel_ids=" + hotelArrayList.get(i).hotelId + "&check_out=" + toDate + "&languagecode=en-us&check_in=" + fromDate)
+                                                                            .get()
+                                                                            .addHeader("X-RapidAPI-Key", "b34ecf7a0fmsh5cbb7c353f899abp1c8c15jsn43d3583a9734")
+                                                                            .addHeader("X-RapidAPI-Host", "apidojo-booking-v1.p.rapidapi.com")
+                                                                            .build();
+
+                                                                    client.newCall(request2).enqueue(new Callback() {
+                                                                        @Override
+                                                                        public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                                                                            Toast.makeText(HotelList.this, "Can't get description of hotel", Toast.LENGTH_SHORT).show();
+                                                                        }
+
+                                                                        @Override
+                                                                        public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+
+                                                                            String responseStr = response.body().string();
+
+                                                                            Log.d(TAG, "onResponse: hotel desc response: " + responseStr);
+
+                                                                            String hotelDescription = "";
+                                                                            try{
+
+                                                                                JSONArray jsonArray = new JSONArray(responseStr);
+                                                                                JSONObject jsonObject = jsonArray.getJSONObject(1);
+
+                                                                                hotelDescription = jsonObject.getString("description");
+
+                                                                            }
+                                                                            catch(Exception e){
+                                                                                Log.d(TAG, "onResponse: can't parse json from string3: " + e);
+                                                                            }
+
+                                                                            Log.d(TAG, "onResponse: hotel desc: " + hotelDescription);
+
+                                                                            //intent to go to hotel page
+                                                                            Intent toHotelPage = new Intent(getApplicationContext(), HotelPage.class);
+
+                                                                            //hotel data
+                                                                            toHotelPage.putExtra("hotelName", hotelArrayList.get(i).hotelName);
+                                                                            toHotelPage.putExtra("hotelId", hotelArrayList.get(i).hotelId);
+                                                                            toHotelPage.putExtra("hotelOfferId", "");
+                                                                            toHotelPage.putExtra("hotelCheckIn", fromDate);
+                                                                            toHotelPage.putExtra("hotelCheckOut", toDate);
+//                                                toHotelPage.putExtra("numBeds", numBeds);
+//                                                toHotelPage.putExtra("bedType", bedType);
+                                                                            toHotelPage.putExtra("hotelDescription", hotelDescription);
+                                                                            toHotelPage.putExtra("hotelCurrency", hotelArrayList.get(i).hotelCurrency);
+                                                                            toHotelPage.putExtra("hotelPrice", hotelArrayList.get(i).hotelPrice);
+                                                                            //toHotelPage.putExtra("flightPrice", flightPrice);
+
+                                                                            //flight data
+                                                                            toHotelPage.putExtra("flightLocation", flightDepartureIATA);
+                                                                            toHotelPage.putExtra("flightDestination", flightArrivalIATA);
+                                                                            toHotelPage.putExtra("flightLocationName", flightDepartureLocation);
+                                                                            toHotelPage.putExtra("flightDestinationName", flightArrivalLocation);
+                                                                            toHotelPage.putExtra("flightFromDate", flightDepartureDateTime);
+                                                                            toHotelPage.putExtra("flightToDate", flightArrivalDateTime);
+                                                                            toHotelPage.putExtra("adultCount", adultCount);
+                                                                            toHotelPage.putExtra("kidCount", kidCount);
+                                                                            toHotelPage.putExtra("roundOrOneWayTrip", roundOrOneWayTrip);
+                                                                            toHotelPage.putExtra("class", flightClass);
+                                                                            toHotelPage.putExtra("airline", airline);
+                                                                            toHotelPage.putExtra("flightCurrency", flightCurrency);
+                                                                            toHotelPage.putExtra("flightPrice", flightPrice);
+                                                                            toHotelPage.putExtra("flightCode", flightCode);
+                                                                            toHotelPage.putExtra("flightItinerary", flightItinerary);
+
+                                                                            //stop loading animation
+                                                                            loadingDialog.cancel();
+
+                                                                            startActivity(toHotelPage);
+
+                                                                        }
+                                                                    });
+
+                                                                }
+                                                            });
+
+                                                        }
+                                                    });
+
+
+                                                }
+                                                catch (Exception e){
+                                                    Log.d(TAG, "onResponse: parse 2nd response from str error: " + e);
+                                                }
+
+                                            }else{
+                                                Log.d(TAG, "onResponseFailure: Failed to load response due to: " + response.body().string());
+                                            }
+
+                                        }
+                                    });
+
+                                } catch (JSONException e) {
+                                    //throw new RuntimeException(e);
+                                    Log.d(TAG, "onResponse: parse response to json error: " + e);
+                                }
+
+
+                            }else{
+                                Log.d(TAG, "onResponseFailure: Failed to load response due to: " + response.body().string());
+                            }
+
+                        }
+                    });
+
+                }
+                catch (Exception e){
+                    Log.d(TAG, "run: rapidapi error: " + e);
+                }
+
+            }
+        });
+
+    }
+
+    private void setCityPopup(){
+
+        setCityPopupView = layoutInflater.inflate(R.layout.set_city_popup, null);
+
+        popupWindow = new PopupWindow(setCityPopupView,width,height,focusable);
+
+        hotelListRL.post(new Runnable() {
+            @Override
+            public void run() {
+                popupWindow.showAtLocation(hotelListRL, Gravity.CENTER,0,0);
+
+            }
+        });
+
+        RelativeLayout setCityPopupRL = setCityPopupView.findViewById(R.id.setCityRL);
+        EditText cityET = setCityPopupView.findViewById(R.id.cityET);
+        Button setCityBtn = setCityPopupView.findViewById(R.id.setCityBtn);
+
+        setCityBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                city = cityET.getText().toString();
+
+                popupWindow.dismiss();
+
+                loadingDialog.show();
+                getHotel2();
+            }
+        });
 
     }
 
@@ -144,7 +434,7 @@ public class HotelList extends AppCompatActivity {
 
                         Log.d(TAG, "run: name and id: " + hotelName + ", " + hotelId);
 
-                        hotelListModel = new HotelListModel(hotelName, hotelId);
+                        hotelListModel = new HotelListModel(hotelName, hotelId, "", "");
 
                         hotelArrayList.add(hotelListModel);
 

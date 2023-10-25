@@ -43,7 +43,7 @@ public class PreLoginFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-                //startActivity(new Intent(getActivity(), LoginFragment.class));
+//                startActivity(new Intent(getActivity(), HotelList.class));
                 fragmentManager.beginTransaction()
                         .replace(R.id.fragmentContainer, LoginFragment.class, null)
                         .setReorderingAllowed(true)

@@ -318,7 +318,8 @@ public class FlightList extends AppCompatActivity {
                                             toFlightPage.putExtra("roundOrOneWayTrip", roundOrOneWayTrip);
                                             toFlightPage.putExtra("class", flightArrayList.get(i).cabin);
                                             toFlightPage.putExtra("airline", flightArrayList.get(i).airline);
-                                            toFlightPage.putExtra("price", flightArrayList.get(i).priceCurrency + " " + flightArrayList.get(i).priceTotal);
+                                            toFlightPage.putExtra("flightCurrency", flightArrayList.get(i).priceCurrency);
+                                            toFlightPage.putExtra("flightPrice", flightArrayList.get(i).priceTotal);
                                             toFlightPage.putExtra("flight", itineraryArrayList.get(0).aircraftCode + itineraryArrayList.get(0).number);
                                             //toFlightPage.putExtra("flightData", flightArrayList.get(i));
                                             toFlightPage.putExtra("flightItinerary", itineraryArrayList);

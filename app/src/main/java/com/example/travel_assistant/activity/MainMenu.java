@@ -35,6 +35,12 @@ import com.amadeus.Params;
 import com.amadeus.referencedata.Locations;
 import com.amadeus.resources.FlightOfferSearch;
 import com.amadeus.resources.Location;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.travel_assistant.R;
 import com.example.travel_assistant.adapter.LocationSearchAdapter;
 import com.example.travel_assistant.fragments.PreLoginFragment;
@@ -47,9 +53,16 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.amadeus.Amadeus;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.stripe.android.PaymentConfiguration;
+import com.stripe.android.paymentsheet.PaymentSheet;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -88,6 +101,7 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
     Amadeus amadeus = Amadeus
             .builder("htHGvYM2OB3wmAqVykNHAbGPuTlSBV1m","0hiGWqr3KQSGXION")
             .build();
+    String aviationAK = "2dc38c7582b03a9963f2fe39eeac574a";
 
     LoadingDialog loadingDialog;
 
@@ -338,7 +352,8 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
             dLayout.closeDrawer(GravityCompat.START);
         }
         else {
-            super.onBackPressed();
+            //super.onBackPressed();
+            signOut();
         }
     }
 
@@ -374,6 +389,7 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
                     public void onClick(View view) {
                         loadingDialog.show();
                         getLocation(flightFromET.getText().toString(), popup);
+                        getLocation2(flightFromET.getText().toString(), popup);
 
                     }
                 });
@@ -411,6 +427,7 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
                     public void onClick(View view) {
                         loadingDialog.show();
                         getLocation(flightToET.getText().toString(), popup);
+                        getLocation2(flightToET.getText().toString(), popup);
 
                     }
                 });
@@ -643,6 +660,38 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
 
             }
         });
+    }
+
+    public void getLocation2(String location, String popup){
+
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String url ="http://api.aviationstack.com/v1/cities";
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        Toast.makeText(MainMenu.this, "got a response!", Toast.LENGTH_SHORT).show();
+
+                        Log.d(TAG, "onResponse: aviation: " + response);
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        }){
+            protected Map<String, String> getParams(){
+                Map<String, String> paramV = new HashMap<>();
+                paramV.put("access_key", aviationAK);
+                paramV.put("search", location);
+                return paramV;
+            }
+        };
+        queue.add(stringRequest);
+
     }
 
     public void getLocation(String location, String popup){

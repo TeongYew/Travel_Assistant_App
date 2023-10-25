@@ -44,7 +44,8 @@ public class FlightPage extends AppCompatActivity {
     String flight = "";
     String depTerminal = "";
     String arrTerminal = "";
-    String price = "";
+    String flightCurrency = "";
+    String flightPrice = "";
     final String TAG = String.valueOf(FlightPage.this);
 
 
@@ -96,7 +97,8 @@ public class FlightPage extends AppCompatActivity {
         roundOrOneWayTrip = intent.getStringExtra("roundOrOneWayTrip");
         flightClass = intent.getStringExtra("class");
         airline = intent.getStringExtra("airline");
-        price = intent.getStringExtra("price");
+        flightCurrency = intent.getStringExtra("flightCurrency");
+        flightPrice = intent.getStringExtra("flightPrice");
         flight = intent.getStringExtra("flight");
         flightItinerary = (ArrayList<FlightItineraryListModel>) intent.getSerializableExtra("flightItinerary");
 
@@ -108,7 +110,7 @@ public class FlightPage extends AppCompatActivity {
         flightAirlineTV.setText(airline + " Airlines");
         flightCodeTV.setText(flight);
         flightTerminalTV.setText(depTerminal);
-        flightPriceTV.setText(price);
+        flightPriceTV.setText(flightCurrency + " " + flightPrice);
 
         //getLocation(flightLocation, flightDestination);
         getAirport(flightLocation,flightDestination);
@@ -133,7 +135,8 @@ public class FlightPage extends AppCompatActivity {
                 toPayment.putExtra("roundOrOneWayTrip", roundOrOneWayTrip);
                 toPayment.putExtra("class", flightClass);
                 toPayment.putExtra("airline", airline);
-                toPayment.putExtra("flightPrice", price);
+                toPayment.putExtra("flightCurrency", flightCurrency);
+                toPayment.putExtra("flightPrice", flightPrice);
                 toPayment.putExtra("flightCode", flight);
                 toPayment.putExtra("flightItinerary", flightItinerary);
 
@@ -167,7 +170,8 @@ public class FlightPage extends AppCompatActivity {
                 toHotelList.putExtra("roundOrOneWayTrip", roundOrOneWayTrip);
                 toHotelList.putExtra("class", flightClass);
                 toHotelList.putExtra("airline", airline);
-                toHotelList.putExtra("flightPrice", price);
+                toHotelList.putExtra("flightCurrency", flightCurrency);
+                toHotelList.putExtra("flightPrice", flightPrice);
                 toHotelList.putExtra("flightCode", flight);
                 toHotelList.putExtra("flightItinerary", flightItinerary);
 
