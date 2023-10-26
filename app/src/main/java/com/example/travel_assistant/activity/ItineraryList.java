@@ -75,8 +75,12 @@ import okhttp3.RequestBody;
 public class ItineraryList extends AppCompatActivity {
 
     final String TAG = ItineraryList.this.toString();
+
+    //for async methods
     private Executor executor = Executors.newSingleThreadExecutor();
     private Handler handler = new Handler(Looper.getMainLooper());
+
+    //layouts
     android.widget.ListView itineraryLV;
     FloatingActionButton optionsFAB, createItineraryFAB, generateItineraryFAB;
     LinearLayout createItineraryLL, generateItineraryLL;
@@ -87,6 +91,7 @@ public class ItineraryList extends AppCompatActivity {
     ArrayList<ItineraryModel> itineraryArrayList = new ArrayList<>();
     TravelItineraryListAdapter customAdapter;
 
+    //variables for popup window
     LayoutInflater layoutInflater;
     int width = ViewGroup.LayoutParams.MATCH_PARENT;
     int height = ViewGroup.LayoutParams.MATCH_PARENT;
@@ -97,8 +102,11 @@ public class ItineraryList extends AppCompatActivity {
 
     public static final MediaType JSON
             = MediaType.get("application/json; charset=utf-8");
+
+    //intialise okhttpclient
     OkHttpClient client = new OkHttpClient();
 
+    //initialise firebase auth and firestore
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     FirebaseAuth auth = FirebaseAuth.getInstance();
 
@@ -107,6 +115,7 @@ public class ItineraryList extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_itinerary_list);
 
+        //initialise the layouts
         itineraryLV = findViewById(R.id.itineraryLV);
         optionsFAB = findViewById(R.id.optionsFAB);
         createItineraryFAB = findViewById(R.id.createItineraryFAB);
@@ -132,11 +141,16 @@ public class ItineraryList extends AppCompatActivity {
 
         //Log.d(TAG, "onCreate: chatgpt: " + gptResponse);
         callAPI("How are you?");
+
+        //get the user's travel itinerary from firestore and populate the listview
         getUserItinerary();
 
         optionsFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                //if the button is clicked, animate and display the create and generate itinerary button
+                //if button is clicked again, set the create and generate button to gone
 
                 if(optionsSelected == false){
 
@@ -191,6 +205,7 @@ public class ItineraryList extends AppCompatActivity {
 
     private void getUserItinerary(){
 
+        //get the user's travel itinerary using the user_uid
         db.collection("itinerary")
                 .whereEqualTo("user_uid", uid)
                 .get()
@@ -202,6 +217,7 @@ public class ItineraryList extends AppCompatActivity {
                                 Log.d(TAG, document.getId() + " => " + document.getData());
                                 Log.d(TAG, document.getId() + " => " + document.getData().get("itinerary_day_count"));
 
+                                //set the string variables to hold the data recevied from firestore
                                 String itineraryId = document.getData().get("itinerary_id").toString();
                                 String itineraryTitle = document.getData().get("itinerary_title").toString();
                                 String itineraryLocation = document.getData().get("itinerary_location").toString();
@@ -209,6 +225,7 @@ public class ItineraryList extends AppCompatActivity {
                                 String itineraryTo = document.getData().get("itinerary_to").toString();
                                 String itineraryDayCount = document.getData().get("itinerary_day_count").toString();
 
+                                //create an itinerary model to be added into the itinerary array list
                                 ArrayList<ItineraryDayModel> itineraryDayArrayList = new ArrayList<>();
 
                                 ItineraryModel itineraryModel = new ItineraryModel(itineraryId, itineraryTitle, itineraryLocation, itineraryFrom, itineraryTo, Integer.parseInt(itineraryDayCount), itineraryDayArrayList);
@@ -217,6 +234,7 @@ public class ItineraryList extends AppCompatActivity {
 
                             }
 
+                            //populate the itinerary listview using the data from the itinerary array list
                             customAdapter = new TravelItineraryListAdapter(getApplicationContext(), itineraryArrayList);
                             itineraryLV.setAdapter(customAdapter);
 
@@ -224,6 +242,8 @@ public class ItineraryList extends AppCompatActivity {
                                 @Override
                                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
+                                    //create the intent to send the user to the ItineraryPage activity
+                                    //send the selected itinerary data to the ItineraryPage activity
                                     Intent toItineraryPage = new Intent(getApplicationContext(), ItineraryPage.class);
                                     toItineraryPage.putExtra("from", "existing");
                                     toItineraryPage.putExtra("itinerary", customAdapter.getItem(i));
@@ -237,37 +257,40 @@ public class ItineraryList extends AppCompatActivity {
                                 @Override
                                 public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
 
+                                    //on long click, create and display an alert dialog to confirm the deletion of the itinerary
+
                                     AlertDialog.Builder builder = new AlertDialog.Builder(ItineraryList.this);
 
-                                    // Set the message show for the Alert time
+                                    //set the message for the alert dialog
                                     builder.setMessage("Do you want to delete the itinerary item?");
 
-                                    // Set Alert Title
+                                    //set alert title
                                     builder.setTitle("Alert !");
 
-                                    // Set Cancelable false for when the user clicks on the outside the Dialog Box then it will remain show
+                                    //set cancelable false for when the user clicks on the outside the dialog box then it will remain show
                                     builder.setCancelable(false);
 
-                                    // Set the positive button with yes name Lambda OnClickListener method is use of DialogInterface interface.
+                                    //set the positive button with yes
                                     builder.setPositiveButton("Yes", (DialogInterface.OnClickListener) (dialog, which) -> {
 
+                                        //if user clicks yes, delete the selected itinerary
                                         deleteItinerary(customAdapter.getItem(i).itineraryId);
 
+                                        //clear the current itinerary listview and get the user's travel itinerary again
                                         itineraryArrayList.clear();
                                         customAdapter.notifyDataSetChanged();
                                         getUserItinerary();
 
                                     });
 
-                                    // Set the Negative button with No name Lambda OnClickListener method is use of DialogInterface interface.
+                                    //set the negative button with no
                                     builder.setNegativeButton("No", (DialogInterface.OnClickListener) (dialog, which) -> {
                                         // If user click no then dialog box is canceled.
                                         dialog.cancel();
                                     });
 
-                                    // Create the Alert dialog
+                                    //create and show the alert dialog
                                     AlertDialog alertDialog = builder.create();
-                                    // Show the Alert Dialog box
                                     alertDialog.show();
 
                                     return true;
@@ -283,6 +306,7 @@ public class ItineraryList extends AppCompatActivity {
     }
 
     private void animateButton(View view, int translationY, long duration) {
+        //create an animation where the button will move on the y axis (vertically)
         ObjectAnimator animator = ObjectAnimator.ofFloat(view, "translationY", translationY);
         animator.setDuration(duration);
         animator.start();
@@ -290,10 +314,12 @@ public class ItineraryList extends AppCompatActivity {
 
     public void setPopupWindow(){
 
+        //initialise the itineraryPopupView
         itineraryPopupView = layoutInflater.inflate(R.layout.create_itinerary_popup, null);
 
         popupWindow = new PopupWindow(itineraryPopupView,width,height,focusable);
 
+        //display the popup window
         itineraryListRL.post(new Runnable() {
             @Override
             public void run() {
@@ -302,6 +328,7 @@ public class ItineraryList extends AppCompatActivity {
             }
         });
 
+        //initialise the layouts from itineraryPopupView
         RelativeLayout createItineraryPopupRL = itineraryPopupView.findViewById(R.id.createItineraryPopupRL);
         EditText itineraryTitleET = itineraryPopupView.findViewById(R.id.itineraryTitleET);
         EditText itineraryLocationET = itineraryPopupView.findViewById(R.id.itineraryLocationET);
@@ -309,6 +336,7 @@ public class ItineraryList extends AppCompatActivity {
         EditText itineraryToET = itineraryPopupView.findViewById(R.id.itineraryToET);
         Button createItineraryBtn = itineraryPopupView.findViewById(R.id.createItineraryBtn);
 
+        //if user clicks outside the popup window, close the popup window
         createItineraryPopupRL.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -317,6 +345,7 @@ public class ItineraryList extends AppCompatActivity {
             }
         });
 
+        //ensure that the itineraryFromET will only take in date inputs in the format of DD/MM/YYYY
         itineraryFromET.addTextChangedListener(new TextWatcher() {
             private String current = "";
             private String ddmmyyyy = "DDMMYYYY";
@@ -378,7 +407,7 @@ public class ItineraryList extends AppCompatActivity {
             public void afterTextChanged(Editable s) {}
         });
 
-
+        //ensure that the itineraryToET will only take in date inputs in the format of DD/MM/YYYY
         itineraryToET.addTextChangedListener(new TextWatcher() {
             private String current = "";
             private String ddmmyyyy = "DDMMYYYY";
@@ -445,11 +474,14 @@ public class ItineraryList extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
+                //take in the input and create the variables to hold the inputs
                 String itineraryTitleStr = itineraryTitleET.getText().toString();
                 String itineraryLocationStr = itineraryLocationET.getText().toString();
                 String itineraryFromStr = itineraryFromET.getText().toString();
                 String itineraryToStr = itineraryToET.getText().toString();
 
+                //check if the required fields are filled
+                //if not, display a toast message to notify the user
                 if(TextUtils.isEmpty(itineraryTitleStr) || TextUtils.isEmpty(itineraryLocationStr) || TextUtils.isEmpty(itineraryFromStr) || TextUtils.isEmpty(itineraryToStr)){
                     Toast.makeText(ItineraryList.this, "Please make sure the all necessary fields are filled", Toast.LENGTH_SHORT).show();
                 }
@@ -459,6 +491,7 @@ public class ItineraryList extends AppCompatActivity {
 
                     try {
 
+                        //format the input date and get the day count
                         Date itineraryFromDate = new SimpleDateFormat("dd/MM/yyyy").parse(itineraryFromStr);
                         Date itineraryToDate = new SimpleDateFormat("dd/MM/yyyy").parse(itineraryToStr);
 
@@ -472,6 +505,7 @@ public class ItineraryList extends AppCompatActivity {
 
                         Log.d(TAG, "onClick: day count: " + dayCount);
 
+                        //create a new itinerary day model to be inserted into firestore
                         ArrayList<ItineraryDayModel> itineraryDayArrayList = new ArrayList<>();
 
                         ItineraryModel itineraryModel = new ItineraryModel("", itineraryTitleStr, itineraryLocationStr, itineraryFromStr, itineraryToStr, Integer.parseInt(dayCount), itineraryDayArrayList);
@@ -511,7 +545,7 @@ public class ItineraryList extends AppCompatActivity {
         itinerary.put("user_uid", uid);
 
 
-        // Add a new document with a generated ID
+        // Add a new itinerary document with a generated ID
         db.collection("itinerary")
                 .add(itinerary)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
@@ -523,6 +557,7 @@ public class ItineraryList extends AppCompatActivity {
                         //add the doc ref id into the itinerary_id
                         DocumentReference itineraryRef = db.collection("itinerary").document(itineraryDocId);
 
+                        //update the itinerary_id with the firebase generated id
                         itineraryRef
                                 .update("itinerary_id", itineraryDocId)
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -572,6 +607,7 @@ public class ItineraryList extends AppCompatActivity {
 
     public void deleteItinerary(String docID){
 
+        //delete the user's itinerary
         db.collection("itinerary").document(docID)
                 .delete()
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -579,6 +615,7 @@ public class ItineraryList extends AppCompatActivity {
                     public void onSuccess(Void aVoid) {
                         Log.d(TAG, "DocumentSnapshot successfully deleted!");
 
+                        //once the itinerary is deleted, get all the itinerary item of the deleted itinerary
                         db.collection("itinerary_item")
                                 .whereEqualTo("user_uid", uid)
                                 .whereEqualTo("itinerary_id", docID)
@@ -588,6 +625,7 @@ public class ItineraryList extends AppCompatActivity {
                                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                         if (task.isSuccessful()) {
 
+                                            //delete all the itinerary item related to the deleted itinerary
                                             for (QueryDocumentSnapshot document : task.getResult()) {
 
                                                 String docId = document.getId();

@@ -50,7 +50,7 @@ import okhttp3.Response;
 public class HotelList extends AppCompatActivity {
 
     final String TAG = String.valueOf(HotelList.this);
-    android.widget.ListView hotelListLV;
+
 
     //data for hotel search
     String location = "";
@@ -59,6 +59,9 @@ public class HotelList extends AppCompatActivity {
     //String adultCount = "";
     //String kidCount = "";
     //String flightPrice = "";
+
+    //layout and variable for listview
+    android.widget.ListView hotelListLV;
     HotelListModel hotelListModel;
     ArrayList<HotelListModel> hotelArrayList = new ArrayList<>();
 
@@ -80,6 +83,7 @@ public class HotelList extends AppCompatActivity {
     String flightPrice = "";
     ArrayList<FlightItineraryListModel> flightItinerary = new ArrayList<>();
 
+    //layout variables for popup window
     LayoutInflater layoutInflater;
     int width = ViewGroup.LayoutParams.MATCH_PARENT;
     int height = ViewGroup.LayoutParams.MATCH_PARENT;
@@ -90,11 +94,16 @@ public class HotelList extends AppCompatActivity {
     String city = "";
     LoadingDialog loadingDialog;
 
+    //for async methods
     private Executor executor = Executors.newSingleThreadExecutor();
     private Handler handler = new Handler(Looper.getMainLooper());
+
+    //initialise the amadeus api
     Amadeus amadeus = Amadeus
             .builder("htHGvYM2OB3wmAqVykNHAbGPuTlSBV1m","0hiGWqr3KQSGXION")
             .build();
+
+    //initialise the okhttpclient
     OkHttpClient client = new OkHttpClient();
 
     @Override
@@ -102,12 +111,14 @@ public class HotelList extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hotel_list);
 
+        //initialise the layout
         hotelListLV = findViewById(R.id.hotelListLV);
         hotelListRL = findViewById(R.id.hotelListRL);
         layoutInflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
 
         loadingDialog = new LoadingDialog(this);
 
+        //get the hotel and flight data from the FlightPage activity
         Intent fromFlightPage = getIntent();
 
         //hotel data
@@ -142,6 +153,7 @@ public class HotelList extends AppCompatActivity {
 //        loadingDialog.show();
 //        //getHotel();
 //        getHotel2();
+        //display a popup window that will prompt the user to set the city of their accommodation
         setCityPopup();
 
     }
@@ -154,6 +166,7 @@ public class HotelList extends AppCompatActivity {
 
                 try{
 
+                    //get dest_id of the city using the apidojo booking autocomplete api
                     Request request = new Request.Builder()
                             .url("https://apidojo-booking-v1.p.rapidapi.com/locations/auto-complete?text=" + city + "&languagecode=en-us")
                             .get()
@@ -175,20 +188,21 @@ public class HotelList extends AppCompatActivity {
 
                             if(response.isSuccessful()){
 
-
+                                //get the json response in string
                                 String responseStr = response.body().string();
 
                                 Log.d(TAG, "run: response: " + response);
                                 Log.d(TAG, "onResponse: response body: " + responseStr);
 
                                 try {
+                                    //create a json array to hold the json array from the response string
                                     JSONArray jsonArray = new JSONArray(responseStr);
-
 
                                     //get first dest_id
                                     JSONObject locationJS = jsonArray.getJSONObject(0);
                                     String destID = locationJS.get("dest_id").toString();
 
+                                    //using the dest_id from the previous api, call the apidojo booking properties list api
                                     Request request1 = new Request.Builder()
                                             .url("https://apidojo-booking-v1.p.rapidapi.com/properties/list?offset=0&arrival_date=" + fromDate +"&departure_date=" + toDate + "&guest_qty=" + adultCount +"&dest_ids=" + destID +"&room_qty=1&search_type=city&children_qty=" + kidCount + "&search_id=111&price_filter_currencycode=USD&order_by=popularity&languagecode=en-us&travel_purpose=leisure")
                                             .get()
@@ -209,6 +223,7 @@ public class HotelList extends AppCompatActivity {
 
                                             if(response.isSuccessful()){
 
+                                                //get the json response in string
                                                 String responseStr = response.body().string();
 
                                                 Log.d(TAG, "run: response2: " + response);
@@ -216,13 +231,16 @@ public class HotelList extends AppCompatActivity {
 
                                                 try{
 
+                                                    //create a json array to hold the json array from the response string
                                                     JSONObject jsonObject = new JSONObject(responseStr);
                                                     JSONArray jsonArray = new JSONArray(jsonObject.get("result").toString());
 //
                                                     for (int i=0; i<jsonArray.length(); i++){
 
+                                                        //create a json object to hold the current json object of the json array
                                                         JSONObject curJSON = jsonArray.getJSONObject(i);
 
+                                                        //create the variables to hold the required data from the api
                                                         //String hotelName = "";
                                                         String hotelName = curJSON.get("hotel_name").toString();
                                                         String hotelId = curJSON.get("hotel_id").toString();
@@ -232,7 +250,8 @@ public class HotelList extends AppCompatActivity {
                                                         String address = curJSON.get("address_trans").toString();
                                                         String accomType = curJSON.get("accommodation_type_name").toString();
 
-//
+                                                        //create a hotel list model to hold the hotel data received from the api
+                                                        //add the hotel list model into the hotel array list
                                                         hotelListModel = new HotelListModel(hotelName, hotelId, hotelCurrency, hotelPrice);
 
                                                         hotelArrayList.add(hotelListModel);
@@ -252,6 +271,7 @@ public class HotelList extends AppCompatActivity {
                                                             //stop loading animation
                                                             loadingDialog.cancel();
 
+                                                            //populate the hotel listview using the hotel array list
                                                             HotelListAdapter customAdapter = new HotelListAdapter(getApplicationContext(), hotelArrayList);
                                                             hotelListLV.setAdapter(customAdapter);
 
@@ -262,6 +282,7 @@ public class HotelList extends AppCompatActivity {
                                                                     //start loading animation
                                                                     loadingDialog.show();
 
+                                                                    //call the apidojo booking properties description api using the hotel_id received from the previous api
                                                                     Request request2 = new Request.Builder()
                                                                             .url("https://apidojo-booking-v1.p.rapidapi.com/properties/get-description?hotel_ids=" + hotelArrayList.get(i).hotelId + "&check_out=" + toDate + "&languagecode=en-us&check_in=" + fromDate)
                                                                             .get()
@@ -278,16 +299,20 @@ public class HotelList extends AppCompatActivity {
                                                                         @Override
                                                                         public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
 
+                                                                            //get the json response in string
                                                                             String responseStr = response.body().string();
 
                                                                             Log.d(TAG, "onResponse: hotel desc response: " + responseStr);
 
+                                                                            //try and get the hotel description
                                                                             String hotelDescription = "";
                                                                             try{
 
+                                                                                //create a json object to hold the json object data from the response string
                                                                                 JSONArray jsonArray = new JSONArray(responseStr);
                                                                                 JSONObject jsonObject = jsonArray.getJSONObject(1);
 
+                                                                                //get the hotel description from the json object
                                                                                 hotelDescription = jsonObject.getString("description");
 
                                                                             }
@@ -382,10 +407,12 @@ public class HotelList extends AppCompatActivity {
 
     private void setCityPopup(){
 
+        //intialise setCityPopupView and popup window
         setCityPopupView = layoutInflater.inflate(R.layout.set_city_popup, null);
 
         popupWindow = new PopupWindow(setCityPopupView,width,height,focusable);
 
+        //display the popup window
         hotelListRL.post(new Runnable() {
             @Override
             public void run() {
@@ -394,6 +421,7 @@ public class HotelList extends AppCompatActivity {
             }
         });
 
+        //intialise the layouts from setCityPopupView
         RelativeLayout setCityPopupRL = setCityPopupView.findViewById(R.id.setCityRL);
         EditText cityET = setCityPopupView.findViewById(R.id.cityET);
         Button setCityBtn = setCityPopupView.findViewById(R.id.setCityBtn);
@@ -402,10 +430,12 @@ public class HotelList extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
+                //get the city that was inputted by the user and then close the popup window
                 city = cityET.getText().toString();
 
                 popupWindow.dismiss();
 
+                //show the loading animation and get the hotel using the city input by the user
                 loadingDialog.show();
                 getHotel2();
             }

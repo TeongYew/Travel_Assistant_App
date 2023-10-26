@@ -34,7 +34,7 @@ public class AuthFragmentContainer extends AppCompatActivity {
         setContentView(R.layout.activity_auth_fragment_container);
 
         //getData();
-        getString("NYC");
+        //getString("NYC");
     }
 
     public void getString(String iata){
@@ -55,9 +55,10 @@ public class AuthFragmentContainer extends AppCompatActivity {
 
     public void getData(){
 
+        //code to get the iata data from csv
         try {
             Resources resources = getResources();
-            InputStream inputStream = resources.openRawResource(R.raw.iata_airport); // Replace with your CSV file name
+            InputStream inputStream = resources.openRawResource(R.raw.iata_airport);
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
             String line;
             StringBuilder data = new StringBuilder();
@@ -66,19 +67,20 @@ public class AuthFragmentContainer extends AppCompatActivity {
                 // Split the CSV line by the semicolon
                 String[] parts = line.split(",");
                 if (parts.length >= 5) {
-                    String thirdColumnData = parts[2].replaceAll("\"", ""); // Get data from the third column (index 2)
-                    String fifthColumnData = parts[4]; // Get data from the fifth column (index 4)
+                    // Get data from the third column (index 2)
+                    String thirdColumnData = parts[2].replaceAll("\"", "");
+                    // Get data from the fifth column (index 4)
+                    String fifthColumnData = parts[4];
 
-                    // Format the data as needed
+                    // Format the data to be input into the strings.xml
                     String formattedData = "<string name=\"" + thirdColumnData + "\">" + fifthColumnData + "</string>\n";
                     data.append(formattedData);
                 }
             }
 
-            // Display or use the formatted data
+
             Log.d("getData", "data: " + data);
 
-            // Your string variable
             String dataToExport = data.toString();
 
 

@@ -26,11 +26,15 @@ import java.util.concurrent.Executors;
 
 public class FlightPage extends AppCompatActivity {
 
+    final String TAG = String.valueOf(FlightPage.this);
+
+    //layouts
     TextView departureTimeTV, departureIATATV, departureLocationTV,departureAirportTV;
     TextView arrivalTimeTV, arrivalIATATV, arrivalLocationTV, arrivalAirportTV;
     TextView flightAirlineTV, flightClassTV, flightCodeTV, flightDateTV, flightTerminalTV, flightPriceTV;
     Button bookFlightBtn, lookForHotelBtn;
 
+    //flight data
     String flightLocation = "";
     String flightDestination = "";
     String fromDate = "";
@@ -46,19 +50,18 @@ public class FlightPage extends AppCompatActivity {
     String arrTerminal = "";
     String flightCurrency = "";
     String flightPrice = "";
-    final String TAG = String.valueOf(FlightPage.this);
-
-
     ArrayList<FlightItineraryListModel> flightItinerary = new ArrayList<>();
     LocationModel depLocation;
     LocationModel arrLocation;
     String depAirportName = "-";
     String arrAirportName = "-";
+
+    //initialise the amadeus api
     Amadeus amadeus = Amadeus
             .builder("htHGvYM2OB3wmAqVykNHAbGPuTlSBV1m","0hiGWqr3KQSGXION")
             .build();
 
-
+    //for async methods
     private Executor executor = Executors.newSingleThreadExecutor();
     private Handler handler = new Handler(Looper.getMainLooper());
 
@@ -67,6 +70,7 @@ public class FlightPage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_flight_page);
 
+        //initialise the layouts
         departureTimeTV = findViewById(R.id.departureTimeTV);
         departureIATATV = findViewById(R.id.departureIATATV);
         //departureLocationTV = findViewById(R.id.departureLocationTV);
@@ -84,6 +88,7 @@ public class FlightPage extends AppCompatActivity {
         bookFlightBtn = findViewById(R.id.bookFlightBtn);
         lookForHotelBtn = findViewById(R.id.lookForHotelBtn);
 
+        //get the flight data from the FlightList activity
         Intent intent = getIntent();
         flightLocation = intent.getStringExtra("location");
         flightDestination = intent.getStringExtra("destination");
@@ -102,6 +107,7 @@ public class FlightPage extends AppCompatActivity {
         flight = intent.getStringExtra("flight");
         flightItinerary = (ArrayList<FlightItineraryListModel>) intent.getSerializableExtra("flightItinerary");
 
+        //set the layouts with the flight data from FlightList activity
         departureIATATV.setText(flightLocation);
         arrivalIATATV.setText(flightDestination);
         departureTimeTV.setText(fromDate);
@@ -112,12 +118,16 @@ public class FlightPage extends AppCompatActivity {
         flightTerminalTV.setText(depTerminal);
         flightPriceTV.setText(flightCurrency + " " + flightPrice);
 
+        //get the airport name using the flight iata code
         //getLocation(flightLocation, flightDestination);
         getAirport(flightLocation,flightDestination);
 
         bookFlightBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                //create intent to send user to the PaymentPage activity
+                //send the flight data to the PaymentPage activity
 
                 //flight data
                 Intent toPayment = new Intent(getApplicationContext(), PaymentPage.class);
@@ -147,6 +157,9 @@ public class FlightPage extends AppCompatActivity {
         lookForHotelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                //create an intent to send user to the HotelList activity
+                //send the flight data the HotelList activity
                 Intent toHotelList = new Intent(getApplicationContext(), HotelList.class);
 
                 //hotel data
@@ -183,11 +196,17 @@ public class FlightPage extends AppCompatActivity {
 
     public void getAirport(String depIata, String arrIata){
 
+        //get the airport name from the strings.xml file
+
+        //try and get the string from the strings file using the departure and iata code from the the flight data
         String depIataCode = depIata;
         String arrIataCode = arrIata;
         int depIataResourceId = getResources().getIdentifier(depIataCode, "string", getPackageName());
         int arrIataResourceId = getResources().getIdentifier(arrIataCode, "string", getPackageName());
 
+        //if the departure airport name is found, set the departureAirportTV using the airport name
+        //also set the depAirportName with the airport name that was found
+        //if not found, set the departureAirportTV text to "-"
         if (depIataResourceId != 0) {
             String airportName = getResources().getString(depIataResourceId);
             // Use the resourceValue as needed
@@ -201,6 +220,9 @@ public class FlightPage extends AppCompatActivity {
             departureAirportTV.setText("-");
         }
 
+        //if the arrival airport name is found, set the arrivalAirportTV using the airport name
+        //also set the arrAirportName with the airport name that was found
+        //if not found, set the arrivalAirportTV text to "-"
         if (arrIataResourceId != 0) {
             String airportName = getResources().getString(arrIataResourceId);
             // Use the resourceValue as needed

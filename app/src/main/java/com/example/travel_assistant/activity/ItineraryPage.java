@@ -59,18 +59,23 @@ import java.util.Map;
 public class ItineraryPage extends AppCompatActivity {
 
     final String TAG = ItineraryPage.this.toString();
-    ItineraryModel itineraryModel;
-    String currentDate = "";
-    Date itineraryFromDate, itineraryToDate;
+
+    //layouts
     TextView itineraryTitleTV, itineraryLocationTV, itineraryDateTV;
     LinearLayout dateCardsLL;
-    int firstCardSet = 1;
-    String uid = "";
-    ArrayList<ItineraryDayModel> itineraryDayArrayList = new ArrayList<>();
+    Date itineraryFromDate, itineraryToDate;
     FloatingActionButton addItineraryFAB;
     android.widget.ListView itineraryDayLV;
     TravelItineraryDayAdapter customAdapter;
 
+    //variables
+    int firstCardSet = 1;
+    String uid = "";
+    ArrayList<ItineraryDayModel> itineraryDayArrayList = new ArrayList<>();
+    ItineraryModel itineraryModel;
+    String currentDate = "";
+
+    //popup window variables
     LayoutInflater layoutInflater;
     int width = ViewGroup.LayoutParams.MATCH_PARENT;
     int height = ViewGroup.LayoutParams.MATCH_PARENT;
@@ -80,6 +85,7 @@ public class ItineraryPage extends AppCompatActivity {
     View itineraryDetailsPopupView;
     RelativeLayout itineraryPageRL;
 
+    //initialise firebase auth and firestore
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     FirebaseAuth auth = FirebaseAuth.getInstance();
 
@@ -88,6 +94,7 @@ public class ItineraryPage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_itinerary_page);
 
+        //initialise the layouts
         itineraryTitleTV = findViewById(R.id.itineraryTitleTV);
         itineraryLocationTV = findViewById(R.id.itineraryLocationTV);
         itineraryDateTV = findViewById(R.id.itineraryDateTV);
@@ -107,6 +114,7 @@ public class ItineraryPage extends AppCompatActivity {
             throw new RuntimeException(e);
         }
 
+        //get the itinerary data from the ItineraryList activity
         Intent fromItineraryList = getIntent();
         itineraryModel = (ItineraryModel) fromItineraryList.getSerializableExtra("itinerary");
 //        itineraryTitle = fromItineraryList.getStringExtra("itineraryTitle");
@@ -118,10 +126,12 @@ public class ItineraryPage extends AppCompatActivity {
 
         //Log.d(TAG, "onCreate: " + itineraryTitle);
 
+        //set the textviews with the itinerary data
         itineraryTitleTV.setText(itineraryModel.itineraryName);
         itineraryLocationTV.setText(itineraryModel.itineraryLocation);
         itineraryDateTV.setText(itineraryModel.itineraryDateFrom + " - " + itineraryModel.itineraryDateTo);
 
+        //inflate the date cards of the itinerary and get all the itinerary items
         inflateDateCards();
         getItineraryDay();
         
@@ -139,6 +149,7 @@ public class ItineraryPage extends AppCompatActivity {
 
     public void deleteItineraryItem(String docID){
 
+        //delete the selected itinerary item
         db.collection("itinerary_item").document(docID)
                 .delete()
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -158,12 +169,15 @@ public class ItineraryPage extends AppCompatActivity {
 
     public void editItineraryItem(String docID, String location, String timeFrom, String timeTo, String notes){
 
+        //update the itinerary item
         DocumentReference itineraryItemRef = db.collection("itinerary_item").document(docID);
 
+        //if timeTo is not set, make sure it is then empty to prevent formatting errors
         if(timeTo.equals("-")){
             timeTo = "";
         }
 
+        //update all the itinerary item data
         itineraryItemRef
                 .update("itinerary_item_location", location,
                         "itinerary_item_from", timeFrom,
@@ -186,10 +200,12 @@ public class ItineraryPage extends AppCompatActivity {
 
     public void setItineraryDetailsPopupView(ItineraryDayModel itineraryDayModel){
 
+        //initialise itineraryDetailsPopupView
         itineraryDetailsPopupView = layoutInflater.inflate(R.layout.edit_travel_itinerary_popup, null);
 
         popupWindow = new PopupWindow(itineraryDetailsPopupView,width,height,focusable);
 
+        //display the itinerary details popup window
         itineraryPageRL.post(new Runnable() {
             @Override
             public void run() {
@@ -198,8 +214,10 @@ public class ItineraryPage extends AppCompatActivity {
             }
         });
 
+
         RelativeLayout editItineraryRL = itineraryDetailsPopupView.findViewById(R.id.editItineraryRL);
 
+        //if user clicks outside of the popup window, close the popup window
         editItineraryRL.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -208,17 +226,20 @@ public class ItineraryPage extends AppCompatActivity {
             }
         });
 
+        //initialise the layouts from itineraryDetailsPopupView
         EditText itineraryItemLocationET = itineraryDetailsPopupView.findViewById(R.id.itineraryItemLocationET);
         EditText itineraryItemTimeFromET = itineraryDetailsPopupView.findViewById(R.id.itineraryItemTimeFromET);
         EditText itineraryItemTimeToET = itineraryDetailsPopupView.findViewById(R.id.itineraryItemTimeToET);
         EditText itineraryItemNotesET = itineraryDetailsPopupView.findViewById(R.id.itineraryItemNotesET);
         Button saveItineraryItemBtn = itineraryDetailsPopupView.findViewById(R.id.saveItineraryItemBtn);
 
+        //set the edit texts with the current itinerary item data
         itineraryItemLocationET.setText(itineraryDayModel.locationName);
         itineraryItemTimeFromET.setText(itineraryDayModel.locationTimeFrom);
         itineraryItemTimeToET.setText(itineraryDayModel.locationTimeTo);
         itineraryItemNotesET.setText(itineraryDayModel.notes);
 
+        //if time to is empty, set it to display "-"
         if(itineraryDayModel.locationTimeTo.equals("")){
             itineraryItemTimeToET.setText("-");
         }
@@ -226,6 +247,8 @@ public class ItineraryPage extends AppCompatActivity {
         itineraryItemTimeFromET.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                //set a time picker dialog
 
                 final Calendar c = Calendar.getInstance();
 
@@ -239,8 +262,9 @@ public class ItineraryPage extends AppCompatActivity {
                             @Override
                             public void onTimeSet(TimePicker view, int hourOfDay,
                                                   int minute) {
-                                // on below line we are setting selected time
-                                // in our text view.
+
+                                //if the hour or minute only has 1 digit, add a 0 in front
+                                //to prevent formatting and ordering errors
                                 String hourStr = String.valueOf(hourOfDay);
                                 String minuteStr = String.valueOf(minute);
                                 if(hourStr.length() < 2){
@@ -249,10 +273,11 @@ public class ItineraryPage extends AppCompatActivity {
                                 if(minuteStr.length() < 2){
                                     minuteStr = "0" + minuteStr;
                                 }
+
+                                //set the selected time to the edittext
                                 itineraryItemTimeFromET.setText(hourStr + ":" + minuteStr);
                             }
                         }, hour, minute, false);
-                // at last we are calling show to
                 // display our time picker dialog.
                 timePickerDialog.show();
 
@@ -263,6 +288,8 @@ public class ItineraryPage extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
+                //set a time picker dialog
+
                 final Calendar c = Calendar.getInstance();
 
                 // on below line we are getting our hour, minute.
@@ -277,6 +304,9 @@ public class ItineraryPage extends AppCompatActivity {
                                                   int minute) {
                                 // on below line we are setting selected time
                                 // in our text view.
+
+                                //if the selected hour or minute only has 1 digit, add a 0 in front of the number
+                                //to prevent formatting and ordering errors
                                 String hourStr = String.valueOf(hourOfDay);
                                 String minuteStr = String.valueOf(minute);
                                 if(hourStr.length() < 2){
@@ -285,10 +315,11 @@ public class ItineraryPage extends AppCompatActivity {
                                 if(minuteStr.length() < 2){
                                     minuteStr = "0" + minuteStr;
                                 }
+
+                                //set the selected time to the edittext
                                 itineraryItemTimeToET.setText(hourStr + ":" + minuteStr);
                             }
                         }, hour, minute, false);
-                // at last we are calling show to
                 // display our time picker dialog.
                 timePickerDialog.show();
 
@@ -299,17 +330,21 @@ public class ItineraryPage extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
+                //create the string variables to hold the input data
                 String editedLocation = itineraryItemLocationET.getText().toString();
                 String editedTimeFrom = itineraryItemTimeFromET.getText().toString();
                 String editedTimeTo = itineraryItemTimeToET.getText().toString();
                 String editedNotes = itineraryItemNotesET.getText().toString();
 
+                //call the method that updates the itinerary item using the user input
                 editItineraryItem(itineraryDayModel.docID, editedLocation, editedTimeFrom, editedTimeTo, editedNotes);
 
+                //clear the itinerary item listview and get the itinerary items from firestore
                 itineraryDayArrayList.clear();
                 customAdapter.notifyDataSetChanged();
                 getItineraryDay();
 
+                //close the popup window
                 popupWindow.dismiss();
             }
         });
@@ -332,7 +367,7 @@ public class ItineraryPage extends AppCompatActivity {
         itineraryItem.put("user_uid", uid);
 
 
-        // Add a new document with a generated ID
+        // Add a new itinerary item document with a generated ID
         db.collection("itinerary_item")
                 .add(itineraryItem)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
@@ -353,6 +388,7 @@ public class ItineraryPage extends AppCompatActivity {
 
     public void getItineraryDay(){
 
+        //get the user's itinerary item using the user's uid and selected itinerary's id
         db.collection("itinerary_item")
                 .whereEqualTo("user_uid", uid)
                 .whereEqualTo("itinerary_id", itineraryModel.itineraryId)
@@ -367,6 +403,7 @@ public class ItineraryPage extends AppCompatActivity {
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 Log.d(TAG, document.getId() + " => " + document.getData());
 
+                                //create the string variables to hold the data from firestore
                                 String itineraryId = document.getData().get("itinerary_id").toString();
                                 //String itineraryItemId = document.getData().get("itinerary_item_id").toString();
                                 String itineraryItemDate = document.getData().get("itinerary_item_date").toString();
@@ -376,7 +413,7 @@ public class ItineraryPage extends AppCompatActivity {
                                 String itineraryItemNotes = document.getData().get("itinerary_item_notes").toString();
                                 String docID = document.getId();
 
-                                //change into date
+                                //change the string date data into date variable
                                 Date itineraryFromDate, itineraryToDate;
 
                                 try {
@@ -397,12 +434,13 @@ public class ItineraryPage extends AppCompatActivity {
                                     throw new RuntimeException(e);
                                 }
 
-
+                                //create a new itinerary day model to be added into the itinerary day array list
                                 ItineraryDayModel itineraryDayModel = new ItineraryDayModel(itineraryId, itineraryItemLocation, itineraryItemDate, itineraryItemTimeFrom,itineraryItemTimeTo, itineraryItemNotes, docID, itineraryFromDate, itineraryToDate);
                                 itineraryDayArrayList.add(itineraryDayModel);
 
                             }
 
+                            //populate the itinerary day listview
                             customAdapter = new TravelItineraryDayAdapter(getApplicationContext(), itineraryDayArrayList);
                             itineraryDayLV.setAdapter(customAdapter);
 
@@ -410,6 +448,7 @@ public class ItineraryPage extends AppCompatActivity {
                                 @Override
                                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
+                                    //display the popup window to allows the users to edit and update the selected itinerary item
                                     setItineraryDetailsPopupView(itineraryDayArrayList.get(i));
 
                                 }
@@ -419,37 +458,41 @@ public class ItineraryPage extends AppCompatActivity {
                                 @Override
                                 public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
 
+                                    //if user long clicks on the itinerary item,
+                                    //display an alert dialog to confirm the deletion of the itinerary item
+
                                     AlertDialog.Builder builder = new AlertDialog.Builder(ItineraryPage.this);
 
-                                    // Set the message show for the Alert time
+                                    //set the message for the alert dialog
                                     builder.setMessage("Do you want to delete the itinerary item?");
 
-                                    // Set Alert Title
+                                    //set alert title
                                     builder.setTitle("Alert !");
 
-                                    // Set Cancelable false for when the user clicks on the outside the Dialog Box then it will remain show
+                                    //set Cancelable false for when the user clicks on the outside the Dialog Box then it will remain show
                                     builder.setCancelable(false);
 
-                                    // Set the positive button with yes name Lambda OnClickListener method is use of DialogInterface interface.
+                                    //set the positive button with yes
                                     builder.setPositiveButton("Yes", (DialogInterface.OnClickListener) (dialog, which) -> {
 
+                                        //if user clicks yes, then delete the selected itinerary item
                                         deleteItineraryItem(itineraryDayArrayList.get(i).docID);
 
+                                        //clear the itinerary day list view and get the itinerary items
                                         itineraryDayArrayList.clear();
                                         customAdapter.notifyDataSetChanged();
                                         getItineraryDay();
 
                                     });
 
-                                    // Set the Negative button with No name Lambda OnClickListener method is use of DialogInterface interface.
+                                    //set the negative button with no
                                     builder.setNegativeButton("No", (DialogInterface.OnClickListener) (dialog, which) -> {
                                         // If user click no then dialog box is canceled.
                                         dialog.cancel();
                                     });
 
-                                    // Create the Alert dialog
+                                    //create and show the Alert dialog
                                     AlertDialog alertDialog = builder.create();
-                                    // Show the Alert Dialog box
                                     alertDialog.show();
 
                                     return true;
@@ -470,10 +513,12 @@ public class ItineraryPage extends AppCompatActivity {
 
     public void setItineraryAddPopupView(){
 
+        //initialise the itineraryAddPopupView and popup window
         itineraryAddPopupView = layoutInflater.inflate(R.layout.add_travel_itinerary_popup, null);
 
         popupWindow = new PopupWindow(itineraryAddPopupView,width,height,focusable);
 
+        //display the popup window
         itineraryPageRL.post(new Runnable() {
             @Override
             public void run() {
@@ -482,6 +527,7 @@ public class ItineraryPage extends AppCompatActivity {
             }
         });
 
+        //initialise the layout variables from itineraryAddPopupView
         RelativeLayout addItineraryRL = itineraryAddPopupView.findViewById(R.id.addItineraryRL);
         EditText itineraryLocationET = itineraryAddPopupView.findViewById(R.id.itineraryLocationET);
         EditText itineraryFromET = itineraryAddPopupView.findViewById(R.id.itineraryFromET);
@@ -489,6 +535,7 @@ public class ItineraryPage extends AppCompatActivity {
         EditText itineraryNotesET = itineraryAddPopupView.findViewById(R.id.itineraryNotesET);
         Button addItineraryBtn = itineraryAddPopupView.findViewById(R.id.addItineraryBtn);
 
+        //if user clicks outside of the popup window, close the popup window
         addItineraryRL.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -501,16 +548,21 @@ public class ItineraryPage extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
+                //check if the required fields are filled
+                //if not, display a toast message to notify the user to fill in the required fields
                 if (TextUtils.isEmpty(itineraryLocationET.getText()) || TextUtils.isEmpty(itineraryFromET.getText())){
                     Toast.makeText(ItineraryPage.this, "Please at least fill in the location and time field", Toast.LENGTH_SHORT).show();
                 }
                 else {
 
+                    //create the string variables to hold the input data
                     String itineraryLocation = itineraryLocationET.getText().toString();
                     String itineraryFrom = itineraryFromET.getText().toString();
                     String itineraryTo = "";
                     String itineraryNotes = "";
 
+                    //for the optional fields, check if it is filled
+                    //if the optional fields are filled, get the input data
                     if (!TextUtils.isEmpty(itineraryToET.getText())){
                         itineraryTo = itineraryToET.getText().toString();
                     }
@@ -519,7 +571,7 @@ public class ItineraryPage extends AppCompatActivity {
                         itineraryNotes = itineraryNotesET.getText().toString();
                     }
 
-                    //change into date
+                    //change the string date data into date variable
                     Date itineraryFromDate, itineraryToDate;
 
                     try {
@@ -541,11 +593,15 @@ public class ItineraryPage extends AppCompatActivity {
                     }
 
 
+                    //create an itinerary day model to be added into firestore
                     ItineraryDayModel itineraryDayModel = new ItineraryDayModel(itineraryModel.itineraryId, itineraryLocation, currentDate, itineraryFrom, itineraryTo, itineraryNotes, "", itineraryFromDate, itineraryToDate);
 
                     addItineraryDays(itineraryDayModel);
+
+                    //close the popup window
                     popupWindow.dismiss();
 
+                    //clear the itinerary day listview and get the itinerary items
                     itineraryDayArrayList.clear();
                     customAdapter.notifyDataSetChanged();
                     getItineraryDay();
@@ -558,6 +614,8 @@ public class ItineraryPage extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
+                //set a time picker dialog
+
                 final Calendar c = Calendar.getInstance();
 
                 // on below line we are getting our hour, minute.
@@ -570,8 +628,9 @@ public class ItineraryPage extends AppCompatActivity {
                             @Override
                             public void onTimeSet(TimePicker view, int hourOfDay,
                                                   int minute) {
-                                // on below line we are setting selected time
-                                // in our text view.
+
+                                //if the selected hour and minute only has 1 digit, add a 0 in front of the number
+                                //in order to prevent formatting and ordering errors
                                 String hourStr = String.valueOf(hourOfDay);
                                 String minuteStr = String.valueOf(minute);
                                 if(hourStr.length() < 2){
@@ -580,10 +639,11 @@ public class ItineraryPage extends AppCompatActivity {
                                 if(minuteStr.length() < 2){
                                     minuteStr = "0" + minuteStr;
                                 }
+
+                                //set the selected time into the edittext
                                 itineraryFromET.setText(hourStr + ":" + minuteStr);
                             }
                         }, hour, minute, false);
-                // at last we are calling show to
                 // display our time picker dialog.
                 timePickerDialog.show();
 
@@ -594,6 +654,8 @@ public class ItineraryPage extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
+                //set a time picker dialog
+
                 final Calendar c = Calendar.getInstance();
 
                 // on below line we are getting our hour, minute.
@@ -606,8 +668,9 @@ public class ItineraryPage extends AppCompatActivity {
                             @Override
                             public void onTimeSet(TimePicker view, int hourOfDay,
                                                   int minute) {
-                                // on below line we are setting selected time
-                                // in our text view.
+
+                                //if the selected hour and minute only has 1 digit, add a 0 in front of the number
+                                //in order to prevent formatting and ordering errors
                                 String hourStr = String.valueOf(hourOfDay);
                                 String minuteStr = String.valueOf(minute);
                                 if(hourStr.length() < 2){
@@ -616,10 +679,11 @@ public class ItineraryPage extends AppCompatActivity {
                                 if(minuteStr.length() < 2){
                                     minuteStr = "0" + minuteStr;
                                 }
+
+                                //set the selected time to the edittext
                                 itineraryToET.setText(hourStr + ":" + minuteStr);
                             }
                         }, hour, minute, false);
-                // at last we are calling show to
                 // display our time picker dialog.
                 timePickerDialog.show();
 
@@ -630,13 +694,16 @@ public class ItineraryPage extends AppCompatActivity {
 
     public void inflateDateCards(){
 
+        //initialise the card layout variables
+        //set the array count to the number of days
+        //this is to make sure we have as many views and layouts as the day count
         View[] cardViews = new View[itineraryModel.itineraryDaysCount];
         TextView[] cardDayTexts = new TextView[itineraryModel.itineraryDaysCount];
         TextView[] cardMonthTexts = new TextView[itineraryModel.itineraryDaysCount];
         TextView[] cardFullDateTexts = new TextView[itineraryModel.itineraryDaysCount];
 
 
-        // Initialize cardLayouts and cardTexts arrays with references to your views
+        // Initialize cardLayouts and cardTexts arrays with references to the views
         for (int i = 0; i < itineraryModel.itineraryDaysCount; i++) {
             cardViews[i] = getLayoutInflater().inflate(R.layout.itinerary_date_card, dateCardsLL, false);
             cardDayTexts[i] = cardViews[i].findViewById(R.id.dateTV);
@@ -649,24 +716,31 @@ public class ItineraryPage extends AppCompatActivity {
 
             try {
 
+                //get the day, month and full date in string
                 Date itineraryFromDate = new SimpleDateFormat("dd/MM/yyyy").parse(itineraryModel.itineraryDateFrom);
 
                 Calendar cal = Calendar.getInstance();
 
                 cal.setTime(itineraryFromDate);
 
+                //the calender will be the first date, add i to it to act as a counter for the days
                 cal.add(Calendar.DAY_OF_MONTH, i);
 
+                //get the month name string
                 SimpleDateFormat month_date = new SimpleDateFormat("MMM");
                 String month_name = month_date.format(cal.getTime());
 
+                //get the full date string
                 SimpleDateFormat full_date = new SimpleDateFormat("dd/MM/yyyy");
                 String fullDateStr = full_date.format(cal.getTime());
 
+                //set the text views with the data accordingly
                 cardDayTexts[i].setText(String.valueOf(cal.get(Calendar.DAY_OF_MONTH)));
                 cardMonthTexts[i].setText(month_name);
                 cardFullDateTexts[i].setText(fullDateStr);
 
+                //make sure the currentDate will always be the first card's date
+                //once the first card is set, set the rest of the card text views to white to signify unselected
                 if(firstCardSet == 1){
                     firstCardSet--;
                     //currentDate = cardDayTexts[i].getText().toString() + "/" + cardMonthTexts[i].getText().toString();
@@ -693,7 +767,7 @@ public class ItineraryPage extends AppCompatActivity {
                 cardViews[i].setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        // Reset text color for all cards
+                        // Reset text color for all cards, white to signify unselected
                         for (int j = 0; j < itineraryModel.itineraryDaysCount; j++) {
                             cardDayTexts[j].setTextColor(getResources().getColor(R.color.white));
                             cardMonthTexts[j].setTextColor(getResources().getColor(R.color.white));
@@ -703,16 +777,19 @@ public class ItineraryPage extends AppCompatActivity {
                         cardDayTexts[cardIndex].setTextColor(getResources().getColor(R.color.black));
                         cardMonthTexts[cardIndex].setTextColor(getResources().getColor(R.color.black));
 
+                        //get the currentDate of the selected card
                         //currentDate = cardDayTexts[cardIndex].getText().toString() + "/" + cardMonthTexts[cardIndex].getText().toString();
                         currentDate = cardFullDateTexts[cardIndex].getText().toString();
                         Log.d(TAG, "inflateDateCards: currentDate: " + currentDate);
 
+                        //clear the itinerary day listview and get the itinerary items for the selected date
                         itineraryDayArrayList.clear();
                         customAdapter.notifyDataSetChanged();
                         getItineraryDay();
                     }
                 });
 
+                //add all the views to the linear layout holding all the cards
                 dateCardsLL.addView(cardViews[i]);
 
             } catch (Exception e) {

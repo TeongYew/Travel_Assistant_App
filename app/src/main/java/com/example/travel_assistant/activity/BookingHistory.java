@@ -11,6 +11,7 @@ import com.google.android.material.tabs.TabLayout;
 
 public class BookingHistory extends AppCompatActivity {
 
+    //layouts
     TabLayout tabLayout;
     ViewPager2 viewPager2;
     HistoryViewPagerAdapter historyViewPagerAdapter;
@@ -20,6 +21,7 @@ public class BookingHistory extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_booking_history);
 
+        //intialise the layouts
         tabLayout = findViewById(R.id.historyTL);
         viewPager2 = findViewById(R.id.historyVP);
         historyViewPagerAdapter = new HistoryViewPagerAdapter(this);
@@ -28,6 +30,7 @@ public class BookingHistory extends AppCompatActivity {
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
+                //set the current fragment accordingly with the selected tab
                 viewPager2.setCurrentItem(tab.getPosition());
             }
 
@@ -42,6 +45,7 @@ public class BookingHistory extends AppCompatActivity {
             }
         });
 
+        //if user scrolls horizontally, make sure the tab is able to update accordingly
         viewPager2.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(int position) {

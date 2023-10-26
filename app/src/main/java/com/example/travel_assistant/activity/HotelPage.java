@@ -49,6 +49,7 @@ public class HotelPage extends AppCompatActivity {
     String flightPrice = "";
     ArrayList<FlightItineraryListModel> flightItinerary = new ArrayList<>();
 
+    //layouts
     TextView hotelNameTV, priceTV, checkInTV, checkOutTV, numBedsTV, bedTypeTV, descriptionTV;
     Button toPaymentBtn;
 
@@ -57,6 +58,7 @@ public class HotelPage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hotel_page);
 
+        //initialise the layouts
         hotelNameTV = findViewById(R.id.hotelNameTV);
         priceTV = findViewById(R.id.priceTV);
         checkInTV = findViewById(R.id.checkInTV);
@@ -66,6 +68,7 @@ public class HotelPage extends AppCompatActivity {
         descriptionTV = findViewById(R.id.descriptionTV);
         toPaymentBtn = findViewById(R.id.toPaymentBtn);
 
+        //get the hotel and flight data from HotelList activity
         Intent fromHotelList = getIntent();
 
         //hotel data
@@ -104,6 +107,7 @@ public class HotelPage extends AppCompatActivity {
 
         //Log.d(TAG, "onCreate: hotel name and id: " + hotelName + ", " + hotelId);
 
+        //set the layouts with the hotel data
         hotelNameTV.setText(hotelName);
         priceTV.setText(hotelCurrency + hotelPrice);
         checkInTV.setText(hotelCheckIn);
@@ -117,6 +121,8 @@ public class HotelPage extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
+                //create new intent to send user to the PaymentPage activity
+                //send the hotel and flight data to the PaymentPage activity
                 Intent toPaymentPage = new Intent(getApplicationContext(), PaymentPage.class);
                 toPaymentPage.putExtra("paymentFor", "flightAndHotel");
 

@@ -25,6 +25,8 @@ import java.util.ArrayList;
 public class CommonPhrases extends AppCompatActivity {
 
     final String TAG = CommonPhrases.this.toString();
+
+    //layouts
     Spinner languageSpinner;
     String currentLanguage = "";
     Button generalBtn, greetingsBtn, navigationsBtn, emergenciesBtn, accommodationsBtn;
@@ -36,12 +38,14 @@ public class CommonPhrases extends AppCompatActivity {
     boolean emergenciesSelected = false;
     boolean accommodationsSelected = false;
 
+    //array list of common phrases and questions
     ArrayList<String> generalList = new ArrayList<>();
     ArrayList<String> greetingsList = new ArrayList<>();
     ArrayList<String> navigationsList = new ArrayList<>();
     ArrayList<String> emergenciesList = new ArrayList<>();
     ArrayList<String> accommodationsList = new ArrayList<>();
 
+    //popup variables
     RelativeLayout phrasesRL;
     LayoutInflater layoutInflater;
     int width = ViewGroup.LayoutParams.MATCH_PARENT;
@@ -55,6 +59,7 @@ public class CommonPhrases extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_common_phrases);
 
+        //initialise the layouts
         languageSpinner = findViewById(R.id.languageSpinner);
         generalBtn = findViewById(R.id.generalBtn);
         greetingsBtn = findViewById(R.id.greetingsBtn);
@@ -70,15 +75,18 @@ public class CommonPhrases extends AppCompatActivity {
         phrasesRL = findViewById(R.id.phrasesRL);
         layoutInflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
 
+        //set the language spinner menu items
         ArrayAdapter<CharSequence> adapter=ArrayAdapter.createFromResource(this, R.array.languages, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
         languageSpinner.setAdapter(adapter);
 
+        //intialise the common phrases and questions array list
         initialiseArrayLists();
 
         languageSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                //get the current selected language
                 currentLanguage = languageSpinner.getSelectedItem().toString();
                 Log.d(TAG, "onItemClick: current language: " + currentLanguage);
             }
@@ -93,6 +101,11 @@ public class CommonPhrases extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
+                //when the button is clicked, change the selected boolean of the button to true or false accordingly
+                //if currently true, then set to false and vice versa
+                //if button is currently selected, set the other buttons to gone
+                //if button is not currently selected, set all the buttons to visible
+
                 if(generalSelected == false){
                     generalSelected = true;
 
@@ -103,7 +116,8 @@ public class CommonPhrases extends AppCompatActivity {
                     emergenciesBtn.setVisibility(View.GONE);
                     accommodationsBtn.setVisibility(View.GONE);
 
-
+                    //populate the listview with the general phrases array list
+                    //set the listview to visible
                     ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(CommonPhrases.this, R.layout.general_phrases_listview, R.id.generalTV, generalList);
                     generalLV.setAdapter(arrayAdapter);
                     generalLV.setVisibility(View.VISIBLE);
@@ -135,6 +149,12 @@ public class CommonPhrases extends AppCompatActivity {
         greetingsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                //when the button is clicked, change the selected boolean of the button to true or false accordingly
+                //if currently true, then set to false and vice versa
+                //if button is currently selected, set the other buttons to gone
+                //if button is not currently selected, set all the buttons to visible
+
                 if(greetingsSelected == false){
                     greetingsSelected = true;
 
@@ -145,6 +165,8 @@ public class CommonPhrases extends AppCompatActivity {
                     emergenciesBtn.setVisibility(View.GONE);
                     accommodationsBtn.setVisibility(View.GONE);
 
+                    //populate the listview with the greetings phrases array list
+                    //set the listview to visible
                     ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(CommonPhrases.this, R.layout.greeting_phrases_listview, R.id.greetingsTV, greetingsList);
                     greetingsLV.setAdapter(arrayAdapter);
                     greetingsLV.setVisibility(View.VISIBLE);
@@ -175,6 +197,12 @@ public class CommonPhrases extends AppCompatActivity {
         navigationsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                //when the button is clicked, change the selected boolean of the button to true or false accordingly
+                //if currently true, then set to false and vice versa
+                //if button is currently selected, set the other buttons to gone
+                //if button is not currently selected, set all the buttons to visible
+
                 if(navigationsSelected == false){
                     navigationsSelected = true;
 
@@ -185,6 +213,8 @@ public class CommonPhrases extends AppCompatActivity {
                     emergenciesBtn.setVisibility(View.GONE);
                     accommodationsBtn.setVisibility(View.GONE);
 
+                    //populate the listview with the navigation phrases array list
+                    //set the listview to visible
                     ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(CommonPhrases.this, R.layout.navigation_phrases_listview, R.id.navigationsTV, navigationsList);
                     navigationsLV.setAdapter(arrayAdapter);
                     navigationsLV.setVisibility(View.VISIBLE);
@@ -215,6 +245,12 @@ public class CommonPhrases extends AppCompatActivity {
         emergenciesBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                //when the button is clicked, change the selected boolean of the button to true or false accordingly
+                //if currently true, then set to false and vice versa
+                //if button is currently selected, set the other buttons to gone
+                //if button is not currently selected, set all the buttons to visible
+
                 if(emergenciesSelected == false){
                     emergenciesSelected = true;
 
@@ -225,6 +261,8 @@ public class CommonPhrases extends AppCompatActivity {
                     //emergenciesBtn.setVisibility(View.GONE);
                     accommodationsBtn.setVisibility(View.GONE);
 
+                    //populate the listview with the emergency phrases array list
+                    //set the listview to visible
                     ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(CommonPhrases.this, R.layout.emergency_phrases_listview, R.id.emergenciesTV, emergenciesList);
                     emergenciesLV.setAdapter(arrayAdapter);
                     emergenciesLV.setVisibility(View.VISIBLE);
@@ -255,6 +293,12 @@ public class CommonPhrases extends AppCompatActivity {
         accommodationsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                //when the button is clicked, change the selected boolean of the button to true or false accordingly
+                //if currently true, then set to false and vice versa
+                //if button is currently selected, set the other buttons to gone
+                //if button is not currently selected, set all the buttons to visible
+
                 if(accommodationsSelected == false){
                     accommodationsSelected = true;
 
@@ -265,6 +309,8 @@ public class CommonPhrases extends AppCompatActivity {
                     emergenciesBtn.setVisibility(View.GONE);
                     //accommodationsBtn.setVisibility(View.GONE);
 
+                    //populate the listview with the accommodation phrases array list
+                    //set the listview to visible
                     ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(CommonPhrases.this, R.layout.accommodation_phrases_listview, R.id.accommodationsTV, accommodationsList);
                     accommodationsLV.setAdapter(arrayAdapter);
                     accommodationsLV.setVisibility(View.VISIBLE);
@@ -305,10 +351,12 @@ public class CommonPhrases extends AppCompatActivity {
 
     public void setupTranslatorPopup(){
 
+        //initialise the translatorPopupView
         translatorPopupView = layoutInflater.inflate(R.layout.translator_popup, null);
 
         popupWindow = new PopupWindow(translatorPopupView,width,height,focusable);
 
+        //display the translator popup window
         phrasesRL.post(new Runnable() {
             @Override
             public void run() {
@@ -317,11 +365,13 @@ public class CommonPhrases extends AppCompatActivity {
             }
         });
 
+        //initialise the layout variables of translatorPopupView
         RelativeLayout translatePopupRL = translatorPopupView.findViewById(R.id.translatorPopupRL);
         EditText translateInputET = translatorPopupView.findViewById(R.id.translateInputET);
         EditText translateOutputET = translatorPopupView.findViewById(R.id.translateOutputET);
         Button translateBtn = translatorPopupView.findViewById(R.id.translateBtn);
 
+        //if user clicks on the outside of the popup window, close the popup
         translatePopupRL.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -335,6 +385,8 @@ public class CommonPhrases extends AppCompatActivity {
     }
 
     public void initialiseArrayLists(){
+
+        //populate the array lists with phrases and questions accordingly
 
         //general
         generalList.add("Do you speak English?");

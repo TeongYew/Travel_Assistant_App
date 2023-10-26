@@ -52,9 +52,11 @@ import okhttp3.OkHttpClient;
 
 public class PaymentPage extends AppCompatActivity {
 
+    //layouts
     EditText usernameET, emailET, phoneET;
     Button paymentBtn;
 
+    //stripe api
     PaymentSheet paymentSheet;
     String paymentIntentClientSecret;
     PaymentSheet.CustomerConfiguration configuration;
@@ -76,7 +78,6 @@ public class PaymentPage extends AppCompatActivity {
     String flightCode = "";
     String flightCurrency = "";
     String flightPrice = "";
-
     ArrayList<FlightItineraryListModel> flightItinerary = new ArrayList<>();
 
     //date for hotel booking
@@ -93,12 +94,17 @@ public class PaymentPage extends AppCompatActivity {
 
     String paymentFor = "";
 
+    //initialise firebase auth and firestore
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     FirebaseAuth auth = FirebaseAuth.getInstance();
 
     String dummyPrice = "25000";
+
+    //for async methods
     private Executor executor = Executors.newSingleThreadExecutor();
     private Handler handler = new Handler(Looper.getMainLooper());
+
+    //initialise okhttpclient
     OkHttpClient client = new OkHttpClient();
 
     @Override
@@ -106,6 +112,7 @@ public class PaymentPage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_payment_page);
 
+        //intialise the layouts
         usernameET = findViewById(R.id.usernameET);
         emailET = findViewById(R.id.emailET);
         phoneET = findViewById(R.id.phoneET);
@@ -120,9 +127,12 @@ public class PaymentPage extends AppCompatActivity {
             throw new RuntimeException(e);
         }
 
+        //get the flight data or flight+hotel data from the previous activity accordingly
         Intent fromBooking = getIntent();
         paymentFor = fromBooking.getStringExtra("paymentFor");
         if(paymentFor.equals("flightAndHotel")){
+
+            //if user booked flight and hotel, get both the flight and hotel data
 
             //flight data
             flightDepartureIATA = fromBooking.getStringExtra("flightLocation");
@@ -160,6 +170,8 @@ public class PaymentPage extends AppCompatActivity {
 
         } else if (paymentFor.equals("flightOnly")) {
 
+            //if user booked flight only, get the flight data
+
             //flight data
             flightDepartureIATA = fromBooking.getStringExtra("flightLocation");
             flightArrivalIATA = fromBooking.getStringExtra("flightDestination");
@@ -182,18 +194,20 @@ public class PaymentPage extends AppCompatActivity {
 
         }
 
-
+        //fetch stripe api
         fetchStripeAPI();
 
         paymentBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-
+                //check if the text fields are filled
+                //if not, then display a toast notifying the user to fill in the fields
                 if(TextUtils.isEmpty(usernameET.getText()) || TextUtils.isEmpty(emailET.getText()) || TextUtils.isEmpty(phoneET.getText())){
                     Toast.makeText(PaymentPage.this, "Please make sure all the necessary fields are filled", Toast.LENGTH_SHORT).show();
                 }
                 else{
+                    //check if a response can be received from the stripe api
                     if(paymentIntentClientSecret != null){
                         paymentSheet.presentWithPaymentIntent(paymentIntentClientSecret,
                                 new PaymentSheet.Configuration("TravelApp", configuration));
@@ -212,6 +226,7 @@ public class PaymentPage extends AppCompatActivity {
 
     public void onPaymentSheetResult(final PaymentSheetResult paymentSheetResult){
 
+        //depending on the result of the payment sheet display th toast messages accordingly
         if(paymentSheetResult instanceof PaymentSheetResult.Canceled){
             Toast.makeText(this, "Cancelled", Toast.LENGTH_SHORT).show();
         }
@@ -220,6 +235,7 @@ public class PaymentPage extends AppCompatActivity {
         }
         if(paymentSheetResult instanceof PaymentSheetResult.Completed){
             Toast.makeText(this, "Payment Success!", Toast.LENGTH_SHORT).show();
+            //if payment is completed, add the flight and hotel booking data into firestore
             addBooking();
         }
 
@@ -335,7 +351,7 @@ public class PaymentPage extends AppCompatActivity {
         flight.put("user_uid", uid);
 
 
-        // Add a new document with a generated ID
+        // Add a new flight_booking document with a generated ID
         db.collection("flight_booking")
                 .add(flight)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
@@ -347,6 +363,7 @@ public class PaymentPage extends AppCompatActivity {
                         //add the doc ref id into the newly made flight_booking
                         DocumentReference flightBookingRef = db.collection("flight_booking").document(flightBookingId);
 
+                        //update the flight_booking_id with the firebase generated id
                         flightBookingRef
                                 .update("flight_booking_id", flightBookingId)
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -354,7 +371,7 @@ public class PaymentPage extends AppCompatActivity {
                                     public void onSuccess(Void aVoid) {
                                         Log.d(TAG, "DocumentSnapshot flight_booking_id successfully updated!");
 
-                                        //add flight itinerary
+                                        //add flight itineraries
                                         for (int i = 0; i < flightItinerary.size(); i++){
 
                                             // Create a new flight_itinerary
@@ -372,7 +389,7 @@ public class PaymentPage extends AppCompatActivity {
                                             flight_itinerary.put("user_uid", uid);
 
 
-                                            // Add a new document with a generated ID
+                                            // Add a new flight_itinerary document with a generated ID
                                             db.collection("flight_itinerary")
                                                     .add(flight_itinerary)
                                                     .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
@@ -410,6 +427,7 @@ public class PaymentPage extends AppCompatActivity {
 
 
         //if user booked hotel as well
+        //add the hotel booking data into firestore
         if(paymentFor.equals("flightAndHotel")){
 
             // Create a new hotel
@@ -426,7 +444,7 @@ public class PaymentPage extends AppCompatActivity {
             hotel.put("user_uid", uid);
 
 
-            // Add a new document with a generated ID
+            // Add a new hotel document with a generated ID
             db.collection("hotel_booking")
                     .add(hotel)
                     .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
@@ -435,8 +453,10 @@ public class PaymentPage extends AppCompatActivity {
                             Log.d(TAG, "DocumentSnapshot (hotel_booking) added with ID: " + documentReference.getId());
                             String hotelBookingId = documentReference.getId();
 
+                            //add the firebase generated id into the newly created hotel_booking document
                             DocumentReference hotelBookingRef = db.collection("hotel_booking").document(hotelBookingId);
 
+                            //update the hotel_booking_id with the firestore generated id
                             hotelBookingRef
                                     .update("hotel_booking_id", hotelBookingId)
                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -471,9 +491,11 @@ public class PaymentPage extends AppCompatActivity {
 
     public void fetchStripeAPI(){
 
+        //create new request and set the url
         RequestQueue queue = Volley.newRequestQueue(this);
         String url ="http://192.168.0.3/stripeAPI/index.php";
 
+        //initialise a new string request to call the stripe api
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
                 new Response.Listener<String>() {
                     @Override
@@ -483,6 +505,7 @@ public class PaymentPage extends AppCompatActivity {
 
                         try {
 
+                            //hold the response string in a json object
                             JSONObject jsonObject = new JSONObject(response);
                             configuration = new PaymentSheet.CustomerConfiguration(
                                     jsonObject.getString("customer"),
@@ -509,7 +532,7 @@ public class PaymentPage extends AppCompatActivity {
             }
         };
 
-        //10000 is the time in milliseconds adn is equal to 10 sec
+        //set the retry policy to 10seconds
         stringRequest.setRetryPolicy(new DefaultRetryPolicy(
                 10000,
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES,

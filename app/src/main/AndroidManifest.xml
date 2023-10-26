@@ -29,9 +29,6 @@
             android:exported="false"
             android:theme="@style/Theme.AppCompat" />
         <activity
-            android:name=".activity.ListView"
-            android:exported="false" />
-        <activity
             android:name=".activity.DestAnalyticsPage"
             android:exported="false"
             android:theme="@style/Theme.AppCompat" />

@@ -2,7 +2,6 @@ package com.example.travel_assistant.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,7 +12,6 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.LinearInterpolator;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.PopupWindow;
@@ -22,16 +20,13 @@ import android.widget.TextView;
 
 import com.amadeus.Amadeus;
 import com.amadeus.Params;
-import com.amadeus.referencedata.Locations;
 import com.amadeus.resources.FlightOfferSearch;
-import com.amadeus.resources.Location;
 import com.example.travel_assistant.R;
 import com.example.travel_assistant.adapter.FlightItineraryListAdapter;
 import com.example.travel_assistant.adapter.FlightListAdapter;
 import com.example.travel_assistant.model.FlightItineraryListModel;
 import com.example.travel_assistant.model.FlightListModel;
 import com.example.travel_assistant.others.LoadingDialog;
-import com.example.travel_assistant.others.LoadingView;
 import com.google.gson.JsonArray;
 
 import java.util.ArrayList;
@@ -40,6 +35,7 @@ import java.util.concurrent.Executors;
 
 public class FlightList extends AppCompatActivity {
 
+    //flight data
     String flightLocation = "";
     String flightDestination = "";
     String fromDate = "";
@@ -49,15 +45,24 @@ public class FlightList extends AppCompatActivity {
     String roundOrOneWayTrip = "";
     boolean directFlightsOnly = false;
     final String TAG = String.valueOf(FlightList.this);
+
+    //layout and variables for listview
     android.widget.ListView flightListLV;
     ArrayList<FlightListModel> flightArrayList = new ArrayList<>();
+    FlightListModel flightListData;
+    ArrayList<FlightItineraryListModel> itineraryArrayList;
+
+
+    //for async methods
     private Executor executor = Executors.newSingleThreadExecutor();
     private Handler handler = new Handler(Looper.getMainLooper());
+
+    //initialise the amadeus api
     Amadeus amadeus = Amadeus
             .builder("htHGvYM2OB3wmAqVykNHAbGPuTlSBV1m","0hiGWqr3KQSGXION")
             .build();
 
-    FlightListModel flightListData;
+    //layout variables for popup window
     LayoutInflater layoutInflater;
     int width = ViewGroup.LayoutParams.MATCH_PARENT;
     int height = ViewGroup.LayoutParams.MATCH_PARENT;
@@ -65,7 +70,8 @@ public class FlightList extends AppCompatActivity {
     PopupWindow popupWindow;
     View itineraryPopupView;
     RelativeLayout flightListRL;
-    ArrayList<FlightItineraryListModel> itineraryArrayList;
+
+    //layout
     LoadingDialog loadingDialog;
 
     @Override
@@ -73,6 +79,7 @@ public class FlightList extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_flight_list);
 
+        //get the flight data from MainMeu activity
         Intent intent = getIntent();
         flightLocation = intent.getStringExtra("location");
         flightDestination = intent.getStringExtra("destination");
@@ -83,6 +90,7 @@ public class FlightList extends AppCompatActivity {
         directFlightsOnly = intent.getBooleanExtra("directFlightsOnly",false);
         roundOrOneWayTrip = intent.getStringExtra("roundOrOneWayTrip");
 
+        //initialise the layouts
         loadingDialog = new LoadingDialog(this);
 
         flightListLV = findViewById(R.id.flightListLV);
@@ -111,8 +119,11 @@ public class FlightList extends AppCompatActivity {
 
                     Log.d(TAG, "run: got into before setting flight offers");
 
+                    //create the variable to call the amadeus flight offers api
                     FlightOfferSearch[] flightOffers;
 
+                    //depending on if the user selects the one way or round trip option
+                    //call the api accordingly
                     if(roundOrOneWayTrip.equals("round")){
                         flightOffers = amadeus.shopping.flightOffersSearch.get(
                                 Params.with("originLocationCode",flightLocation)
@@ -146,10 +157,11 @@ public class FlightList extends AppCompatActivity {
 
 
 
-                    Location[] locations = amadeus.referenceData.locations.get(Params
-                            .with("keyword", "LON")
-                            .and("subType", Locations.ANY));
+//                    Location[] locations = amadeus.referenceData.locations.get(Params
+//                            .with("keyword", "LON")
+//                            .and("subType", Locations.ANY));
 
+                    //create a json array to hold the data results from the amadeus flight offers api
                     JsonArray flightsData = flightOffers[0].getResponse().getResult().get("data").getAsJsonArray();
 
                     Log.d(TAG, "run: flightsData: " + flightOffers[0].getResponse().getResult().toString());
@@ -157,14 +169,17 @@ public class FlightList extends AppCompatActivity {
                     //each data is a flight
                     for(int i = 0; i < flightsData.size(); i++){
 
+                        //get the duration of the entire flight
                         String duration = flightsData.get(i).getAsJsonObject().get("itineraries").getAsJsonArray().get(0).getAsJsonObject().get("duration").toString();
                         //each flight has its own itinerary
                         //but itinerary only has one
                         //different stops can get from the segment in the itinerary
+                        //get the flight itinerary data of the the flight
                         JsonArray itinerarySegments = flightsData.get(i).getAsJsonObject().get("itineraries").getAsJsonArray().get(0).getAsJsonObject().get("segments").getAsJsonArray();
 
                         Log.d(TAG, "run: this is itinerary duration: " + duration);
 
+                        //get the data from the flight itinerary segments
                         String firstdepartureIata = itinerarySegments.get(0).getAsJsonObject().get("departure").getAsJsonObject().get("iataCode").toString().replaceAll("\"", "");
                         String firstdepartureAt = itinerarySegments.get(0).getAsJsonObject().get("departure").getAsJsonObject().get("at").toString().replaceAll("\"", "");
                         String lastArrivalIata = itinerarySegments.get(itinerarySegments.size() - 1).getAsJsonObject().get("arrival").getAsJsonObject().get("iataCode").toString().replaceAll("\"", "");
@@ -179,10 +194,12 @@ public class FlightList extends AppCompatActivity {
 
                         Log.d(TAG, "run: this is itinerary first departure and final arrival: " + firstdepartureIata + ", " + lastArrivalIata);
 
+                        //create a new flight list model to be added into the flightArrayList
                         FlightListModel flight = new FlightListModel(firstdepartureIata, "", lastArrivalIata, "", firstdepartureAt, lastArrivalAt, priceCurrency, priceTotal, cabin, airline, flightItinerary);
 
                         flightArrayList.add(flight);
 
+                        //check and log the flight itinerary data
                         for(int x = 0; x < itinerarySegments.size(); x++){
 
                             String departureIata = itinerarySegments.get(x).getAsJsonObject().get("departure").getAsJsonObject().get("iataCode").toString();
@@ -233,10 +250,12 @@ public class FlightList extends AppCompatActivity {
                                 @Override
                                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
+                                    //initialise the itineraryPopupView
                                     itineraryPopupView = layoutInflater.inflate(R.layout.flight_list_popup, null);
 
                                     popupWindow = new PopupWindow(itineraryPopupView,width,height,focusable);
 
+                                    //display the popup window
                                     flightListRL.post(new Runnable() {
                                         @Override
                                         public void run() {
@@ -245,13 +264,14 @@ public class FlightList extends AppCompatActivity {
                                         }
                                     });
 
-
+                                    //get the flight itinerary data of the selected flight
                                     JsonArray itinerary = flightArrayList.get(i).getFlightItinerary();
 
                                     Log.d(TAG, "onItemClick: itinerary size: " + itinerary.size());
 
                                     for(int x = 0; x < itinerary.size(); x++){
 
+                                        //get the data of the current flight itinerary item
                                         String departureIATA = itinerary.get(x).getAsJsonObject().get("segments").getAsJsonArray().get(0).getAsJsonObject().get("departure").getAsJsonObject().get("iataCode").toString().replaceAll("\"", "");
                                         String arrivalIATA = itinerary.get(x).getAsJsonObject().get("segments").getAsJsonArray().get(0).getAsJsonObject().get("arrival").getAsJsonObject().get("iataCode").toString().replaceAll("\"", "");
                                         String departureAt = itinerary.get(x).getAsJsonObject().get("segments").getAsJsonArray().get(0).getAsJsonObject().get("departure").getAsJsonObject().get("at").toString().replaceAll("\"", "");
@@ -264,6 +284,9 @@ public class FlightList extends AppCompatActivity {
                                         String departureTerminal = "-";
                                         String arrivalTerminal = "-";
 
+                                        //since the terminal data provided by the api is inconsistent,
+                                        //use try/catch to try and get the terminal data and if the terminal data is not provided,
+                                        //set the terminal variable to "-"
                                         try {
                                             departureTerminal = itinerary.get(x).getAsJsonObject().get("segments").getAsJsonArray().get(0).getAsJsonObject().get("departure").getAsJsonObject().get("terminal").toString().replaceAll("\"", "");
                                             Log.d(TAG, "run: departure terminal: " + departureTerminal);
@@ -282,18 +305,21 @@ public class FlightList extends AppCompatActivity {
                                             arrivalTerminal = "-";
                                         }
 
+                                        //create a flight itinerary list model to be added into the itinerary array list
                                         FlightItineraryListModel itineraryListModel = new FlightItineraryListModel(departureIATA, arrivalIATA, departureAt, arrivalAt, departureTerminal, arrivalTerminal, carrierCode,number, aircraftCode, duration);
 
                                         itineraryArrayList.add(itineraryListModel);
 
                                     }
 
+                                    //initialise the layouts from the itineraryPopupView
                                     android.widget.ListView itineraryLV = itineraryPopupView.findViewById(R.id.itineraryLV);
                                     RelativeLayout itineraryListRL = itineraryPopupView.findViewById(R.id.flightPopupRL);
                                     Button toFlightPageBtn = itineraryPopupView.findViewById(R.id.toFlightPageBtn);
                                     TextView departureTV = itineraryPopupView.findViewById(R.id.departureTV);
                                     TextView arrivalTV = itineraryPopupView.findViewById(R.id.arrivalTV);
 
+                                    //set the layouts with the appropriate data received from the flight offer search api
                                     departureTV.setText(flightArrayList.get(i).departureIATA);
                                     arrivalTV.setText(flightArrayList.get(i).arrivalIATA);
                                     FlightItineraryListAdapter itineraryAdapter = new FlightItineraryListAdapter(getApplicationContext(), itineraryArrayList);
@@ -303,6 +329,8 @@ public class FlightList extends AppCompatActivity {
                                         @Override
                                         public void onClick(View view) {
 
+                                            //create new intent to send user to the FlightPage activity
+                                            //send the flight data over to the FlightPage activity
                                             Intent toFlightPage = new Intent(getApplicationContext(), FlightPage.class);
                                             //toFlightPage.putExtra("location", flightLocation);
                                             //toFlightPage.putExtra("destination", flightDestination);
@@ -331,6 +359,8 @@ public class FlightList extends AppCompatActivity {
                                     itineraryListRL.setOnTouchListener(new View.OnTouchListener() {
                                         @Override
                                         public boolean onTouch(View view, MotionEvent motionEvent) {
+                                            //if the user closes or clicks outside of the popup window
+                                            //clear the current flight itinerary listview in the popup window
                                             itineraryArrayList.clear();
                                             itineraryAdapter.notifyDataSetChanged();
                                             popupWindow.dismiss();
