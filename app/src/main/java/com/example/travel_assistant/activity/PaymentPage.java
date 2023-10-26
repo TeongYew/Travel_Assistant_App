@@ -8,6 +8,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -33,12 +35,20 @@ import com.stripe.android.PaymentConfiguration;
 import com.stripe.android.paymentsheet.PaymentSheet;
 import com.stripe.android.paymentsheet.PaymentSheetResult;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
 
 public class PaymentPage extends AppCompatActivity {
 
@@ -87,6 +97,9 @@ public class PaymentPage extends AppCompatActivity {
     FirebaseAuth auth = FirebaseAuth.getInstance();
 
     String dummyPrice = "25000";
+    private Executor executor = Executors.newSingleThreadExecutor();
+    private Handler handler = new Handler(Looper.getMainLooper());
+    OkHttpClient client = new OkHttpClient();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -209,6 +222,94 @@ public class PaymentPage extends AppCompatActivity {
             Toast.makeText(this, "Payment Success!", Toast.LENGTH_SHORT).show();
             addBooking();
         }
+
+    }
+
+    private void convertCurrency(){
+
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+
+
+                try{
+
+                    okhttp3.Request request = new okhttp3.Request.Builder()
+                            .url("https://apidojo-booking-v1.p.rapidapi.com/currency/get-exchange-rates?base_currency=" + hotelCurrency + "&languagecode=en-us")
+                            .get()
+                            .addHeader("X-RapidAPI-Key", "b34ecf7a0fmsh5cbb7c353f899abp1c8c15jsn43d3583a9734")
+                            .addHeader("X-RapidAPI-Host", "apidojo-booking-v1.p.rapidapi.com")
+                            .build();
+
+//        Request request = new Request.Builder()
+//                .url("https://apidojo-booking-v1.p.rapidapi.com/currency/get-exchange-rates?base_currency=" + hotelCurrency + "&languagecode=en-us")
+//                .get()
+//                .addHeader("X-RapidAPI-Key", "b34ecf7a0fmsh5cbb7c353f899abp1c8c15jsn43d3583a9734")
+//                .addHeader("X-RapidAPI-Host", "apidojo-booking-v1.p.rapidapi.com")
+//                .build();
+
+                    Response response = client.newCall(request).execute();
+                    client.newCall(request).enqueue(new Callback() {
+                        @Override
+                        public void onFailure(@NonNull Call call, @NonNull IOException e) {
+
+                        }
+
+                        @Override
+                        public void onResponse(@NonNull Call call, @NonNull okhttp3.Response response) throws IOException {
+
+                            if (response.isSuccessful()){
+
+                                String responseStr = response.body().string();
+
+                                double exchangeRate = 0.0;
+
+                                try{
+
+                                    JSONObject jsonObject = new JSONObject(responseStr);
+                                    JSONArray jsonArray = new JSONArray(jsonObject.get("exchange_rates").toString());
+
+                                    for (int i = 0; i<jsonArray.length(); i++){
+
+                                        JSONObject jsonObject1 = jsonArray.getJSONObject(i);
+                                        String curCurrency = jsonObject1.get("currency").toString();
+                                        if (curCurrency.equals(hotelCurrency)){
+                                            exchangeRate = Double.parseDouble(jsonObject1.get("exchange_rate_buy").toString());
+                                            break;
+                                        }
+
+                                    }
+
+                                    double hotelPriceDouble = Double.parseDouble(hotelPrice);
+                                    double convertedHotelPrice = hotelPriceDouble * exchangeRate;
+
+                                    Log.d(TAG, "onResponse: convertedHotelPrice: " + convertedHotelPrice);
+
+                                }
+                                catch (Exception e){
+                                    Log.d(TAG, "onResponse: error parsing currency exchange json: " + e);
+                                }
+
+                            }
+                            else{
+
+                            }
+
+                        }
+                    });
+
+                }
+                catch (Exception e){
+                    Log.d(TAG, "run: error getting currency exchange: " + e);
+                }
+
+
+
+            }
+        });
+
+
+
 
     }
 
