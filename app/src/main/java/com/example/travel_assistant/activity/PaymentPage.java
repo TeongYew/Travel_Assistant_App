@@ -26,6 +26,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.travel_assistant.R;
 import com.example.travel_assistant.model.FlightItineraryListModel;
+import com.example.travel_assistant.others.LoadingDialog;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -55,6 +56,7 @@ public class PaymentPage extends AppCompatActivity {
     //layouts
     EditText usernameET, emailET, phoneET;
     Button paymentBtn;
+    LoadingDialog loadingDialog;
 
     //stripe api
     PaymentSheet paymentSheet;
@@ -98,7 +100,7 @@ public class PaymentPage extends AppCompatActivity {
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     FirebaseAuth auth = FirebaseAuth.getInstance();
 
-    String dummyPrice = "25000";
+    String totalPrice = "0";
 
     //for async methods
     private Executor executor = Executors.newSingleThreadExecutor();
@@ -117,6 +119,7 @@ public class PaymentPage extends AppCompatActivity {
         emailET = findViewById(R.id.emailET);
         phoneET = findViewById(R.id.phoneET);
         paymentBtn = findViewById(R.id.paymentBtn);
+        loadingDialog = new LoadingDialog(this);
 
         //get the current user's uid
         try {
@@ -193,9 +196,17 @@ public class PaymentPage extends AppCompatActivity {
             }
 
         }
+//        flightCurrency = "EUR";
+//        hotelCurrency = "JPY";
+//        hotelPrice = "10000";
+
+        //start loading animation
+        loadingDialog.show();
+        //convert hotel currency
+        convertCurrency();
 
         //fetch stripe api
-        fetchStripeAPI();
+        //fetchStripeAPI();
 
         paymentBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -251,20 +262,21 @@ public class PaymentPage extends AppCompatActivity {
                 try{
 
                     okhttp3.Request request = new okhttp3.Request.Builder()
-                            .url("https://apidojo-booking-v1.p.rapidapi.com/currency/get-exchange-rates?base_currency=" + hotelCurrency + "&languagecode=en-us")
+                            .url("https://apidojo-booking-v1.p.rapidapi.com/currency/get-exchange-rates?base_currency=" + flightCurrency + "&languagecode=en-us")
                             .get()
                             .addHeader("X-RapidAPI-Key", "b34ecf7a0fmsh5cbb7c353f899abp1c8c15jsn43d3583a9734")
                             .addHeader("X-RapidAPI-Host", "apidojo-booking-v1.p.rapidapi.com")
                             .build();
 
-//        Request request = new Request.Builder()
-//                .url("https://apidojo-booking-v1.p.rapidapi.com/currency/get-exchange-rates?base_currency=" + hotelCurrency + "&languagecode=en-us")
-//                .get()
-//                .addHeader("X-RapidAPI-Key", "b34ecf7a0fmsh5cbb7c353f899abp1c8c15jsn43d3583a9734")
-//                .addHeader("X-RapidAPI-Host", "apidojo-booking-v1.p.rapidapi.com")
-//                .build();
+//                    okhttp3.Request request = new Request.Builder()
+//                            .url("https://apidojo-booking-v1.p.rapidapi.com/currency/get-exchange-rates?base_currency=USD&languagecode=en-us")
+//                            .get()
+//                            .addHeader("X-RapidAPI-Key", "b34ecf7a0fmsh5cbb7c353f899abp1c8c15jsn43d3583a9734")
+//                            .addHeader("X-RapidAPI-Host", "apidojo-booking-v1.p.rapidapi.com")
+//                            .build();
+//
+//                    Response response = client.newCall(request).execute();
 
-                    Response response = client.newCall(request).execute();
                     client.newCall(request).enqueue(new Callback() {
                         @Override
                         public void onFailure(@NonNull Call call, @NonNull IOException e) {
@@ -276,15 +288,20 @@ public class PaymentPage extends AppCompatActivity {
 
                             if (response.isSuccessful()){
 
+                                //get the json response in string
                                 String responseStr = response.body().string();
 
+                                Log.d(TAG, "onResponse: response str: " + responseStr);
                                 double exchangeRate = 0.0;
 
                                 try{
 
+                                    //create a json array to hold all the json data
                                     JSONObject jsonObject = new JSONObject(responseStr);
                                     JSONArray jsonArray = new JSONArray(jsonObject.get("exchange_rates").toString());
 
+                                    //look through the json array for the currency that is equal to the hotel currency
+                                    //once found, get the exchange rate
                                     for (int i = 0; i<jsonArray.length(); i++){
 
                                         JSONObject jsonObject1 = jsonArray.getJSONObject(i);
@@ -296,10 +313,26 @@ public class PaymentPage extends AppCompatActivity {
 
                                     }
 
+                                    //perform the calculations to convert the hotel price to the same currency as the flight currency
                                     double hotelPriceDouble = Double.parseDouble(hotelPrice);
-                                    double convertedHotelPrice = hotelPriceDouble * exchangeRate;
+                                    double convertedHotelPrice = hotelPriceDouble / exchangeRate;
 
+                                    Log.d(TAG, "onResponse: hotelPrice: " + hotelPriceDouble);
+                                    Log.d(TAG, "onResponse: exchangeRate: " + exchangeRate);
                                     Log.d(TAG, "onResponse: convertedHotelPrice: " + convertedHotelPrice);
+
+                                    //set the new hotel price and update the hotel currency
+                                    hotelPrice = String.valueOf(convertedHotelPrice);
+                                    hotelCurrency = flightCurrency;
+
+                                    //get the total price by adding the converted hotel price and the flight price
+                                    double flightPriceDouble = Double.parseDouble(flightPrice);
+                                    double totalPriceDouble = flightPriceDouble + convertedHotelPrice;
+                                    totalPrice = String.valueOf(totalPriceDouble);
+                                    totalPrice = totalPrice + "00";
+
+                                    //once total price is calculated, fetch the stripe api
+                                    fetchStripeAPI();
 
                                 }
                                 catch (Exception e){
@@ -493,13 +526,16 @@ public class PaymentPage extends AppCompatActivity {
 
         //create new request and set the url
         RequestQueue queue = Volley.newRequestQueue(this);
-        String url ="http://192.168.0.3/stripeAPI/index.php";
+        String url ="http://192.168.0.6/stripeAPI/index.php";
 
         //initialise a new string request to call the stripe api
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+
+                        //stop the loading animation
+                        loadingDialog.cancel();
 
                         Toast.makeText(PaymentPage.this, "got a response!", Toast.LENGTH_SHORT).show();
 
@@ -523,11 +559,13 @@ public class PaymentPage extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
+                //stop the loading animation
+                loadingDialog.cancel();
             }
         }){
             protected Map<String, String> getParams(){
                 Map<String, String> paramV = new HashMap<>();
-                paramV.put("price", dummyPrice);
+                paramV.put("price", totalPrice);
                 return paramV;
             }
         };

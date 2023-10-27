@@ -1,8 +1,11 @@
 package com.example.travel_assistant.activity;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -19,8 +22,21 @@ import android.widget.Spinner;
 
 import com.example.travel_assistant.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.common.base.Charsets;
 
+import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class CommonPhrases extends AppCompatActivity {
 
@@ -44,6 +60,7 @@ public class CommonPhrases extends AppCompatActivity {
     ArrayList<String> navigationsList = new ArrayList<>();
     ArrayList<String> emergenciesList = new ArrayList<>();
     ArrayList<String> accommodationsList = new ArrayList<>();
+    String phrasesURLEncoded = "";
 
     //popup variables
     RelativeLayout phrasesRL;
@@ -53,6 +70,13 @@ public class CommonPhrases extends AppCompatActivity {
     boolean focusable = true;
     PopupWindow popupWindow;
     View translatorPopupView;
+
+    //for async methods
+    private Executor executor = Executors.newSingleThreadExecutor();
+    private Handler handler = new Handler(Looper.getMainLooper());
+
+    //initialise okhttpclient
+    OkHttpClient client = new OkHttpClient();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +106,7 @@ public class CommonPhrases extends AppCompatActivity {
 
         //intialise the common phrases and questions array list
         initialiseArrayLists();
+
 
         languageSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -349,6 +374,65 @@ public class CommonPhrases extends AppCompatActivity {
 
     }
 
+    private void translate(){
+
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+
+                try{
+
+//                    MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
+//                    //RequestBody body = RequestBody.create(mediaType, "q=" + phrasesURLEncoded + "&target=" + "ms" + "&source=en");
+//                    RequestBody body = RequestBody.create(mediaType, "q=Hello%2C%20world!&target=es&source=en");
+//                    Request request = new Request.Builder()
+//                            .url("https://google-translate1.p.rapidapi.com/language/translate/v2")
+//                            .post(body)
+//                            .addHeader("content-type", "application/x-www-form-urlencoded")
+//                            .addHeader("Accept-Encoding", "application/gzip")
+//                            .addHeader("X-RapidAPI-Key", "b34ecf7a0fmsh5cbb7c353f899abp1c8c15jsn43d3583a9734")
+//                            .addHeader("X-RapidAPI-Host", "google-translate1.p.rapidapi.com")
+//                            .build();
+//
+//                    //Response response = client.newCall(request).execute();
+
+                    Request request = new Request.Builder()
+                            .url("https://nlp-translation.p.rapidapi.com/v1/translate?text=" + phrasesURLEncoded + "&to=" + getString(getResources().getIdentifier("Tamil", "string", getPackageName())) + "&from=en")
+                            .get()
+                            .addHeader("X-RapidAPI-Key", "b34ecf7a0fmsh5cbb7c353f899abp1c8c15jsn43d3583a9734")
+                            .addHeader("X-RapidAPI-Host", "nlp-translation.p.rapidapi.com")
+                            .build();
+
+                    client.newCall(request).enqueue(new Callback() {
+                        @Override
+                        public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                            Log.d(TAG, "onFailure: error getting google translate api: " + e);
+                        }
+
+                        @Override
+                        public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+
+                            String responseStr = response.body().string();
+
+                            Log.d(TAG, "onResponse: response str: " + responseStr);
+
+
+
+                        }
+                    });
+
+                }
+                catch (Exception e){
+                    Log.d(TAG, "run: error calling google translate api: " + e);
+                }
+
+
+
+            }
+        });
+
+    }
+
     public void setupTranslatorPopup(){
 
         //initialise the translatorPopupView
@@ -476,6 +560,39 @@ public class CommonPhrases extends AppCompatActivity {
         accommodationsList.add("How do i access the internet?");
         accommodationsList.add("Towel");
         accommodationsList.add("I need my room cleaned");
+
+        try{
+
+            for (int i = 0; i < generalList.size(); i++){
+                phrasesURLEncoded += URLEncoder.encode(generalList.get(i).toString(), "UTF-8").replaceAll("\\+", "%20");
+            }
+
+            for (int i = 0; i < greetingsList.size(); i++){
+
+            }
+
+            for (int i = 0; i < navigationsList.size(); i++){
+
+            }
+
+            for (int i = 0; i < emergenciesList.size(); i++){
+
+            }
+
+            for (int i = 0; i < emergenciesList.size(); i++){
+
+            }
+
+            Log.d(TAG, "initialiseArrayLists: phrases url encoded: " + phrasesURLEncoded);
+
+            translate();
+
+        }
+        catch (Exception e){
+            Log.d(TAG, "initialiseArrayLists: error encoding all the phrases: " + e);
+        }
+
+
 
     }
 

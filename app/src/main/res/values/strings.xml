@@ -12,6 +12,13 @@
         <item>Tamil</item>
     </string-array>
 
+    <!--language and language codes -->
+    <string name="English">"en"</string>
+    <string name="Malay">"ms"</string>
+    <string name="Mandarin">"zh-CN"</string>
+    <string name="Tamil">"ta"</string>
+
+
     <!--iata codes and airport names -->
     <string name="iata">"airport"</string>
     <string name="SHJ">"Sharjah International Airport"</string>

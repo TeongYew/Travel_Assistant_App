@@ -70,7 +70,9 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class ItineraryList extends AppCompatActivity {
 
@@ -197,7 +199,7 @@ public class ItineraryList extends AppCompatActivity {
         generateItineraryFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                generateItinerary();
             }
         });
 
@@ -721,55 +723,131 @@ public class ItineraryList extends AppCompatActivity {
 
     }
 
-
-
-    public void generateItinerary(String message) {
-
-        String url = "https://api.openai.com/v1/chat/completions";
-        String apiKey = "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";
-        String model = "gpt-3.5-turbo";
+    private void generateItinerary(){
 
         executor.execute(new Runnable() {
             @Override
             public void run() {
 
-                try {
+                try{
 
-                    // Create the HTTP POST request
-                    URL obj = new URL(url);
-                    HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-                    con.setRequestMethod("POST");
-                    con.setRequestProperty("Authorization", "Bearer " + apiKey);
-                    con.setRequestProperty("Content-Type", "application/json");
+                    Request request = new Request.Builder()
+                            .url("https://ai-trip-planner.p.rapidapi.com/?days=" + "3" + "&destination=" + "London,UK")
+                            .get()
+                            .addHeader("X-RapidAPI-Key", "b34ecf7a0fmsh5cbb7c353f899abp1c8c15jsn43d3583a9734")
+                            .addHeader("X-RapidAPI-Host", "ai-trip-planner.p.rapidapi.com")
+                            .build();
 
-                    // Build the request body
-                    String body = "{\"model\": \"" + model + "\", \"messages\": [{\"role\": \"user\", \"content\": \"" + message + "\"}]}";
-                    con.setDoOutput(true);
-                    OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream());
-                    writer.write(body);
-                    writer.flush();
-                    writer.close();
+                    Response response = client.newCall(request).execute();
 
-                    // Get the response
-                    BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-                    String inputLine;
-                    StringBuffer response = new StringBuffer();
-                    while ((inputLine = in.readLine()) != null) {
-                        response.append(inputLine);
-                    }
-                    in.close();
+                    client.newCall(request).enqueue(new Callback() {
+                        @Override
+                        public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                            Log.d(TAG, "onFailure: error getting trip: " + e);
+                        }
 
-                    // returns the extracted contents of the response.
-                    gptResponse = extractContentFromResponse(response.toString());
+                        @Override
+                        public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
 
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+                            String responseStr = response.body().string();
+
+                            Log.d(TAG, "onResponse: response str: " + responseStr);
+
+                            try{
+
+                                JSONObject jsonObject = new JSONObject(responseStr);
+                                JSONArray jsonArray = new JSONArray(jsonObject.getString("plan"));
+
+                                for (int i = 0; i < jsonArray.length(); i++){
+
+                                    JSONObject dayJson = jsonArray.getJSONObject(i);
+                                    String dayStr = dayJson.getString("day");
+
+                                    Log.d(TAG, "onResponse: dayStr: " + dayStr);
+
+                                    JSONArray activityJson = dayJson.getJSONArray("activities");
+
+                                    for (int x = 0; x < activityJson.length(); x++){
+
+                                        JSONObject dayDetails = activityJson.getJSONObject(i);
+                                        String time = dayDetails.getString("time");
+                                        String description = dayDetails.getString("description");
+
+                                        Log.d(TAG, "onResponse: time: " + time);
+                                        Log.d(TAG, "onResponse: description: " + description);
+
+                                    }
+
+                                }
+
+                            }
+                            catch (Exception e){
+                                Log.d(TAG, "onResponse: error parsing json: " + e);
+                            }
+
+                        }
+                    });
+
+                }
+                catch (Exception e){
+                    Log.d(TAG, "run: error fetching trip planner api");
                 }
 
             }
         });
 
+
+
     }
+
+
+//    public void generateItinerary(String message) {
+//
+//        String url = "https://api.openai.com/v1/chat/completions";
+//        String apiKey = "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";
+//        String model = "gpt-3.5-turbo";
+//
+//        executor.execute(new Runnable() {
+//            @Override
+//            public void run() {
+//
+//                try {
+//
+//                    // Create the HTTP POST request
+//                    URL obj = new URL(url);
+//                    HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+//                    con.setRequestMethod("POST");
+//                    con.setRequestProperty("Authorization", "Bearer " + apiKey);
+//                    con.setRequestProperty("Content-Type", "application/json");
+//
+//                    // Build the request body
+//                    String body = "{\"model\": \"" + model + "\", \"messages\": [{\"role\": \"user\", \"content\": \"" + message + "\"}]}";
+//                    con.setDoOutput(true);
+//                    OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream());
+//                    writer.write(body);
+//                    writer.flush();
+//                    writer.close();
+//
+//                    // Get the response
+//                    BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+//                    String inputLine;
+//                    StringBuffer response = new StringBuffer();
+//                    while ((inputLine = in.readLine()) != null) {
+//                        response.append(inputLine);
+//                    }
+//                    in.close();
+//
+//                    // returns the extracted contents of the response.
+//                    gptResponse = extractContentFromResponse(response.toString());
+//
+//                } catch (IOException e) {
+//                    throw new RuntimeException(e);
+//                }
+//
+//            }
+//        });
+//
+//    }
 
     // This method extracts the response expected from chatgpt and returns it.
     public static String extractContentFromResponse(String response) {

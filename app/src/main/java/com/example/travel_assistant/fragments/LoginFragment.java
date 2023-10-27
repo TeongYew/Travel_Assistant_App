@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.example.travel_assistant.R;
 import com.example.travel_assistant.activity.MainMenu;
+import com.example.travel_assistant.activity.PaymentPage;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -63,7 +64,7 @@ public class LoginFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-                //startActivity(new Intent(getActivity(), MainMenu.class));
+//                startActivity(new Intent(getActivity(), PaymentPage.class));
 
                 String email, password;
 
