@@ -7,36 +7,31 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="400dp"
+        android:layout_height="200dp"
         android:layout_margin="10dp"
         android:orientation="vertical"
         android:background="@drawable/rounded_popup_outline"
         android:layout_centerInParent="true"
         android:padding="15dp">
 
-        <EditText
+        <TextView
             android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:id="@+id/translateInputET"
-            android:hint="Enter text to translate ..."
-            android:gravity="top|start"
-            android:background="@drawable/custom_edittext3"
-            android:padding="8dp"
-            android:layout_marginTop="5dp"
-            android:textColor="@color/dark_grey"
-            android:textColorHint="@color/grey" />
+            android:layout_height="wrap_content"
+            android:text="Input the text that you would like to translate"
+            android:textSize="20sp"
+            android:textColor="@color/black"
+            android:gravity="center"
+            android:layout_marginTop="10dp"/>
 
         <EditText
             android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:id="@+id/translateOutputET"
-            android:hint="Translation ..."
-            android:gravity="top|start"
+            android:layout_height="50dp"
+            android:id="@+id/translateInputET"
+            android:hint="Text to be translated (English) ..."
             android:background="@drawable/custom_edittext3"
             android:padding="8dp"
-            android:layout_marginTop="5dp"
-            android:textColor="@color/black"
-            android:textColorHint="@color/grey" />
+            android:layout_marginTop="10dp"
+            android:textColor="@color/dark_grey" />
 
         <Button
             android:layout_width="wrap_content"

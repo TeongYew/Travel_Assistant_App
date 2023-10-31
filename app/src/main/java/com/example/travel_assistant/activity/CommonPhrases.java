@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.travel_assistant.R;
+import com.example.travel_assistant.others.LoadingDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.common.base.Charsets;
 
@@ -60,6 +61,7 @@ public class CommonPhrases extends AppCompatActivity {
     boolean navigationsSelected = false;
     boolean emergenciesSelected = false;
     boolean accommodationsSelected = false;
+    LoadingDialog loadingDialog;
 
     //array list of common phrases and questions
     ArrayList<String> generalList = new ArrayList<>();
@@ -109,6 +111,7 @@ public class CommonPhrases extends AppCompatActivity {
         translateFAB = findViewById(R.id.translateFAB);
         phrasesRL = findViewById(R.id.phrasesRL);
         layoutInflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        loadingDialog = new LoadingDialog(this);
 
         //set the language spinner menu items
         ArrayAdapter<CharSequence> adapter=ArrayAdapter.createFromResource(this, R.array.languages, android.R.layout.simple_spinner_item);
@@ -232,6 +235,9 @@ public class CommonPhrases extends AppCompatActivity {
                             String selectedPhrase = generalList.get(i).toString();
                             Log.d(TAG, "onItemClick: selected phrase: " + selectedPhrase);
 
+                            //start the loading animation
+                            loadingDialog.show();
+
                             //url encode the string and call the translate method using it
                             String encodedString = urlEncodeString(selectedPhrase);
                             translate(encodedString);
@@ -286,6 +292,9 @@ public class CommonPhrases extends AppCompatActivity {
                             String selectedPhrase = greetingsList.get(i).toString();
                             Log.d(TAG, "onItemClick: selected phrase: " + selectedPhrase);
 
+                            //start the loading animation
+                            loadingDialog.show();
+
                             //url encode the string and call the translate method using it
                             String encodedString = urlEncodeString(selectedPhrase);
                             translate(encodedString);
@@ -338,6 +347,9 @@ public class CommonPhrases extends AppCompatActivity {
                         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                             String selectedPhrase = navigationsList.get(i).toString();
                             Log.d(TAG, "onItemClick: selected phrase: " + selectedPhrase);
+
+                            //start the loading animation
+                            loadingDialog.show();
 
                             //url encode the string and call the translate method using it
                             String encodedString = urlEncodeString(selectedPhrase);
@@ -392,6 +404,9 @@ public class CommonPhrases extends AppCompatActivity {
                             String selectedPhrase = emergenciesList.get(i).toString();
                             Log.d(TAG, "onItemClick: selected phrase: " + selectedPhrase);
 
+                            //start the loading animation
+                            loadingDialog.show();
+
                             //url encode the string and call the translate method using it
                             String encodedString = urlEncodeString(selectedPhrase);
                             translate(encodedString);
@@ -444,6 +459,9 @@ public class CommonPhrases extends AppCompatActivity {
                         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                             String selectedPhrase = accommodationsList.get(i).toString();
                             Log.d(TAG, "onItemClick: selected phrase: " + selectedPhrase);
+
+                            //start the loading animation
+                            loadingDialog.show();
 
                             //url encode the string and call the translate method using it
                             String encodedString = urlEncodeString(selectedPhrase);
@@ -588,6 +606,9 @@ public class CommonPhrases extends AppCompatActivity {
 
     private void setupTranslationPopup(String translation){
 
+        //stop the loading animation
+        loadingDialog.cancel();
+
         //initialise the translatorPopupView
         translationPopupView = layoutInflater.inflate(R.layout.translation_popup, null);
 
@@ -649,7 +670,6 @@ public class CommonPhrases extends AppCompatActivity {
         //initialise the layout variables of translatorPopupView
         RelativeLayout translatePopupRL = translatorPopupView.findViewById(R.id.translatorPopupRL);
         EditText translateInputET = translatorPopupView.findViewById(R.id.translateInputET);
-        EditText translateOutputET = translatorPopupView.findViewById(R.id.translateOutputET);
         Button translateBtn = translatorPopupView.findViewById(R.id.translateBtn);
 
         //if user clicks on the outside of the popup window, close the popup
@@ -664,6 +684,12 @@ public class CommonPhrases extends AppCompatActivity {
         translateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                //close the popup window
+                popupWindow.dismiss();
+
+                //start the loading animation
+                loadingDialog.show();
 
                 String inputText = translateInputET.getText().toString();
                 String encodedText = urlEncodeString(inputText);
@@ -768,38 +794,38 @@ public class CommonPhrases extends AppCompatActivity {
         accommodationsList.add("Towel");
         accommodationsList.add("I need my room cleaned");
 
-        try{
-
-            phrasesURLEncoded += URLEncoder.encode(generalList.get(0).toString(), "UTF-8").replaceAll("\\+", "%20");
-
-            for (int i = 0; i < generalList.size(); i++){
-
-            }
-
-            for (int i = 0; i < greetingsList.size(); i++){
-
-            }
-
-            for (int i = 0; i < navigationsList.size(); i++){
-
-            }
-
-            for (int i = 0; i < emergenciesList.size(); i++){
-
-            }
-
-            for (int i = 0; i < emergenciesList.size(); i++){
-
-            }
-
-            Log.d(TAG, "initialiseArrayLists: phrases url encoded: " + phrasesURLEncoded);
-
-            //translate();
-
-        }
-        catch (Exception e){
-            Log.d(TAG, "initialiseArrayLists: error encoding all the phrases: " + e);
-        }
+//        try{
+//
+//            phrasesURLEncoded += URLEncoder.encode(generalList.get(0).toString(), "UTF-8").replaceAll("\\+", "%20");
+//
+//            for (int i = 0; i < generalList.size(); i++){
+//
+//            }
+//
+//            for (int i = 0; i < greetingsList.size(); i++){
+//
+//            }
+//
+//            for (int i = 0; i < navigationsList.size(); i++){
+//
+//            }
+//
+//            for (int i = 0; i < emergenciesList.size(); i++){
+//
+//            }
+//
+//            for (int i = 0; i < emergenciesList.size(); i++){
+//
+//            }
+//
+//            Log.d(TAG, "initialiseArrayLists: phrases url encoded: " + phrasesURLEncoded);
+//
+//            //translate();
+//
+//        }
+//        catch (Exception e){
+//            Log.d(TAG, "initialiseArrayLists: error encoding all the phrases: " + e);
+//        }
 
 
 

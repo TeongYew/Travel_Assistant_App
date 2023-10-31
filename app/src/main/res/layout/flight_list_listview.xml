@@ -34,7 +34,8 @@
                 android:layout_gravity="center"
                 android:padding="2dp"
                 android:textSize="20sp"
-                android:textColor="@color/white" />
+                android:textColor="@color/white"
+                android:maxEms="7"/>
 
             <TextView
                 android:id="@+id/departureNameTV"
@@ -42,7 +43,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:padding="2dp"
-                android:textColor="@color/white" />
+                android:textColor="@color/white"
+                android:maxEms="7"/>
 
         </LinearLayout>
 
@@ -66,7 +68,8 @@
                 android:layout_gravity="center"
                 android:padding="2dp"
                 android:textSize="20sp"
-                android:textColor="@color/white"/>
+                android:textColor="@color/white"
+                android:maxEms="7"/>
 
             <TextView
                 android:id="@+id/arrivalNameTV"
@@ -74,7 +77,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:padding="2dp"
-                android:textColor="@color/white" />
+                android:textColor="@color/white"
+                android:maxEms="7"/>
 
         </LinearLayout>
 

@@ -29,7 +29,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:padding="2dp"
-                android:textColor="@color/black" />
+                android:textColor="@color/black"
+                android:textSize="12sp"/>
 
         </LinearLayout>
 
@@ -60,7 +61,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:padding="2dp"
-                android:textColor="@color/black" />
+                android:textColor="@color/black"
+                android:textSize="12sp"/>
 
         </LinearLayout>
 
