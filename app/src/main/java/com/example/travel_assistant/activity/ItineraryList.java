@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.speech.tts.TextToSpeech;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -29,10 +30,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.travel_assistant.R;
-import com.example.travel_assistant.adapter.FlightListAdapter;
-import com.example.travel_assistant.adapter.TravelItineraryDayAdapter;
 import com.example.travel_assistant.adapter.TravelItineraryListAdapter;
-import com.example.travel_assistant.model.ItineraryDayModel;
+import com.example.travel_assistant.model.ItineraryItemModel;
 import com.example.travel_assistant.model.ItineraryModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -49,12 +48,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -93,6 +87,12 @@ public class ItineraryList extends AppCompatActivity {
     ArrayList<ItineraryModel> itineraryArrayList = new ArrayList<>();
     TravelItineraryListAdapter customAdapter;
 
+    //for itinerary generation
+    String generatingItineraryId = "";
+    String generatingItineraryTitle = "";
+    String generatingItineraryLocation = "";
+    boolean currentlyGenerating = false;
+
     //variables for popup window
     LayoutInflater layoutInflater;
     int width = ViewGroup.LayoutParams.MATCH_PARENT;
@@ -111,6 +111,9 @@ public class ItineraryList extends AppCompatActivity {
     //initialise firebase auth and firestore
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     FirebaseAuth auth = FirebaseAuth.getInstance();
+
+    //initialise tts
+    TextToSpeech textToSpeech;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,7 +145,7 @@ public class ItineraryList extends AppCompatActivity {
         //generateItinerary("Who are you?");
 
         //Log.d(TAG, "onCreate: chatgpt: " + gptResponse);
-        callAPI("How are you?");
+        //callAPI("How are you?");
 
         //get the user's travel itinerary from firestore and populate the listview
         getUserItinerary();
@@ -192,14 +195,19 @@ public class ItineraryList extends AppCompatActivity {
         createItineraryFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setPopupWindow();
+                setPopupWindow("create");
             }
         });
 
         generateItineraryFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                generateItinerary();
+
+                //set the generating status to true
+                currentlyGenerating = true;
+
+                setPopupWindow("generate");
+                //generateItinerary();
             }
         });
 
@@ -228,7 +236,7 @@ public class ItineraryList extends AppCompatActivity {
                                 String itineraryDayCount = document.getData().get("itinerary_day_count").toString();
 
                                 //create an itinerary model to be added into the itinerary array list
-                                ArrayList<ItineraryDayModel> itineraryDayArrayList = new ArrayList<>();
+                                ArrayList<ItineraryItemModel> itineraryDayArrayList = new ArrayList<>();
 
                                 ItineraryModel itineraryModel = new ItineraryModel(itineraryId, itineraryTitle, itineraryLocation, itineraryFrom, itineraryTo, Integer.parseInt(itineraryDayCount), itineraryDayArrayList);
 
@@ -278,11 +286,6 @@ public class ItineraryList extends AppCompatActivity {
                                         //if user clicks yes, delete the selected itinerary
                                         deleteItinerary(customAdapter.getItem(i).itineraryId);
 
-                                        //clear the current itinerary listview and get the user's travel itinerary again
-                                        itineraryArrayList.clear();
-                                        customAdapter.notifyDataSetChanged();
-                                        getUserItinerary();
-
                                     });
 
                                     //set the negative button with no
@@ -314,7 +317,7 @@ public class ItineraryList extends AppCompatActivity {
         animator.start();
     }
 
-    public void setPopupWindow(){
+    public void setPopupWindow(String from){
 
         //initialise the itineraryPopupView
         itineraryPopupView = layoutInflater.inflate(R.layout.create_itinerary_popup, null);
@@ -482,6 +485,12 @@ public class ItineraryList extends AppCompatActivity {
                 String itineraryFromStr = itineraryFromET.getText().toString();
                 String itineraryToStr = itineraryToET.getText().toString();
 
+                if (from.equals("generate")){
+                    generatingItineraryTitle = itineraryTitleStr;
+                    generatingItineraryLocation = itineraryLocationStr;
+                    itineraryTitleStr += " - (Generating...)";
+                }
+
                 //check if the required fields are filled
                 //if not, display a toast message to notify the user
                 if(TextUtils.isEmpty(itineraryTitleStr) || TextUtils.isEmpty(itineraryLocationStr) || TextUtils.isEmpty(itineraryFromStr) || TextUtils.isEmpty(itineraryToStr)){
@@ -508,11 +517,11 @@ public class ItineraryList extends AppCompatActivity {
                         Log.d(TAG, "onClick: day count: " + dayCount);
 
                         //create a new itinerary day model to be inserted into firestore
-                        ArrayList<ItineraryDayModel> itineraryDayArrayList = new ArrayList<>();
+                        ArrayList<ItineraryItemModel> itineraryDayArrayList = new ArrayList<>();
 
                         ItineraryModel itineraryModel = new ItineraryModel("", itineraryTitleStr, itineraryLocationStr, itineraryFromStr, itineraryToStr, Integer.parseInt(dayCount), itineraryDayArrayList);
 
-                        insertItinerary(itineraryModel);
+                        insertItinerary(itineraryModel, from);
 
 //                        popupWindow.dismiss();
 //                        getUserItinerary();
@@ -534,7 +543,7 @@ public class ItineraryList extends AppCompatActivity {
 
     }
 
-    public void insertItinerary(ItineraryModel itineraryModel){
+    public void insertItinerary(ItineraryModel itineraryModel, String from){
 
         // Create a new itinerary
         Map<String, Object> itinerary = new HashMap<>();
@@ -556,6 +565,11 @@ public class ItineraryList extends AppCompatActivity {
                         Log.d(TAG, "DocumentSnapshot (itinerary) added with ID: " + documentReference.getId());
                         String itineraryDocId = documentReference.getId();
 
+                        //if the itinerary is being generated, assign the generating itinerary's id
+                        if(from.equals("generate")){
+                            generatingItineraryId = itineraryDocId;
+                        }
+
                         //add the doc ref id into the itinerary_id
                         DocumentReference itineraryRef = db.collection("itinerary").document(itineraryDocId);
 
@@ -566,6 +580,10 @@ public class ItineraryList extends AppCompatActivity {
                                     @Override
                                     public void onSuccess(Void aVoid) {
                                         Log.d(TAG, "DocumentSnapshot successfully updated!");
+
+                                        if(from.equals("generate")){
+                                            generateItinerary(itineraryModel.itineraryDateFrom, itineraryModel.itineraryDaysCount);
+                                        }
 
                                         //dismiss the popup window and reset the listview
                                         popupWindow.dismiss();
@@ -639,6 +657,7 @@ public class ItineraryList extends AppCompatActivity {
                                                             public void onSuccess(Void aVoid) {
                                                                 Log.d(TAG, "DocumentSnapshot successfully deleted!");
 
+
                                                             }
                                                         })
                                                         .addOnFailureListener(new OnFailureListener() {
@@ -649,6 +668,11 @@ public class ItineraryList extends AppCompatActivity {
                                                         });
 
                                             }
+
+                                            //clear the current itinerary listview and get the user's travel itinerary again
+                                            itineraryArrayList.clear();
+                                            customAdapter.notifyDataSetChanged();
+                                            getUserItinerary();
 
                                         } else {
                                             Log.d(TAG, "Error getting documents: ", task.getException());
@@ -667,63 +691,129 @@ public class ItineraryList extends AppCompatActivity {
 
     }
 
-    public void callAPI(String question){
+//    public void callAPI(String question){
+//
+//        JSONObject jsonBody = new JSONObject();
+//        try {
+//            jsonBody.put("model","gpt-3.5-turbo");
+//            JSONArray messageArr = new JSONArray();
+//            JSONObject obj = new JSONObject();
+//            obj.put("role", "user");
+//            obj.put("content", question);
+//            messageArr.put(obj);
+//
+//            jsonBody.put("message", messageArr);
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//
+//        RequestBody body = RequestBody.create(jsonBody.toString(), JSON);
+//        okhttp3.Request request = new okhttp3.Request.Builder()
+//                .url("https://api.openai.com/v1/chat/completions")
+//                .header("Authorization","Bearer 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")
+//                .post(body)
+//                .build();
+//
+//        client.newCall(request).enqueue(new Callback() {
+//            @Override
+//            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+//                Log.d(TAG, "onFailure: Failed to load response due to: " + e.getMessage());
+//            }
+//
+//            @Override
+//            public void onResponse(@NonNull Call call, @NonNull okhttp3.Response response) throws IOException {
+//
+//                if(response.isSuccessful()){
+//                    JSONObject  jsonObject = null;
+//                    try {
+//                        jsonObject = new JSONObject(response.body().string());
+//                        JSONArray jsonArray = jsonObject.getJSONArray("choices");
+//                        String result = jsonArray.getJSONObject(0)
+//                                .getJSONObject("message")
+//                                .getString("content");
+//                        Log.d(TAG, "onResponse: " + result.trim());
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                    }
+//
+//
+//                }else{
+//                    Log.d(TAG, "onResponseFailure: Failed to load response due to: " + response.body().string());
+//                }
+//
+//            }
+//        });
+//
+//
+//    }
 
-        JSONObject jsonBody = new JSONObject();
-        try {
-            jsonBody.put("model","gpt-3.5-turbo");
-            JSONArray messageArr = new JSONArray();
-            JSONObject obj = new JSONObject();
-            obj.put("role", "user");
-            obj.put("content", question);
-            messageArr.put(obj);
+    private void setItineraryTitle(String docID){
 
-            jsonBody.put("message", messageArr);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        DocumentReference itineraryRef = db.collection("itinerary").document(docID);
 
-        RequestBody body = RequestBody.create(jsonBody.toString(), JSON);
-        okhttp3.Request request = new okhttp3.Request.Builder()
-                .url("https://api.openai.com/v1/chat/completions")
-                .header("Authorization","Bearer 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")
-                .post(body)
-                .build();
+        //update the itinerary title
+        itineraryRef
+                .update("itinerary_title", generatingItineraryTitle)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "DocumentSnapshot successfully updated!");
 
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                Log.d(TAG, "onFailure: Failed to load response due to: " + e.getMessage());
-            }
+                        //clear the current itinerary listview and get the user's travel itinerary again
+                        itineraryArrayList.clear();
+                        customAdapter.notifyDataSetChanged();
+                        getUserItinerary();
+                        currentlyGenerating = false;
 
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull okhttp3.Response response) throws IOException {
-
-                if(response.isSuccessful()){
-                    JSONObject  jsonObject = null;
-                    try {
-                        jsonObject = new JSONObject(response.body().string());
-                        JSONArray jsonArray = jsonObject.getJSONArray("choices");
-                        String result = jsonArray.getJSONObject(0)
-                                .getJSONObject("message")
-                                .getString("content");
-                        Log.d(TAG, "onResponse: " + result.trim());
-                    } catch (JSONException e) {
-                        e.printStackTrace();
                     }
-
-
-                }else{
-                    Log.d(TAG, "onResponseFailure: Failed to load response due to: " + response.body().string());
-                }
-
-            }
-        });
-
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error updating document", e);
+                    }
+                });
 
     }
 
-    private void generateItinerary(){
+    private void addItineraryItems(ItineraryItemModel itineraryItemModel, int currentNumber, int numberCount){
+
+        // Create a new itinerary_item
+        Map<String, Object> itineraryItem = new HashMap<>();
+        itineraryItem.put("itinerary_id", generatingItineraryId);
+        itineraryItem.put("itinerary_item_location", itineraryItemModel.locationName);
+        itineraryItem.put("itinerary_item_date", itineraryItemModel.locationDate);
+        itineraryItem.put("itinerary_item_from", itineraryItemModel.locationTimeFrom);
+        itineraryItem.put("itinerary_item_to", itineraryItemModel.locationTimeTo);
+        itineraryItem.put("itinerary_item_notes", itineraryItemModel.notes);
+        itineraryItem.put("itinerary_date_time", itineraryItemModel.locationFrom);
+        itineraryItem.put("user_uid", uid);
+
+
+        // Add a new itinerary item document with a generated ID
+        db.collection("itinerary_item")
+                .add(itineraryItem)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        Log.d(TAG, "DocumentSnapshot (itinerary_item) added with ID: " + documentReference.getId());
+
+                        if (currentNumber == numberCount){
+                            setItineraryTitle(generatingItineraryId);
+                        }
+
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error adding document (itinerary_item)", e);
+                    }
+                });
+
+    }
+
+    private void generateItinerary(String date, int dayCount){
 
         executor.execute(new Runnable() {
             @Override
@@ -732,7 +822,7 @@ public class ItineraryList extends AppCompatActivity {
                 try{
 
                     Request request = new Request.Builder()
-                            .url("https://ai-trip-planner.p.rapidapi.com/?days=" + "3" + "&destination=" + "London,UK")
+                            .url("https://ai-trip-planner.p.rapidapi.com/?days=" + dayCount + "&destination=" + generatingItineraryLocation)
                             .get()
                             .addHeader("X-RapidAPI-Key", "b34ecf7a0fmsh5cbb7c353f899abp1c8c15jsn43d3583a9734")
                             .addHeader("X-RapidAPI-Host", "ai-trip-planner.p.rapidapi.com")
@@ -744,6 +834,16 @@ public class ItineraryList extends AppCompatActivity {
                         @Override
                         public void onFailure(@NonNull Call call, @NonNull IOException e) {
                             Log.d(TAG, "onFailure: error getting trip: " + e);
+
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(ItineraryList.this, "Please ensure that the inputs (specifically the location) is proper.", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                            deleteItinerary(generatingItineraryId);
+                            currentlyGenerating = false;
+
                         }
 
                         @Override
@@ -758,6 +858,8 @@ public class ItineraryList extends AppCompatActivity {
                                 JSONObject jsonObject = new JSONObject(responseStr);
                                 JSONArray jsonArray = new JSONArray(jsonObject.getString("plan"));
 
+                                ArrayList<ItineraryItemModel> itineraryItemArrayList = new ArrayList<>();
+
                                 for (int i = 0; i < jsonArray.length(); i++){
 
                                     JSONObject dayJson = jsonArray.getJSONObject(i);
@@ -765,24 +867,79 @@ public class ItineraryList extends AppCompatActivity {
 
                                     Log.d(TAG, "onResponse: dayStr: " + dayStr);
 
+                                    //get the day, month and full date in string
+                                    SimpleDateFormat date_format = new SimpleDateFormat("dd/MM/yyyy");
+                                    Date itineraryFromDate = date_format.parse(date);
+
+                                    Calendar cal = Calendar.getInstance();
+
+                                    cal.setTime(itineraryFromDate);
+
+                                    //the calender will be the first date, add i to it to act as a counter for the days
+                                    cal.add(Calendar.DAY_OF_MONTH, i);
+
+                                    //get the current date in the for loop in string
+                                    String currentDate = date_format.format(cal.getTime());
+
+                                    //create a json array to hold all the activities of the current itinerary day
                                     JSONArray activityJson = dayJson.getJSONArray("activities");
 
                                     for (int x = 0; x < activityJson.length(); x++){
 
-                                        JSONObject dayDetails = activityJson.getJSONObject(i);
+                                        JSONObject dayDetails = activityJson.getJSONObject(x);
                                         String time = dayDetails.getString("time");
                                         String description = dayDetails.getString("description");
 
                                         Log.d(TAG, "onResponse: time: " + time);
                                         Log.d(TAG, "onResponse: description: " + description);
 
+
+                                        //change the string date data into date time variable
+                                        Date itineraryFromDateTime;
+
+                                        //need to first make sure the time is in the format of HH:mm
+                                        SimpleDateFormat inputFormat = new SimpleDateFormat("h:mm a");
+                                        SimpleDateFormat outputFormat = new SimpleDateFormat("HH:mm");
+
+                                        try {
+                                            Date date = inputFormat.parse(time); // This converts the time string to a Date object.
+                                            time = outputFormat.format(date); // This formats the Date object back to a time string in "HH:mm" format.
+                                        } catch (ParseException e) {
+                                            e.printStackTrace();
+                                        }
+
+
+                                        String itineraryFromDateTimeStr = currentDate + " " + time;
+                                        DateFormat dateTimeformat= new SimpleDateFormat("dd/MM/yyyy HH:mm");
+                                        itineraryFromDateTime = dateTimeformat.parse(itineraryFromDateTimeStr);
+
+
+                                        ItineraryItemModel itineraryItemModel = new ItineraryItemModel(generatingItineraryId, description, currentDate, time, "", "", "", itineraryFromDateTime);
+
+                                        itineraryItemArrayList.add(itineraryItemModel);
+
                                     }
+
+                                }
+
+                                //for loop the insertion of the itinerary days into firestore
+                                for(int i = 0; i<itineraryItemArrayList.size(); i++){
+
+                                    addItineraryItems(itineraryItemArrayList.get(i), (i + 1), itineraryItemArrayList.size());
 
                                 }
 
                             }
                             catch (Exception e){
                                 Log.d(TAG, "onResponse: error parsing json: " + e);
+                                handler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(ItineraryList.this, "Please ensure that the inputs (specifically the location) is proper.", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                                deleteItinerary(generatingItineraryId);
+                                currentlyGenerating = false;
                             }
 
                         }
@@ -791,6 +948,14 @@ public class ItineraryList extends AppCompatActivity {
                 }
                 catch (Exception e){
                     Log.d(TAG, "run: error fetching trip planner api");
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(ItineraryList.this, "Please ensure that the inputs (specifically the location) is proper.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    deleteItinerary(generatingItineraryId);
+                    currentlyGenerating = false;
                 }
 
             }

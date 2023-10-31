@@ -3,12 +3,12 @@ package com.example.travel_assistant.model;
 import java.io.Serializable;
 import java.util.Date;
 
-public class ItineraryDayModel implements Serializable {
+public class ItineraryItemModel implements Serializable {
 
     public String itineraryId, locationName, locationDate, locationTimeFrom, locationTimeTo, notes, docID;
-    public Date locationFrom, locationTo;
+    public Date locationFrom;
 
-    public ItineraryDayModel(String itineraryId, String locationName, String locationDate, String locationTimeFrom, String locationTimeTo, String notes, String docID, Date locationFrom, Date locationTo) {
+    public ItineraryItemModel(String itineraryId, String locationName, String locationDate, String locationTimeFrom, String locationTimeTo, String notes, String docID, Date locationFrom) {
         this.itineraryId = itineraryId;
         this.locationName = locationName;
         this.locationDate = locationDate;
@@ -17,7 +17,6 @@ public class ItineraryDayModel implements Serializable {
         this.notes = notes;
         this.docID = docID;
         this.locationFrom = locationFrom;
-        this.locationTo = locationTo;
     }
 
     public String getItineraryId() {
@@ -74,14 +73,6 @@ public class ItineraryDayModel implements Serializable {
 
     public void setLocationFrom(Date locationFrom) {
         this.locationFrom = locationFrom;
-    }
-
-    public Date getLocationTo() {
-        return locationTo;
-    }
-
-    public void setLocationTo(Date locationTo) {
-        this.locationTo = locationTo;
     }
 
     public String getDocID() {

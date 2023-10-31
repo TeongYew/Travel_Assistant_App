@@ -9,21 +9,17 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.example.travel_assistant.R;
-import com.example.travel_assistant.model.ItineraryDayModel;
-import com.example.travel_assistant.model.ItineraryModel;
+import com.example.travel_assistant.model.ItineraryItemModel;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 
 public class TravelItineraryDayAdapter extends BaseAdapter {
 
     Context context;
-    ArrayList<ItineraryDayModel> itineraryDayArrayList;
+    ArrayList<ItineraryItemModel> itineraryDayArrayList;
     LayoutInflater inflater;
 
-    public TravelItineraryDayAdapter(Context context, ArrayList<ItineraryDayModel> itineraryDayArrayList) {
+    public TravelItineraryDayAdapter(Context context, ArrayList<ItineraryItemModel> itineraryDayArrayList) {
         this.context = context;
         this.itineraryDayArrayList = itineraryDayArrayList;
         //Log.d("TAG", "getView: got in the adapter constructor");
@@ -38,7 +34,7 @@ public class TravelItineraryDayAdapter extends BaseAdapter {
     }
 
     @Override
-    public ItineraryDayModel getItem(int i) {
+    public ItineraryItemModel getItem(int i) {
         return itineraryDayArrayList.get(i);
     }
 

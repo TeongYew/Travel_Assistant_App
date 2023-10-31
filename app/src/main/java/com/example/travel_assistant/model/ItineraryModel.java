@@ -7,9 +7,9 @@ public class ItineraryModel implements Serializable {
 
     public String itineraryId, itineraryName, itineraryLocation, itineraryDateFrom, itineraryDateTo;
     public int itineraryDaysCount;
-    public ArrayList<ItineraryDayModel> itineraryDays;
+    public ArrayList<ItineraryItemModel> itineraryDays;
 
-    public ItineraryModel(String itineraryId, String itineraryName, String itineraryLocation, String itineraryDateFrom, String itineraryDateTo, int itineraryDaysCount, ArrayList<ItineraryDayModel> itineraryDays) {
+    public ItineraryModel(String itineraryId, String itineraryName, String itineraryLocation, String itineraryDateFrom, String itineraryDateTo, int itineraryDaysCount, ArrayList<ItineraryItemModel> itineraryDays) {
         this.itineraryId = itineraryId;
         this.itineraryName = itineraryName;
         this.itineraryLocation = itineraryLocation;
@@ -59,11 +59,11 @@ public class ItineraryModel implements Serializable {
         this.itineraryDaysCount = itineraryDaysCount;
     }
 
-    public ArrayList<ItineraryDayModel> getItineraryDays() {
+    public ArrayList<ItineraryItemModel> getItineraryDays() {
         return itineraryDays;
     }
 
-    public void setItineraryDays(ArrayList<ItineraryDayModel> itineraryDays) {
+    public void setItineraryDays(ArrayList<ItineraryItemModel> itineraryDays) {
         this.itineraryDays = itineraryDays;
     }
 

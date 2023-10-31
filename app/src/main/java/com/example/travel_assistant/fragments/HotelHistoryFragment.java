@@ -1,6 +1,5 @@
 package com.example.travel_assistant.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -11,16 +10,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.PopupWindow;
-import android.widget.RelativeLayout;
 
 import com.example.travel_assistant.R;
-import com.example.travel_assistant.activity.ItineraryPage;
 import com.example.travel_assistant.adapter.HotelHistoryListAdapter;
-import com.example.travel_assistant.adapter.TravelItineraryListAdapter;
 import com.example.travel_assistant.model.HotelHistoryModel;
-import com.example.travel_assistant.model.ItineraryDayModel;
-import com.example.travel_assistant.model.ItineraryModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;

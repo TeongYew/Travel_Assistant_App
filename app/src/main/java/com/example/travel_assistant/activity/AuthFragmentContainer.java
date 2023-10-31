@@ -22,6 +22,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class AuthFragmentContainer extends AppCompatActivity {
 
@@ -35,6 +38,7 @@ public class AuthFragmentContainer extends AppCompatActivity {
 
         //getData();
         //getString("NYC");
+
     }
 
     public void getString(String iata){

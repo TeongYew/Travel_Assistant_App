@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -16,17 +17,23 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.travel_assistant.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.common.base.Charsets;
 
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -70,6 +77,7 @@ public class CommonPhrases extends AppCompatActivity {
     boolean focusable = true;
     PopupWindow popupWindow;
     View translatorPopupView;
+    View translationPopupView;
 
     //for async methods
     private Executor executor = Executors.newSingleThreadExecutor();
@@ -77,6 +85,9 @@ public class CommonPhrases extends AppCompatActivity {
 
     //initialise okhttpclient
     OkHttpClient client = new OkHttpClient();
+
+    //initialise tts
+    TextToSpeech textToSpeech;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,12 +119,80 @@ public class CommonPhrases extends AppCompatActivity {
         initialiseArrayLists();
 
 
+        // create the TTS object
+        textToSpeech = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int i) {
+
+                // if No error is found then only it will run
+                if (i != TextToSpeech.ERROR){
+                    // To Choose language of speech
+                    //textToSpeech.setLanguage(Locale.ENGLISH);
+                    //textToSpeech.speak("Hello World", TextToSpeech.QUEUE_FLUSH, null, null);
+
+                    //try and set the initial language (malay in this case) of the tts
+                    int result = textToSpeech.setLanguage(new Locale("ms", "MY"));
+
+                    if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                        textToSpeech.setLanguage(new Locale("id", "ID"));
+                    } else {
+                        textToSpeech.setLanguage(new Locale("ms", "MY"));
+                    }
+                }
+                else {
+                    Log.d(TAG, "onInit: Something went wrong when initialising TTS");
+                }
+
+            }
+        });
+
         languageSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 //get the current selected language
                 currentLanguage = languageSpinner.getSelectedItem().toString();
                 Log.d(TAG, "onItemClick: current language: " + currentLanguage);
+
+                //change the tts language accordingly
+                switch (currentLanguage){
+                    case "Malay":
+                        //textToSpeech.setLanguage(new Locale("ms", "MY"));
+
+                        //set the tts language to the currently selected language
+                        int malayResult = textToSpeech.setLanguage(new Locale("ms", "MY"));
+
+                        if (malayResult == TextToSpeech.LANG_MISSING_DATA || malayResult == TextToSpeech.LANG_NOT_SUPPORTED) {
+                            textToSpeech.setLanguage(new Locale("id", "ID"));
+                        } else {
+                            textToSpeech.setLanguage(new Locale("ms", "MY"));
+                        }
+                        break;
+                    case "Mandarin":
+                        //textToSpeech.setLanguage(new Locale("zh", "CN"));
+
+                        //set the tts language to the currently selected language
+                        int mandarinResult = textToSpeech.setLanguage(new Locale("zh", "CN"));
+
+                        if (mandarinResult == TextToSpeech.LANG_MISSING_DATA || mandarinResult == TextToSpeech.LANG_NOT_SUPPORTED) {
+                            textToSpeech.setLanguage(Locale.ENGLISH);
+                        } else {
+                            textToSpeech.setLanguage(new Locale("zh", "CN"));
+                        }
+                        break;
+                    case "Tamil":
+                        //textToSpeech.setLanguage(new Locale("ta", "IN"));
+
+                        //set the tts language to the currently selected language
+                        int tamilResult = textToSpeech.setLanguage(new Locale("ta", "IN"));
+
+                        if (tamilResult == TextToSpeech.LANG_MISSING_DATA || tamilResult == TextToSpeech.LANG_NOT_SUPPORTED) {
+                            textToSpeech.setLanguage(Locale.ENGLISH);
+                        } else {
+                            textToSpeech.setLanguage(new Locale("ta", "IN"));
+                        }
+                        break;
+                }
+
             }
 
             @Override
@@ -152,6 +231,11 @@ public class CommonPhrases extends AppCompatActivity {
                         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                             String selectedPhrase = generalList.get(i).toString();
                             Log.d(TAG, "onItemClick: selected phrase: " + selectedPhrase);
+
+                            //url encode the string and call the translate method using it
+                            String encodedString = urlEncodeString(selectedPhrase);
+                            translate(encodedString);
+
                         }
                     });
 
@@ -201,6 +285,11 @@ public class CommonPhrases extends AppCompatActivity {
                         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                             String selectedPhrase = greetingsList.get(i).toString();
                             Log.d(TAG, "onItemClick: selected phrase: " + selectedPhrase);
+
+                            //url encode the string and call the translate method using it
+                            String encodedString = urlEncodeString(selectedPhrase);
+                            translate(encodedString);
+
                         }
                     });
                 }
@@ -249,6 +338,11 @@ public class CommonPhrases extends AppCompatActivity {
                         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                             String selectedPhrase = navigationsList.get(i).toString();
                             Log.d(TAG, "onItemClick: selected phrase: " + selectedPhrase);
+
+                            //url encode the string and call the translate method using it
+                            String encodedString = urlEncodeString(selectedPhrase);
+                            translate(encodedString);
+
                         }
                     });
                 }
@@ -297,6 +391,11 @@ public class CommonPhrases extends AppCompatActivity {
                         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                             String selectedPhrase = emergenciesList.get(i).toString();
                             Log.d(TAG, "onItemClick: selected phrase: " + selectedPhrase);
+
+                            //url encode the string and call the translate method using it
+                            String encodedString = urlEncodeString(selectedPhrase);
+                            translate(encodedString);
+
                         }
                     });
                 }
@@ -345,6 +444,11 @@ public class CommonPhrases extends AppCompatActivity {
                         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                             String selectedPhrase = accommodationsList.get(i).toString();
                             Log.d(TAG, "onItemClick: selected phrase: " + selectedPhrase);
+
+                            //url encode the string and call the translate method using it
+                            String encodedString = urlEncodeString(selectedPhrase);
+                            translate(encodedString);
+
                         }
                     });
                 }
@@ -372,9 +476,22 @@ public class CommonPhrases extends AppCompatActivity {
             }
         });
 
+
     }
 
-    private void translate(){
+    @Override
+    protected void onDestroy() {
+        //make sure tts is shut down
+        if (textToSpeech != null) {
+            textToSpeech.stop();
+            textToSpeech.shutdown();
+        }
+        super.onDestroy();
+    }
+
+    private void translate(String urlEncodedPhrase){
+
+        String currentLanguageCode = getString(getResources().getIdentifier(currentLanguage, "string", getPackageName()));
 
         executor.execute(new Runnable() {
             @Override
@@ -397,7 +514,7 @@ public class CommonPhrases extends AppCompatActivity {
 //                    //Response response = client.newCall(request).execute();
 
                     Request request = new Request.Builder()
-                            .url("https://nlp-translation.p.rapidapi.com/v1/translate?text=" + phrasesURLEncoded + "&to=" + getString(getResources().getIdentifier("Tamil", "string", getPackageName())) + "&from=en")
+                            .url("https://nlp-translation.p.rapidapi.com/v1/translate?text=" + urlEncodedPhrase + "&to=" + currentLanguageCode + "&from=en")
                             .get()
                             .addHeader("X-RapidAPI-Key", "b34ecf7a0fmsh5cbb7c353f899abp1c8c15jsn43d3583a9734")
                             .addHeader("X-RapidAPI-Host", "nlp-translation.p.rapidapi.com")
@@ -416,7 +533,20 @@ public class CommonPhrases extends AppCompatActivity {
 
                             Log.d(TAG, "onResponse: response str: " + responseStr);
 
+                            try{
 
+                                JSONObject jsonObject = new JSONObject(responseStr);
+
+                                JSONObject translatedTextJson = jsonObject.getJSONObject("translated_text");
+
+                                String translatedText = translatedTextJson.getString(currentLanguageCode);
+
+                                setupTranslationPopup(translatedText);
+
+                            }
+                            catch (Exception e){
+                                Log.d(TAG, "onResponse: error parsing translation json: " + e);
+                            }
 
                         }
                     });
@@ -430,6 +560,73 @@ public class CommonPhrases extends AppCompatActivity {
 
             }
         });
+
+    }
+
+    private void textToSpeech(String text){
+
+        if (textToSpeech != null) {
+            textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
+        }
+
+    }
+
+    private String urlEncodeString(String phrase){
+
+        String encodedString = "";
+
+        try {
+            encodedString = URLEncoder.encode(phrase, "UTF-8").replaceAll("\\+", "%20");
+        }
+        catch (Exception e){
+            Log.d(TAG, "urlEncodeString: error encoding string: " + e);
+        }
+
+
+        return encodedString;
+    }
+
+    private void setupTranslationPopup(String translation){
+
+        //initialise the translatorPopupView
+        translationPopupView = layoutInflater.inflate(R.layout.translation_popup, null);
+
+        popupWindow = new PopupWindow(translationPopupView,width,height,focusable);
+
+        //display the translator popup window
+        phrasesRL.post(new Runnable() {
+            @Override
+            public void run() {
+                popupWindow.showAtLocation(phrasesRL, Gravity.CENTER,0,0);
+
+            }
+        });
+
+        //initialise the layout variables of translatorPopupView
+        RelativeLayout translationPopupRL = translationPopupView.findViewById(R.id.translationPopupRL);
+        TextView translatedTextTV = translationPopupView.findViewById(R.id.translatedTextTV);
+        ImageButton speechIB = translationPopupView.findViewById(R.id.speechIB);
+
+        //set the translation to the textview
+        translatedTextTV.setText(translation);
+
+        Log.d(TAG, "setupTranslationPopup: translation: " + translation);
+
+        speechIB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                textToSpeech(translation);
+            }
+        });
+
+        //if user clicks on the outside of the popup window, close the popup`
+//        translationPopupRL.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View view, MotionEvent motionEvent) {
+//                popupWindow.dismiss();
+//                return true;
+//            }
+//        });
 
     }
 
@@ -464,7 +661,17 @@ public class CommonPhrases extends AppCompatActivity {
             }
         });
 
+        translateBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
+                String inputText = translateInputET.getText().toString();
+                String encodedText = urlEncodeString(inputText);
+
+                translate(encodedText);
+
+            }
+        });
 
     }
 
@@ -563,8 +770,10 @@ public class CommonPhrases extends AppCompatActivity {
 
         try{
 
+            phrasesURLEncoded += URLEncoder.encode(generalList.get(0).toString(), "UTF-8").replaceAll("\\+", "%20");
+
             for (int i = 0; i < generalList.size(); i++){
-                phrasesURLEncoded += URLEncoder.encode(generalList.get(i).toString(), "UTF-8").replaceAll("\\+", "%20");
+
             }
 
             for (int i = 0; i < greetingsList.size(); i++){
@@ -585,7 +794,7 @@ public class CommonPhrases extends AppCompatActivity {
 
             Log.d(TAG, "initialiseArrayLists: phrases url encoded: " + phrasesURLEncoded);
 
-            translate();
+            //translate();
 
         }
         catch (Exception e){

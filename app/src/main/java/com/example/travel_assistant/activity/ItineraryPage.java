@@ -1,7 +1,5 @@
 package com.example.travel_assistant.activity;
 
-import static android.content.ContentValues.TAG;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -10,9 +8,7 @@ import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -22,7 +18,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
@@ -32,8 +27,7 @@ import android.widget.Toast;
 
 import com.example.travel_assistant.R;
 import com.example.travel_assistant.adapter.TravelItineraryDayAdapter;
-import com.example.travel_assistant.adapter.TravelItineraryListAdapter;
-import com.example.travel_assistant.model.ItineraryDayModel;
+import com.example.travel_assistant.model.ItineraryItemModel;
 import com.example.travel_assistant.model.ItineraryModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -43,7 +37,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -71,7 +64,7 @@ public class ItineraryPage extends AppCompatActivity {
     //variables
     int firstCardSet = 1;
     String uid = "";
-    ArrayList<ItineraryDayModel> itineraryDayArrayList = new ArrayList<>();
+    ArrayList<ItineraryItemModel> itineraryItemArrayList = new ArrayList<>();
     ItineraryModel itineraryModel;
     String currentDate = "";
 
@@ -133,7 +126,7 @@ public class ItineraryPage extends AppCompatActivity {
 
         //inflate the date cards of the itinerary and get all the itinerary items
         inflateDateCards();
-        getItineraryDay();
+        getItineraryItem();
         
 
         addItineraryFAB.setOnClickListener(new View.OnClickListener() {
@@ -198,7 +191,7 @@ public class ItineraryPage extends AppCompatActivity {
 
     }
 
-    public void setItineraryDetailsPopupView(ItineraryDayModel itineraryDayModel){
+    public void setItineraryDetailsPopupView(ItineraryItemModel itineraryItemModel){
 
         //initialise itineraryDetailsPopupView
         itineraryDetailsPopupView = layoutInflater.inflate(R.layout.edit_travel_itinerary_popup, null);
@@ -234,13 +227,13 @@ public class ItineraryPage extends AppCompatActivity {
         Button saveItineraryItemBtn = itineraryDetailsPopupView.findViewById(R.id.saveItineraryItemBtn);
 
         //set the edit texts with the current itinerary item data
-        itineraryItemLocationET.setText(itineraryDayModel.locationName);
-        itineraryItemTimeFromET.setText(itineraryDayModel.locationTimeFrom);
-        itineraryItemTimeToET.setText(itineraryDayModel.locationTimeTo);
-        itineraryItemNotesET.setText(itineraryDayModel.notes);
+        itineraryItemLocationET.setText(itineraryItemModel.locationName);
+        itineraryItemTimeFromET.setText(itineraryItemModel.locationTimeFrom);
+        itineraryItemTimeToET.setText(itineraryItemModel.locationTimeTo);
+        itineraryItemNotesET.setText(itineraryItemModel.notes);
 
         //if time to is empty, set it to display "-"
-        if(itineraryDayModel.locationTimeTo.equals("")){
+        if(itineraryItemModel.locationTimeTo.equals("")){
             itineraryItemTimeToET.setText("-");
         }
 
@@ -337,12 +330,12 @@ public class ItineraryPage extends AppCompatActivity {
                 String editedNotes = itineraryItemNotesET.getText().toString();
 
                 //call the method that updates the itinerary item using the user input
-                editItineraryItem(itineraryDayModel.docID, editedLocation, editedTimeFrom, editedTimeTo, editedNotes);
+                editItineraryItem(itineraryItemModel.docID, editedLocation, editedTimeFrom, editedTimeTo, editedNotes);
 
                 //clear the itinerary item listview and get the itinerary items from firestore
-                itineraryDayArrayList.clear();
+                itineraryItemArrayList.clear();
                 customAdapter.notifyDataSetChanged();
-                getItineraryDay();
+                getItineraryItem();
 
                 //close the popup window
                 popupWindow.dismiss();
@@ -352,18 +345,18 @@ public class ItineraryPage extends AppCompatActivity {
 
     }
 
-    public void addItineraryDays(ItineraryDayModel itineraryDayModel){
+    public void addItineraryItems(ItineraryItemModel itineraryItemModel){
 
         // Create a new itinerary_item
         Map<String, Object> itineraryItem = new HashMap<>();
         itineraryItem.put("itinerary_id", itineraryModel.itineraryId);
         //itineraryItem.put("itinerary_item_id", "000001");
-        itineraryItem.put("itinerary_item_location", itineraryDayModel.locationName);
-        itineraryItem.put("itinerary_item_date", itineraryDayModel.locationDate);
-        itineraryItem.put("itinerary_item_from", itineraryDayModel.locationTimeFrom);
-        itineraryItem.put("itinerary_item_to", itineraryDayModel.locationTimeTo);
-        itineraryItem.put("itinerary_item_notes", itineraryDayModel.notes);
-        itineraryItem.put("itinerary_date_time", itineraryDayModel.locationFrom);
+        itineraryItem.put("itinerary_item_location", itineraryItemModel.locationName);
+        itineraryItem.put("itinerary_item_date", itineraryItemModel.locationDate);
+        itineraryItem.put("itinerary_item_from", itineraryItemModel.locationTimeFrom);
+        itineraryItem.put("itinerary_item_to", itineraryItemModel.locationTimeTo);
+        itineraryItem.put("itinerary_item_notes", itineraryItemModel.notes);
+        itineraryItem.put("itinerary_date_time", itineraryItemModel.locationFrom);
         itineraryItem.put("user_uid", uid);
 
 
@@ -386,7 +379,7 @@ public class ItineraryPage extends AppCompatActivity {
 
     }
 
-    public void getItineraryDay(){
+    public void getItineraryItem(){
 
         //get the user's itinerary item using the user's uid and selected itinerary's id
         db.collection("itinerary_item")
@@ -414,34 +407,25 @@ public class ItineraryPage extends AppCompatActivity {
                                 String docID = document.getId();
 
                                 //change the string date data into date variable
-                                Date itineraryFromDate, itineraryToDate;
+                                Date itineraryFromDateTime;
 
                                 try {
-                                    String itineraryFromDateTime = itineraryItemDate + " " + itineraryItemTimeFrom;
-                                    String itineraryToDateTime = itineraryItemDate + " " + itineraryItemTimeTo;
+                                    String itineraryFromDateTimeStr = itineraryItemDate + " " + itineraryItemTimeFrom;
                                     DateFormat dateformat= new SimpleDateFormat("dd/MM/yyyy HH:mm");
-                                    itineraryFromDate = dateformat.parse(itineraryFromDateTime);
-
-                                    if(itineraryItemTimeTo.equals("")){
-                                        DateFormat dateformat2= new SimpleDateFormat("dd/MM/yyyy");
-                                        itineraryToDate = dateformat2.parse(itineraryToDateTime);
-                                    }
-                                    else{
-                                        itineraryToDate = dateformat.parse(itineraryToDateTime);
-                                    }
+                                    itineraryFromDateTime = dateformat.parse(itineraryFromDateTimeStr);
 
                                 } catch (ParseException e) {
                                     throw new RuntimeException(e);
                                 }
 
                                 //create a new itinerary day model to be added into the itinerary day array list
-                                ItineraryDayModel itineraryDayModel = new ItineraryDayModel(itineraryId, itineraryItemLocation, itineraryItemDate, itineraryItemTimeFrom,itineraryItemTimeTo, itineraryItemNotes, docID, itineraryFromDate, itineraryToDate);
-                                itineraryDayArrayList.add(itineraryDayModel);
+                                ItineraryItemModel itineraryItemModel = new ItineraryItemModel(itineraryId, itineraryItemLocation, itineraryItemDate, itineraryItemTimeFrom,itineraryItemTimeTo, itineraryItemNotes, docID, itineraryFromDateTime);
+                                itineraryItemArrayList.add(itineraryItemModel);
 
                             }
 
                             //populate the itinerary day listview
-                            customAdapter = new TravelItineraryDayAdapter(getApplicationContext(), itineraryDayArrayList);
+                            customAdapter = new TravelItineraryDayAdapter(getApplicationContext(), itineraryItemArrayList);
                             itineraryDayLV.setAdapter(customAdapter);
 
                             itineraryDayLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -449,7 +433,7 @@ public class ItineraryPage extends AppCompatActivity {
                                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
                                     //display the popup window to allows the users to edit and update the selected itinerary item
-                                    setItineraryDetailsPopupView(itineraryDayArrayList.get(i));
+                                    setItineraryDetailsPopupView(itineraryItemArrayList.get(i));
 
                                 }
                             });
@@ -476,12 +460,12 @@ public class ItineraryPage extends AppCompatActivity {
                                     builder.setPositiveButton("Yes", (DialogInterface.OnClickListener) (dialog, which) -> {
 
                                         //if user clicks yes, then delete the selected itinerary item
-                                        deleteItineraryItem(itineraryDayArrayList.get(i).docID);
+                                        deleteItineraryItem(itineraryItemArrayList.get(i).docID);
 
                                         //clear the itinerary day list view and get the itinerary items
-                                        itineraryDayArrayList.clear();
+                                        itineraryItemArrayList.clear();
                                         customAdapter.notifyDataSetChanged();
-                                        getItineraryDay();
+                                        getItineraryItem();
 
                                     });
 
@@ -572,21 +556,12 @@ public class ItineraryPage extends AppCompatActivity {
                     }
 
                     //change the string date data into date variable
-                    Date itineraryFromDate, itineraryToDate;
+                    Date itineraryFromDateTime;
 
                     try {
-                        String itineraryFromDateTime = currentDate + " " + itineraryFrom;
-                        String itineraryToDateTime = currentDate + " " + itineraryTo;
+                        String itineraryFromDateTimeStr = currentDate + " " + itineraryFrom;
                         DateFormat dateformat= new SimpleDateFormat("dd/MM/yyyy HH:mm");
-                        itineraryFromDate = dateformat.parse(itineraryFromDateTime);
-
-                        if(itineraryTo.equals("")){
-                            DateFormat dateformat2= new SimpleDateFormat("dd/MM/yyyy");
-                            itineraryToDate = dateformat2.parse(itineraryToDateTime);
-                        }
-                        else{
-                            itineraryToDate = dateformat.parse(itineraryToDateTime);
-                        }
+                        itineraryFromDateTime = dateformat.parse(itineraryFromDateTimeStr);
 
                     } catch (ParseException e) {
                         throw new RuntimeException(e);
@@ -594,17 +569,17 @@ public class ItineraryPage extends AppCompatActivity {
 
 
                     //create an itinerary day model to be added into firestore
-                    ItineraryDayModel itineraryDayModel = new ItineraryDayModel(itineraryModel.itineraryId, itineraryLocation, currentDate, itineraryFrom, itineraryTo, itineraryNotes, "", itineraryFromDate, itineraryToDate);
+                    ItineraryItemModel itineraryItemModel = new ItineraryItemModel(itineraryModel.itineraryId, itineraryLocation, currentDate, itineraryFrom, itineraryTo, itineraryNotes, "", itineraryFromDateTime);
 
-                    addItineraryDays(itineraryDayModel);
+                    addItineraryItems(itineraryItemModel);
 
                     //close the popup window
                     popupWindow.dismiss();
 
                     //clear the itinerary day listview and get the itinerary items
-                    itineraryDayArrayList.clear();
+                    itineraryItemArrayList.clear();
                     customAdapter.notifyDataSetChanged();
-                    getItineraryDay();
+                    getItineraryItem();
 
                 }
             }
@@ -783,9 +758,9 @@ public class ItineraryPage extends AppCompatActivity {
                         Log.d(TAG, "inflateDateCards: currentDate: " + currentDate);
 
                         //clear the itinerary day listview and get the itinerary items for the selected date
-                        itineraryDayArrayList.clear();
+                        itineraryItemArrayList.clear();
                         customAdapter.notifyDataSetChanged();
-                        getItineraryDay();
+                        getItineraryItem();
                     }
                 });
 
