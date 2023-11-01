@@ -329,7 +329,8 @@ public class PaymentPage extends AppCompatActivity {
                                     double flightPriceDouble = Double.parseDouble(flightPrice);
                                     double totalPriceDouble = flightPriceDouble + convertedHotelPrice;
                                     totalPrice = String.valueOf(totalPriceDouble);
-                                    totalPrice = totalPrice + "00";
+                                    //totalPrice = totalPrice + "00";
+                                    totalPrice = totalPrice.replace(".", "");
 
                                     //once total price is calculated, fetch the stripe api
                                     fetchStripeAPI();
