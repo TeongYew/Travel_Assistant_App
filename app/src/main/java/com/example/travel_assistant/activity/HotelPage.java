@@ -8,10 +8,12 @@ import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.travel_assistant.R;
 import com.example.travel_assistant.model.FlightItineraryListModel;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -28,6 +30,7 @@ public class HotelPage extends AppCompatActivity {
     String numBeds = "";
     String bedType = "";
     String hotelDescription = "";
+    String hotelImageURL = "";
     String hotelCurrency = "";
     String hotelPrice = "";
 
@@ -52,6 +55,7 @@ public class HotelPage extends AppCompatActivity {
     //layouts
     TextView hotelNameTV, priceTV, checkInTV, checkOutTV, numBedsTV, bedTypeTV, descriptionTV;
     Button toPaymentBtn;
+    ImageView hotelIV;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +71,7 @@ public class HotelPage extends AppCompatActivity {
         //bedTypeTV = findViewById(R.id.bedTypeTV);
         descriptionTV = findViewById(R.id.descriptionTV);
         toPaymentBtn = findViewById(R.id.toPaymentBtn);
+        hotelIV = findViewById(R.id.hotelIV);
 
         //get the hotel and flight data from HotelList activity
         Intent fromHotelList = getIntent();
@@ -77,8 +82,7 @@ public class HotelPage extends AppCompatActivity {
         hotelOfferId = fromHotelList.getStringExtra("hotelOfferId");
         hotelCheckIn = fromHotelList.getStringExtra("hotelCheckIn");
         hotelCheckOut = fromHotelList.getStringExtra("hotelCheckOut");
-        //numBeds = fromHotelList.getStringExtra("numBeds");
-        //bedType = fromHotelList.getStringExtra("bedType");
+        hotelImageURL = fromHotelList.getStringExtra("hotelImageURL");
         hotelDescription = fromHotelList.getStringExtra("hotelDescription");
         //description = "Marriott Senior Discount, includes\\n1 King, 285sqft/26sqm, Wireless internet, for\\na fee, Coffee/tea maker";
         hotelCurrency = fromHotelList.getStringExtra("hotelCurrency");
@@ -109,6 +113,7 @@ public class HotelPage extends AppCompatActivity {
 
         //set the layouts with the hotel data
         hotelNameTV.setText(hotelName);
+        Picasso.get().load(hotelImageURL).into(hotelIV);
         priceTV.setText(hotelCurrency + hotelPrice);
         checkInTV.setText(hotelCheckIn);
         checkOutTV.setText(hotelCheckOut);

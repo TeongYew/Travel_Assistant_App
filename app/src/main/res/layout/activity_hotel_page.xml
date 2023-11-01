@@ -12,23 +12,24 @@
     <RelativeLayout
         android:id="@+id/hotelImageRL"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_weight="1">
 
         <ImageView
-            android:id="@+id/myImageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:id="@+id/hotelIV"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
             android:src="@drawable/dummy_hotel"
-            android:scaleType="centerCrop"/>
+            android:scaleType="fitXY"
+            android:adjustViewBounds="true"/>
 
         <TextView
             android:id="@+id/hotelNameTV"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/myImageView"
-            android:layout_alignBottom="@+id/myImageView"
+            android:layout_alignLeft="@+id/hotelIV"
+            android:layout_alignBottom="@+id/hotelIV"
             android:layout_marginStart="5dp"
             android:layout_marginTop="5dp"
             android:layout_marginEnd="5dp"

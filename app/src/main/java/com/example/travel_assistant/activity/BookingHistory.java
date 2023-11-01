@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 import com.example.travel_assistant.R;
 import com.example.travel_assistant.adapter.HistoryViewPagerAdapter;
+import com.example.travel_assistant.others.LoadingDialog;
 import com.google.android.material.tabs.TabLayout;
 
 public class BookingHistory extends AppCompatActivity {
@@ -15,6 +16,7 @@ public class BookingHistory extends AppCompatActivity {
     TabLayout tabLayout;
     ViewPager2 viewPager2;
     HistoryViewPagerAdapter historyViewPagerAdapter;
+    LoadingDialog loadingDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +28,7 @@ public class BookingHistory extends AppCompatActivity {
         viewPager2 = findViewById(R.id.historyVP);
         historyViewPagerAdapter = new HistoryViewPagerAdapter(this);
         viewPager2.setAdapter(historyViewPagerAdapter);
+        loadingDialog = new LoadingDialog(this);
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override

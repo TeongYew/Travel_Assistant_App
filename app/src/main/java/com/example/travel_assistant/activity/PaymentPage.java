@@ -54,7 +54,7 @@ import okhttp3.OkHttpClient;
 public class PaymentPage extends AppCompatActivity {
 
     //layouts
-    EditText usernameET, emailET, phoneET;
+    EditText nameET, emailET, phoneET;
     Button paymentBtn;
     LoadingDialog loadingDialog;
 
@@ -62,6 +62,7 @@ public class PaymentPage extends AppCompatActivity {
     PaymentSheet paymentSheet;
     String paymentIntentClientSecret;
     PaymentSheet.CustomerConfiguration configuration;
+
     String uid = "";
 
     //data for flight_booking
@@ -94,6 +95,7 @@ public class PaymentPage extends AppCompatActivity {
     String hotelCurrency = "";
     String hotelPrice = "";
 
+
     String paymentFor = "";
 
     //initialise firebase auth and firestore
@@ -101,6 +103,7 @@ public class PaymentPage extends AppCompatActivity {
     FirebaseAuth auth = FirebaseAuth.getInstance();
 
     String totalPrice = "0";
+    String totalPriceStripe = "0";
 
     //for async methods
     private Executor executor = Executors.newSingleThreadExecutor();
@@ -115,7 +118,7 @@ public class PaymentPage extends AppCompatActivity {
         setContentView(R.layout.activity_payment_page);
 
         //intialise the layouts
-        usernameET = findViewById(R.id.usernameET);
+        nameET = findViewById(R.id.usernameET);
         emailET = findViewById(R.id.emailET);
         phoneET = findViewById(R.id.phoneET);
         paymentBtn = findViewById(R.id.paymentBtn);
@@ -171,6 +174,11 @@ public class PaymentPage extends AppCompatActivity {
             hotelPrice = fromBooking.getStringExtra("hotelPrice");
             //flightPrice = fromBooking.getStringExtra("flightPrice");
 
+            //start loading animation
+            loadingDialog.show();
+            //convert hotel currency
+            convertCurrency();
+
         } else if (paymentFor.equals("flightOnly")) {
 
             //if user booked flight only, get the flight data
@@ -195,18 +203,17 @@ public class PaymentPage extends AppCompatActivity {
                 roundTrip = true;
             }
 
+            //get the total price of just the flight to be used for stripe api
+            double flightPriceDouble = Double.parseDouble(flightPrice);
+            totalPrice = String.format("%.2f", flightPriceDouble);
+            totalPriceStripe = totalPrice.replace(".", "");
+
+            //fetch stripe api
+            fetchStripeAPI();
+
         }
-//        flightCurrency = "EUR";
-//        hotelCurrency = "JPY";
-//        hotelPrice = "10000";
 
-        //start loading animation
-        loadingDialog.show();
-        //convert hotel currency
-        convertCurrency();
 
-        //fetch stripe api
-        //fetchStripeAPI();
 
         paymentBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -214,7 +221,7 @@ public class PaymentPage extends AppCompatActivity {
 
                 //check if the text fields are filled
                 //if not, then display a toast notifying the user to fill in the fields
-                if(TextUtils.isEmpty(usernameET.getText()) || TextUtils.isEmpty(emailET.getText()) || TextUtils.isEmpty(phoneET.getText())){
+                if(TextUtils.isEmpty(nameET.getText()) || TextUtils.isEmpty(emailET.getText()) || TextUtils.isEmpty(phoneET.getText())){
                     Toast.makeText(PaymentPage.this, "Please make sure all the necessary fields are filled", Toast.LENGTH_SHORT).show();
                 }
                 else{
@@ -246,8 +253,12 @@ public class PaymentPage extends AppCompatActivity {
         }
         if(paymentSheetResult instanceof PaymentSheetResult.Completed){
             Toast.makeText(this, "Payment Success!", Toast.LENGTH_SHORT).show();
+
+            //start loading animation
+            loadingDialog.show();
+
             //if payment is completed, add the flight and hotel booking data into firestore
-            addBooking();
+            addFlightBooking();
         }
 
     }
@@ -331,7 +342,7 @@ public class PaymentPage extends AppCompatActivity {
                                     //totalPrice = String.valueOf(totalPriceDouble);
                                     totalPrice = String.format("%.2f", totalPriceDouble);
                                     //totalPrice = totalPrice + "00";
-                                    totalPrice = totalPrice.replace(".", "");
+                                    totalPriceStripe = totalPrice.replace(".", "");
 
                                     //once total price is calculated, fetch the stripe api
                                     fetchStripeAPI();
@@ -359,12 +370,131 @@ public class PaymentPage extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void addPayment(String flightBookingId, String hotelBookingId){
+
+        // Create a new payment
+        Map<String, Object> payment = new HashMap<>();
+        payment.put("payment_id", "");
+        payment.put("flight_booking_id", flightBookingId);
+        payment.put("hotel_booking_id", hotelBookingId);
+        payment.put("name", nameET.getText().toString());
+        payment.put("email", emailET.getText().toString());
+        payment.put("phone_number", phoneET.getText().toString());
+        payment.put("user_uid", uid);
+        payment.put("price_currency", flightCurrency);
+        payment.put("total_price", totalPrice);
+
+        // Add a new payment document with a generated ID
+        db.collection("payment")
+                .add(payment)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        Log.d(TAG, "DocumentSnapshot (payment) added with ID: " + documentReference.getId());
+
+                        String paymentId = documentReference.getId();
+
+                        //add the firebase generated id into the newly created payment document
+                        DocumentReference paymentRef = db.collection("payment").document(paymentId);
+
+                        //update the payment_id with the firestore generated id
+                        paymentRef
+                                .update("payment_id", paymentId)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.d(TAG, "DocumentSnapshot payment_id successfully updated!");
+
+                                        //stop loading animation
+                                        loadingDialog.cancel();
+
+                                        //finish the activity and go back to main menu
+                                        finish();
+                                        startActivity(new Intent(getApplicationContext(), MainMenu.class));
+
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.w(TAG, "Error updating document", e);
+                                    }
+                                });
+
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error adding document (payment)", e);
+                    }
+                });
 
 
 
     }
 
-    private void addBooking(){
+    private void addHotelBooking(String flightBookingId){
+
+        // Create a new hotel
+        Map<String, Object> hotel = new HashMap<>();
+        hotel.put("hotel_booking_id", "");
+        hotel.put("hotel_id", hotelId);
+        hotel.put("hotel_name", hotelName);
+        hotel.put("offer_id", hotelOfferId);
+        hotel.put("check_in", hotelCheckIn);
+        hotel.put("check_out", hotelCheckOut);
+        hotel.put("description", hotelDescription);
+        hotel.put("hotel_currency", hotelCurrency);
+        hotel.put("hotel_price", hotelPrice);
+        hotel.put("user_uid", uid);
+
+
+        // Add a new hotel document with a generated ID
+        db.collection("hotel_booking")
+                .add(hotel)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        Log.d(TAG, "DocumentSnapshot (hotel_booking) added with ID: " + documentReference.getId());
+                        String hotelBookingId = documentReference.getId();
+
+                        //add the firebase generated id into the newly created hotel_booking document
+                        DocumentReference hotelBookingRef = db.collection("hotel_booking").document(hotelBookingId);
+
+                        //update the hotel_booking_id with the firestore generated id
+                        hotelBookingRef
+                                .update("hotel_booking_id", hotelBookingId)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.d(TAG, "DocumentSnapshot hotel_booking_id successfully updated!");
+
+                                        addPayment(flightBookingId, hotelBookingId);
+
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.w(TAG, "Error updating document", e);
+                                    }
+                                });
+
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error adding document (hotel_booking)", e);
+                    }
+                });
+
+    }
+
+    private void addFlightBooking(){
 
         // Create a new flight
         Map<String, Object> flight = new HashMap<>();
@@ -431,6 +561,7 @@ public class PaymentPage extends AppCompatActivity {
                                                         @Override
                                                         public void onSuccess(DocumentReference documentReference) {
                                                             Log.d(TAG, "DocumentSnapshot (flight_itinerary) added with ID: " + documentReference.getId());
+
                                                         }
                                                     })
                                                     .addOnFailureListener(new OnFailureListener() {
@@ -440,6 +571,15 @@ public class PaymentPage extends AppCompatActivity {
                                                         }
                                                     });
 
+                                        }
+
+                                        //if user booked hotel as well
+                                        //add the hotel booking data into firestore
+                                        if(paymentFor.equals("flightAndHotel")){
+                                            addHotelBooking(flightBookingId);
+                                        }
+                                        else{
+                                            addPayment(flightBookingId, "");
                                         }
 
                                     }
@@ -460,75 +600,13 @@ public class PaymentPage extends AppCompatActivity {
                     }
                 });
 
-
-        //if user booked hotel as well
-        //add the hotel booking data into firestore
-        if(paymentFor.equals("flightAndHotel")){
-
-            // Create a new hotel
-            Map<String, Object> hotel = new HashMap<>();
-            hotel.put("hotel_booking_id", "");
-            hotel.put("hotel_id", hotelId);
-            hotel.put("hotel_name", hotelName);
-            hotel.put("offer_id", hotelOfferId);
-            hotel.put("check_in", hotelCheckIn);
-            hotel.put("check_out", hotelCheckOut);
-            hotel.put("description", hotelDescription);
-            hotel.put("hotel_currency", hotelCurrency);
-            hotel.put("hotel_price", hotelPrice);
-            hotel.put("user_uid", uid);
-
-
-            // Add a new hotel document with a generated ID
-            db.collection("hotel_booking")
-                    .add(hotel)
-                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                        @Override
-                        public void onSuccess(DocumentReference documentReference) {
-                            Log.d(TAG, "DocumentSnapshot (hotel_booking) added with ID: " + documentReference.getId());
-                            String hotelBookingId = documentReference.getId();
-
-                            //add the firebase generated id into the newly created hotel_booking document
-                            DocumentReference hotelBookingRef = db.collection("hotel_booking").document(hotelBookingId);
-
-                            //update the hotel_booking_id with the firestore generated id
-                            hotelBookingRef
-                                    .update("hotel_booking_id", hotelBookingId)
-                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void aVoid) {
-                                            Log.d(TAG, "DocumentSnapshot hotel_booking_id successfully updated!");
-                                        }
-                                    })
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            Log.w(TAG, "Error updating document", e);
-                                        }
-                                    });
-
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.w(TAG, "Error adding document (hotel_booking)", e);
-                        }
-                    });
-
-        }
-
-        //finish the activity and go back to main menu
-        finish();
-        startActivity(new Intent(getApplicationContext(), MainMenu.class));
-
     }
 
     private void fetchStripeAPI(){
 
         //create new request and set the url
         RequestQueue queue = Volley.newRequestQueue(this);
-        String url ="http://192.168.0.6/stripeAPI/index.php";
+        String url ="http://192.168.0.4/stripeAPI/index.php";
 
         //initialise a new string request to call the stripe api
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
@@ -539,7 +617,7 @@ public class PaymentPage extends AppCompatActivity {
                         //stop the loading animation
                         loadingDialog.cancel();
 
-                        Toast.makeText(PaymentPage.this, "got a response!", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(PaymentPage.this, "got a response!", Toast.LENGTH_SHORT).show();
 
                         try {
 
@@ -567,7 +645,7 @@ public class PaymentPage extends AppCompatActivity {
         }){
             protected Map<String, String> getParams(){
                 Map<String, String> paramV = new HashMap<>();
-                paramV.put("price", totalPrice);
+                paramV.put("price", totalPriceStripe);
                 return paramV;
             }
         };

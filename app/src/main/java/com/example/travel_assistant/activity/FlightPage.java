@@ -107,6 +107,9 @@ public class FlightPage extends AppCompatActivity {
         flight = intent.getStringExtra("flight");
         flightItinerary = (ArrayList<FlightItineraryListModel>) intent.getSerializableExtra("flightItinerary");
 
+        //calculate the total price of the flight using the number of passengers
+        calculatePrice();
+
         //set the layouts with the flight data from FlightList activity
         departureIATATV.setText(flightLocation);
         arrivalIATATV.setText(flightDestination);
@@ -191,6 +194,17 @@ public class FlightPage extends AppCompatActivity {
                 startActivity(toHotelList);
             }
         });
+
+    }
+
+    private void calculatePrice(){
+        double noOfPassengers = Double.parseDouble(adultCount) + Double.parseDouble(kidCount);
+
+        if(noOfPassengers > 1){
+            double flightPriceDouble = Double.parseDouble(flightPrice);
+            double calculatedPrice = flightPriceDouble * noOfPassengers;
+            flightPrice = String.valueOf(calculatedPrice);
+        }
 
     }
 

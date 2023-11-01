@@ -2,13 +2,14 @@ package com.example.travel_assistant.model;
 
 public class HotelListModel {
 
-    public String hotelName, hotelId, hotelCurrency, hotelPrice;
+    public String hotelName, hotelId, hotelCurrency, hotelPrice, imageURL;
 
-    public HotelListModel(String hotelName, String hotelId, String hotelCurrency, String hotelPrice) {
+    public HotelListModel(String hotelName, String hotelId, String hotelCurrency, String hotelPrice, String imageURL) {
         this.hotelName = hotelName;
         this.hotelId = hotelId;
         this.hotelCurrency = hotelCurrency;
         this.hotelPrice = hotelPrice;
+        this.imageURL = imageURL;
     }
 
     public String getHotelName() {
@@ -41,5 +42,13 @@ public class HotelListModel {
 
     public void setHotelPrice(String hotelPrice) {
         this.hotelPrice = hotelPrice;
+    }
+
+    public String getImageURL() {
+        return imageURL;
+    }
+
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
     }
 }

@@ -158,7 +158,7 @@ public class HotelList extends AppCompatActivity {
 
     }
 
-    private void getHotel2(){
+    private void getHotel(){
 
         //call the apidojo hotel booking api
 
@@ -251,10 +251,20 @@ public class HotelList extends AppCompatActivity {
                                                         String hotelPrice = priceBreakdown.getString("gross_price").toString();
                                                         String address = curJSON.get("address_trans").toString();
                                                         String accomType = curJSON.get("accommodation_type_name").toString();
+                                                        String imageURL = curJSON.getString("main_photo_url");
+
+                                                        Log.d(TAG, "onResponse: imageURL: " + imageURL);
+
+                                                        try{
+
+                                                        }
+                                                        catch (Exception e){
+
+                                                        }
 
                                                         //create a hotel list model to hold the hotel data received from the api
                                                         //add the hotel list model into the hotel array list
-                                                        hotelListModel = new HotelListModel(hotelName, hotelId, hotelCurrency, hotelPrice);
+                                                        hotelListModel = new HotelListModel(hotelName, hotelId, hotelCurrency, hotelPrice, imageURL);
 
                                                         hotelArrayList.add(hotelListModel);
 
@@ -333,9 +343,8 @@ public class HotelList extends AppCompatActivity {
                                                                             toHotelPage.putExtra("hotelOfferId", "");
                                                                             toHotelPage.putExtra("hotelCheckIn", fromDate);
                                                                             toHotelPage.putExtra("hotelCheckOut", toDate);
-//                                                toHotelPage.putExtra("numBeds", numBeds);
-//                                                toHotelPage.putExtra("bedType", bedType);
                                                                             toHotelPage.putExtra("hotelDescription", hotelDescription);
+                                                                            toHotelPage.putExtra("hotelImageURL", hotelArrayList.get(i).imageURL);
                                                                             toHotelPage.putExtra("hotelCurrency", hotelArrayList.get(i).hotelCurrency);
                                                                             toHotelPage.putExtra("hotelPrice", hotelArrayList.get(i).hotelPrice);
                                                                             //toHotelPage.putExtra("flightPrice", flightPrice);
@@ -439,179 +448,179 @@ public class HotelList extends AppCompatActivity {
 
                 //show the loading animation and get the hotel using the city input by the user
                 loadingDialog.show();
-                getHotel2();
+                getHotel();
             }
         });
 
     }
 
-    public void getHotel(){
-
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-
-                try {
-
-                    Hotel[] hotelList = amadeus.referenceData.locations.hotels.byCity.get(Params.with("cityCode", location));
-
-                    Log.d(TAG, "run: hotel list data: " + hotelList[0].getResponse().getResult().toString());
-
-                    JsonArray hotelData = hotelList[0].getResponse().getResult().get("data").getAsJsonArray();
-
-                    for (int i = 0; i < hotelData.size(); i++){
-
-                        String hotelName = hotelData.get(i).getAsJsonObject().get("name").toString().replaceAll("\"", "");
-                        String hotelId = hotelData.get(i).getAsJsonObject().get("hotelId").toString().replaceAll("\"", "");
-
-                        Log.d(TAG, "run: name and id: " + hotelName + ", " + hotelId);
-
-                        hotelListModel = new HotelListModel(hotelName, hotelId, "", "");
-
-                        hotelArrayList.add(hotelListModel);
-
-                    }
-
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-
-                            //stop loading animation
-                            loadingDialog.cancel();
-
-                            HotelListAdapter customAdapter = new HotelListAdapter(getApplicationContext(), hotelArrayList);
-                            hotelListLV.setAdapter(customAdapter);
-
-                            hotelListLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                                @Override
-                                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
-                                    //start loading animation
-                                    loadingDialog.show();
-
-                                    executor.execute(new Runnable() {
-                                        @Override
-                                        public void run() {
-
-                                            try{
-
-                                                Log.d(TAG, "from hotel list: fromDate and toDate: " + fromDate + ", " + toDate);
-
-                                                HotelOfferSearch[] hotelOffers = amadeus.shopping.hotelOffersSearch.get(Params
-                                                        .with("hotelIds", hotelArrayList.get(i).hotelId)
-                                                        .and("checkInDate", fromDate)
-                                                        .and("checkOutDate", toDate)
-                                                        .and("adult", Integer.valueOf(adultCount)));
-
-                                                Log.d(TAG, "run: hotel offer data: " + hotelOffers[0].getResponse().getResult().toString());
-
-                                                JsonArray hotelDataOffer = hotelOffers[0].getResponse().getResult().get("data").getAsJsonArray().get(0).getAsJsonObject().get("offers").getAsJsonArray();
-
-                                                String offerId = hotelDataOffer.get(0).getAsJsonObject().get("id").toString().replaceAll("\"", "");
-                                                String checkIn = hotelDataOffer.get(0).getAsJsonObject().get("checkInDate").toString().replaceAll("\"", "");
-                                                String checkOut = hotelDataOffer.get(0).getAsJsonObject().get("checkOutDate").toString().replaceAll("\"", "");
-                                                //String boardType = hotelDataOffer.get(0).getAsJsonObject().get("boardType").toString().replaceAll("\"", "");
-                                                //String roomType = hotelDataOffer.get(0).getAsJsonObject().get("room").getAsJsonObject().get("typeEstimated").getAsJsonObject().get("category").toString().replaceAll("\"", "");
-                                                String numBeds = hotelDataOffer.get(0).getAsJsonObject().get("room").getAsJsonObject().get("typeEstimated").getAsJsonObject().get("beds").toString().replaceAll("\"", "");
-                                                String bedType = hotelDataOffer.get(0).getAsJsonObject().get("room").getAsJsonObject().get("typeEstimated").getAsJsonObject().get("bedType").toString().replaceAll("\"", "");
-                                                String description = hotelDataOffer.get(0).getAsJsonObject().get("room").getAsJsonObject().get("description").getAsJsonObject().get("text").toString().replaceAll("\"", "").replace("\\n", " ");
-                                                String priceCurrency = hotelDataOffer.get(0).getAsJsonObject().get("price").getAsJsonObject().get("currency").toString().replaceAll("\"", "");
-                                                String priceTotal = hotelDataOffer.get(0).getAsJsonObject().get("price").getAsJsonObject().get("total").toString().replaceAll("\"", "");
-
-                                                //intent to go to hotel page
-                                                Intent toHotelPage = new Intent(getApplicationContext(), HotelPage.class);
-
-                                                //hotel data
-                                                toHotelPage.putExtra("hotelName", hotelArrayList.get(i).hotelName);
-                                                toHotelPage.putExtra("hotelId", hotelArrayList.get(i).hotelId);
-                                                toHotelPage.putExtra("hotelOfferId", offerId);
-                                                toHotelPage.putExtra("hotelCheckIn", checkIn);
-                                                toHotelPage.putExtra("hotelCheckOut", checkOut);
-//                                                toHotelPage.putExtra("numBeds", numBeds);
-//                                                toHotelPage.putExtra("bedType", bedType);
-                                                toHotelPage.putExtra("hoteldescription", description);
-                                                toHotelPage.putExtra("hotelPrice", priceCurrency + " " + priceTotal);
-                                                //toHotelPage.putExtra("flightPrice", flightPrice);
-
-                                                //flight data
-                                                toHotelPage.putExtra("flightLocation", flightDepartureIATA);
-                                                toHotelPage.putExtra("flightDestination", flightArrivalIATA);
-                                                toHotelPage.putExtra("flightLocationName", flightDepartureLocation);
-                                                toHotelPage.putExtra("flightDestinationName", flightArrivalLocation);
-                                                toHotelPage.putExtra("flightFromDate", flightDepartureDateTime);
-                                                toHotelPage.putExtra("flightToDate", flightArrivalDateTime);
-                                                toHotelPage.putExtra("adultCount", adultCount);
-                                                toHotelPage.putExtra("kidCount", kidCount);
-                                                toHotelPage.putExtra("roundOrOneWayTrip", roundOrOneWayTrip);
-                                                toHotelPage.putExtra("class", flightClass);
-                                                toHotelPage.putExtra("airline", airline);
-                                                toHotelPage.putExtra("flightPrice", flightPrice);
-                                                toHotelPage.putExtra("flightCode", flightCode);
-                                                toHotelPage.putExtra("flightItinerary", flightItinerary);
-
-                                                //stop loading animation
-                                                loadingDialog.cancel();
-
-                                                startActivity(toHotelPage);
-
+//    public void getHotel(){
+//
+//        executor.execute(new Runnable() {
+//            @Override
+//            public void run() {
+//
+//                try {
+//
+//                    Hotel[] hotelList = amadeus.referenceData.locations.hotels.byCity.get(Params.with("cityCode", location));
+//
+//                    Log.d(TAG, "run: hotel list data: " + hotelList[0].getResponse().getResult().toString());
+//
+//                    JsonArray hotelData = hotelList[0].getResponse().getResult().get("data").getAsJsonArray();
+//
+//                    for (int i = 0; i < hotelData.size(); i++){
+//
+//                        String hotelName = hotelData.get(i).getAsJsonObject().get("name").toString().replaceAll("\"", "");
+//                        String hotelId = hotelData.get(i).getAsJsonObject().get("hotelId").toString().replaceAll("\"", "");
+//
+//                        Log.d(TAG, "run: name and id: " + hotelName + ", " + hotelId);
+//
+//                        hotelListModel = new HotelListModel(hotelName, hotelId, "", "");
+//
+//                        hotelArrayList.add(hotelListModel);
+//
+//                    }
+//
+//                    handler.post(new Runnable() {
+//                        @Override
+//                        public void run() {
+//
+//                            //stop loading animation
+//                            loadingDialog.cancel();
+//
+//                            HotelListAdapter customAdapter = new HotelListAdapter(getApplicationContext(), hotelArrayList);
+//                            hotelListLV.setAdapter(customAdapter);
+//
+//                            hotelListLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//                                @Override
+//                                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+//
+//                                    //start loading animation
+//                                    loadingDialog.show();
+//
+//                                    executor.execute(new Runnable() {
+//                                        @Override
+//                                        public void run() {
+//
+//                                            try{
+//
+//                                                Log.d(TAG, "from hotel list: fromDate and toDate: " + fromDate + ", " + toDate);
+//
+//                                                HotelOfferSearch[] hotelOffers = amadeus.shopping.hotelOffersSearch.get(Params
+//                                                        .with("hotelIds", hotelArrayList.get(i).hotelId)
+//                                                        .and("checkInDate", fromDate)
+//                                                        .and("checkOutDate", toDate)
+//                                                        .and("adult", Integer.valueOf(adultCount)));
+//
+//                                                Log.d(TAG, "run: hotel offer data: " + hotelOffers[0].getResponse().getResult().toString());
+//
+//                                                JsonArray hotelDataOffer = hotelOffers[0].getResponse().getResult().get("data").getAsJsonArray().get(0).getAsJsonObject().get("offers").getAsJsonArray();
+//
+//                                                String offerId = hotelDataOffer.get(0).getAsJsonObject().get("id").toString().replaceAll("\"", "");
+//                                                String checkIn = hotelDataOffer.get(0).getAsJsonObject().get("checkInDate").toString().replaceAll("\"", "");
+//                                                String checkOut = hotelDataOffer.get(0).getAsJsonObject().get("checkOutDate").toString().replaceAll("\"", "");
+//                                                //String boardType = hotelDataOffer.get(0).getAsJsonObject().get("boardType").toString().replaceAll("\"", "");
+//                                                //String roomType = hotelDataOffer.get(0).getAsJsonObject().get("room").getAsJsonObject().get("typeEstimated").getAsJsonObject().get("category").toString().replaceAll("\"", "");
+//                                                String numBeds = hotelDataOffer.get(0).getAsJsonObject().get("room").getAsJsonObject().get("typeEstimated").getAsJsonObject().get("beds").toString().replaceAll("\"", "");
+//                                                String bedType = hotelDataOffer.get(0).getAsJsonObject().get("room").getAsJsonObject().get("typeEstimated").getAsJsonObject().get("bedType").toString().replaceAll("\"", "");
+//                                                String description = hotelDataOffer.get(0).getAsJsonObject().get("room").getAsJsonObject().get("description").getAsJsonObject().get("text").toString().replaceAll("\"", "").replace("\\n", " ");
+//                                                String priceCurrency = hotelDataOffer.get(0).getAsJsonObject().get("price").getAsJsonObject().get("currency").toString().replaceAll("\"", "");
+//                                                String priceTotal = hotelDataOffer.get(0).getAsJsonObject().get("price").getAsJsonObject().get("total").toString().replaceAll("\"", "");
+//
+//                                                //intent to go to hotel page
+//                                                Intent toHotelPage = new Intent(getApplicationContext(), HotelPage.class);
+//
+//                                                //hotel data
+//                                                toHotelPage.putExtra("hotelName", hotelArrayList.get(i).hotelName);
+//                                                toHotelPage.putExtra("hotelId", hotelArrayList.get(i).hotelId);
+//                                                toHotelPage.putExtra("hotelOfferId", offerId);
+//                                                toHotelPage.putExtra("hotelCheckIn", checkIn);
+//                                                toHotelPage.putExtra("hotelCheckOut", checkOut);
+////                                                toHotelPage.putExtra("numBeds", numBeds);
+////                                                toHotelPage.putExtra("bedType", bedType);
+//                                                toHotelPage.putExtra("hoteldescription", description);
+//                                                toHotelPage.putExtra("hotelPrice", priceCurrency + " " + priceTotal);
+//                                                //toHotelPage.putExtra("flightPrice", flightPrice);
+//
+//                                                //flight data
+//                                                toHotelPage.putExtra("flightLocation", flightDepartureIATA);
+//                                                toHotelPage.putExtra("flightDestination", flightArrivalIATA);
+//                                                toHotelPage.putExtra("flightLocationName", flightDepartureLocation);
+//                                                toHotelPage.putExtra("flightDestinationName", flightArrivalLocation);
+//                                                toHotelPage.putExtra("flightFromDate", flightDepartureDateTime);
+//                                                toHotelPage.putExtra("flightToDate", flightArrivalDateTime);
+//                                                toHotelPage.putExtra("adultCount", adultCount);
+//                                                toHotelPage.putExtra("kidCount", kidCount);
+//                                                toHotelPage.putExtra("roundOrOneWayTrip", roundOrOneWayTrip);
+//                                                toHotelPage.putExtra("class", flightClass);
+//                                                toHotelPage.putExtra("airline", airline);
+//                                                toHotelPage.putExtra("flightPrice", flightPrice);
+//                                                toHotelPage.putExtra("flightCode", flightCode);
+//                                                toHotelPage.putExtra("flightItinerary", flightItinerary);
+//
+//                                                //stop loading animation
+//                                                loadingDialog.cancel();
+//
+//                                                startActivity(toHotelPage);
+//
+////                                                handler.post(new Runnable() {
+////                                                    @Override
+////                                                    public void run() {
+////
+////                                                        hotelPopupView = layoutInflater.inflate(R.layout.hotel_offer_popup, null);
+////
+////                                                        popupWindow = new PopupWindow(hotelPopupView,width,height,focusable);
+////
+////                                                        hotelListRL.post(new Runnable() {
+////                                                            @Override
+////                                                            public void run() {
+////                                                                popupWindow.showAtLocation(hotelListRL, Gravity.CENTER,0,0);
+////
+////                                                            }
+////                                                        });
+////
+////                                                    }
+////                                                });
+//
+//                                            }
+//                                            catch (Exception e){
+//                                                Log.d(TAG, "run: hotel offer exception: " + e);
+//
 //                                                handler.post(new Runnable() {
 //                                                    @Override
 //                                                    public void run() {
-//
-//                                                        hotelPopupView = layoutInflater.inflate(R.layout.hotel_offer_popup, null);
-//
-//                                                        popupWindow = new PopupWindow(hotelPopupView,width,height,focusable);
-//
-//                                                        hotelListRL.post(new Runnable() {
-//                                                            @Override
-//                                                            public void run() {
-//                                                                popupWindow.showAtLocation(hotelListRL, Gravity.CENTER,0,0);
-//
-//                                                            }
-//                                                        });
-//
+//                                                        //stop loading animation and display error toast
+//                                                        loadingDialog.cancel();
+//                                                        Toast.makeText(HotelList.this, "Hotel currently does not have any offers, please select other hotels.", Toast.LENGTH_SHORT).show();
 //                                                    }
 //                                                });
-
-                                            }
-                                            catch (Exception e){
-                                                Log.d(TAG, "run: hotel offer exception: " + e);
-
-                                                handler.post(new Runnable() {
-                                                    @Override
-                                                    public void run() {
-                                                        //stop loading animation and display error toast
-                                                        loadingDialog.cancel();
-                                                        Toast.makeText(HotelList.this, "Hotel currently does not have any offers, please select other hotels.", Toast.LENGTH_SHORT).show();
-                                                    }
-                                                });
-
-
-                                            }
-
-                                        }
-                                    });
-
-
-
-                                }
-                            });
-
-                        }
-                    });
-
-                }
-                catch (Exception e){
-                    //stop loading animation
-                    loadingDialog.cancel();
-                    Log.d(TAG, "run: " + e);
-                }
-
-
-
-            }
-        });
-
-    }
+//
+//
+//                                            }
+//
+//                                        }
+//                                    });
+//
+//
+//
+//                                }
+//                            });
+//
+//                        }
+//                    });
+//
+//                }
+//                catch (Exception e){
+//                    //stop loading animation
+//                    loadingDialog.cancel();
+//                    Log.d(TAG, "run: " + e);
+//                }
+//
+//
+//
+//            }
+//        });
+//
+//    }
 
 }

@@ -55,7 +55,7 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
+                android:layout_marginTop="5dp"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp"
                 android:layout_marginBottom="5dp"
@@ -105,7 +105,7 @@
                         android:layout_toEndOf="@id/departureIV"
                         android:drawablePadding="2dp"
                         android:text="Location"
-                        android:textSize="24sp"
+                        android:textSize="22sp"
                         android:textStyle="bold"
                         android:textColor="@color/black"/>
                 </RelativeLayout>
@@ -162,7 +162,7 @@
                         android:layout_toEndOf="@id/arrivalIV"
                         android:drawablePadding="2dp"
                         android:text="Destination"
-                        android:textSize="24sp"
+                        android:textSize="22sp"
                         android:textStyle="bold"
                         android:textColor="@color/black"/>
                 </RelativeLayout>
@@ -219,7 +219,7 @@
                         android:layout_toEndOf="@id/dateIV"
                         android:drawablePadding="2dp"
                         android:text="Dates"
-                        android:textSize="24sp"
+                        android:textSize="22sp"
                         android:textStyle="bold"
                         android:textColor="@color/black"/>
                 </RelativeLayout>
@@ -276,7 +276,7 @@
                         android:layout_toEndOf="@id/passengerIV"
                         android:drawablePadding="2dp"
                         android:text="No. of Passengers"
-                        android:textSize="24sp"
+                        android:textSize="22sp"
                         android:textStyle="bold"
                         android:textColor="@color/black"/>
                 </RelativeLayout>
