@@ -108,7 +108,7 @@ public class FlightList extends AppCompatActivity {
     }
 
 
-    public void getFlights(){
+    private void getFlights(){
 
         executor.execute(new Runnable() {
             @Override

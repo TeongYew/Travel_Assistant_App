@@ -381,7 +381,7 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
         startActivity(new Intent(MainMenu.this, AuthFragmentContainer.class));
     }
 
-    public void createPopUpWindow(String popup){
+    private void createPopUpWindow(String popup){
 
         switch(popup){
             case "from":
@@ -410,7 +410,7 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
                         //display the loading animation and get the location
                         loadingDialog.show();
                         getLocation(flightFromET.getText().toString(), popup);
-                        getLocation2(flightFromET.getText().toString(), popup);
+                        //getLocation2(flightFromET.getText().toString(), popup);
 
                     }
                 });
@@ -453,7 +453,7 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
                         //display the loading animation and get the location
                         loadingDialog.show();
                         getLocation(flightToET.getText().toString(), popup);
-                        getLocation2(flightToET.getText().toString(), popup);
+                        //getLocation2(flightToET.getText().toString(), popup);
 
                     }
                 });
@@ -730,7 +730,7 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
 
     }
 
-    public void getLocation(String location, String popup){
+    private void getLocation(String location, String popup){
 
         //create a new location model to hold the location data
         ArrayList<LocationModel> locationArrayList = new ArrayList<>();

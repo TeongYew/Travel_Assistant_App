@@ -317,7 +317,7 @@ public class ItineraryList extends AppCompatActivity {
         animator.start();
     }
 
-    public void setPopupWindow(String from){
+    private void setPopupWindow(String from){
 
         //initialise the itineraryPopupView
         itineraryPopupView = layoutInflater.inflate(R.layout.create_itinerary_popup, null);
@@ -543,7 +543,7 @@ public class ItineraryList extends AppCompatActivity {
 
     }
 
-    public void insertItinerary(ItineraryModel itineraryModel, String from){
+    private void insertItinerary(ItineraryModel itineraryModel, String from){
 
         // Create a new itinerary
         Map<String, Object> itinerary = new HashMap<>();
@@ -625,7 +625,7 @@ public class ItineraryList extends AppCompatActivity {
 
     }
 
-    public void deleteItinerary(String docID){
+    private void deleteItinerary(String docID){
 
         //delete the user's itinerary
         db.collection("itinerary").document(docID)

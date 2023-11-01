@@ -140,7 +140,7 @@ public class ItineraryPage extends AppCompatActivity {
 
     }
 
-    public void deleteItineraryItem(String docID){
+    private void deleteItineraryItem(String docID){
 
         //delete the selected itinerary item
         db.collection("itinerary_item").document(docID)
@@ -160,7 +160,7 @@ public class ItineraryPage extends AppCompatActivity {
 
     }
 
-    public void editItineraryItem(String docID, String location, String timeFrom, String timeTo, String notes){
+    private void editItineraryItem(String docID, String location, String timeFrom, String timeTo, String notes){
 
         //update the itinerary item
         DocumentReference itineraryItemRef = db.collection("itinerary_item").document(docID);
@@ -191,7 +191,7 @@ public class ItineraryPage extends AppCompatActivity {
 
     }
 
-    public void setItineraryDetailsPopupView(ItineraryItemModel itineraryItemModel){
+    private void setItineraryDetailsPopupView(ItineraryItemModel itineraryItemModel){
 
         //initialise itineraryDetailsPopupView
         itineraryDetailsPopupView = layoutInflater.inflate(R.layout.edit_travel_itinerary_popup, null);
@@ -345,7 +345,7 @@ public class ItineraryPage extends AppCompatActivity {
 
     }
 
-    public void addItineraryItems(ItineraryItemModel itineraryItemModel){
+    private void addItineraryItems(ItineraryItemModel itineraryItemModel){
 
         // Create a new itinerary_item
         Map<String, Object> itineraryItem = new HashMap<>();
@@ -379,7 +379,7 @@ public class ItineraryPage extends AppCompatActivity {
 
     }
 
-    public void getItineraryItem(){
+    private void getItineraryItem(){
 
         //get the user's itinerary item using the user's uid and selected itinerary's id
         db.collection("itinerary_item")
@@ -495,7 +495,7 @@ public class ItineraryPage extends AppCompatActivity {
 
 
 
-    public void setItineraryAddPopupView(){
+    private void setItineraryAddPopupView(){
 
         //initialise the itineraryAddPopupView and popup window
         itineraryAddPopupView = layoutInflater.inflate(R.layout.add_travel_itinerary_popup, null);
@@ -667,7 +667,7 @@ public class ItineraryPage extends AppCompatActivity {
 
     }
 
-    public void inflateDateCards(){
+    private void inflateDateCards(){
 
         //initialise the card layout variables
         //set the array count to the number of days

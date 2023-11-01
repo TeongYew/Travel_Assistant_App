@@ -651,7 +651,7 @@ public class CommonPhrases extends AppCompatActivity {
 
     }
 
-    public void setupTranslatorPopup(){
+    private void setupTranslatorPopup(){
 
         //initialise the translatorPopupView
         translatorPopupView = layoutInflater.inflate(R.layout.translator_popup, null);
@@ -701,7 +701,7 @@ public class CommonPhrases extends AppCompatActivity {
 
     }
 
-    public void initialiseArrayLists(){
+    private void initialiseArrayLists(){
 
         //populate the array lists with phrases and questions accordingly
 

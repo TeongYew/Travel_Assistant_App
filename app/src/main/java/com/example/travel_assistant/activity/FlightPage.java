@@ -194,7 +194,7 @@ public class FlightPage extends AppCompatActivity {
 
     }
 
-    public void getAirport(String depIata, String arrIata){
+    private void getAirport(String depIata, String arrIata){
 
         //get the airport name from the strings.xml file
 
@@ -238,7 +238,7 @@ public class FlightPage extends AppCompatActivity {
 
     }
 
-    public void getLocation(String dep, String arr){
+    private void getLocation(String dep, String arr){
 
         executor.execute(new Runnable() {
             @Override

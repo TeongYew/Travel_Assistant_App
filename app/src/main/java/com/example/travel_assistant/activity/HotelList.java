@@ -158,7 +158,9 @@ public class HotelList extends AppCompatActivity {
 
     }
 
-    public void getHotel2(){
+    private void getHotel2(){
+
+        //call the apidojo hotel booking api
 
         executor.execute(new Runnable() {
             @Override

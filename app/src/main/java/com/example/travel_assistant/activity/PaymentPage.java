@@ -235,7 +235,7 @@ public class PaymentPage extends AppCompatActivity {
 
     }
 
-    public void onPaymentSheetResult(final PaymentSheetResult paymentSheetResult){
+    private void onPaymentSheetResult(final PaymentSheetResult paymentSheetResult){
 
         //depending on the result of the payment sheet display th toast messages accordingly
         if(paymentSheetResult instanceof PaymentSheetResult.Canceled){
@@ -328,7 +328,8 @@ public class PaymentPage extends AppCompatActivity {
                                     //get the total price by adding the converted hotel price and the flight price
                                     double flightPriceDouble = Double.parseDouble(flightPrice);
                                     double totalPriceDouble = flightPriceDouble + convertedHotelPrice;
-                                    totalPrice = String.valueOf(totalPriceDouble);
+                                    //totalPrice = String.valueOf(totalPriceDouble);
+                                    totalPrice = String.format("%.2f", totalPriceDouble);
                                     //totalPrice = totalPrice + "00";
                                     totalPrice = totalPrice.replace(".", "");
 
@@ -363,7 +364,7 @@ public class PaymentPage extends AppCompatActivity {
 
     }
 
-    public void addBooking(){
+    private void addBooking(){
 
         // Create a new flight
         Map<String, Object> flight = new HashMap<>();
@@ -523,7 +524,7 @@ public class PaymentPage extends AppCompatActivity {
 
     }
 
-    public void fetchStripeAPI(){
+    private void fetchStripeAPI(){
 
         //create new request and set the url
         RequestQueue queue = Volley.newRequestQueue(this);
