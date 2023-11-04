@@ -9,12 +9,36 @@
         <item>Malay</item>
         <item>Mandarin</item>
         <item>Tamil</item>
+        <item>French</item>
+        <item>Portuguese</item>
+        <item>Arabic</item>
+        <item>Spanish</item>
+        <item>Russian</item>
+        <item>German</item>
+        <item>Japanese</item>
+        <item>Hindi</item>
+        <item>Italian</item>
+        <item>Korean</item>
+        <item>Vietnamese</item>
+        <item>Thai</item>
     </string-array>
 
     <!--language and language codes -->
     <string name="Malay">"ms"</string>
     <string name="Mandarin">"zh-CN"</string>
     <string name="Tamil">"ta"</string>
+    <string name="French">"fr"</string>
+    <string name="Portuguese">"pt"</string>
+    <string name="Arabic">"ar"</string>
+    <string name="Spanish">"es"</string>
+    <string name="Russian">"ru"</string>
+    <string name="German">"de"</string>
+    <string name="Japanese">"ja"</string>
+    <string name="Hindi">"hi"</string>
+    <string name="Italian">"it"</string>
+    <string name="Korean">"ko"</string>
+    <string name="Vietnamese">"vi"</string>
+    <string name="Thai">"th"</string>
 
 
     <!--iata codes and airport names -->

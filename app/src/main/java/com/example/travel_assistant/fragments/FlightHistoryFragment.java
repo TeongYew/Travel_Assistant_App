@@ -79,7 +79,9 @@ public class FlightHistoryFragment extends Fragment {
                                 String flightAirline = document.getData().get("airline").toString();
                                 String flightClass = document.getData().get("class").toString();
                                 String flightCode = document.getData().get("flight_code").toString();
+                                String flightCurrency = document.getData().get("flight_currency").toString();
                                 String flightPrice = document.getData().get("flight_price").toString();
+                                String totalPrice = flightCurrency + " " + flightPrice;
                                 String adultCount = document.getData().get("adult_count").toString();
                                 String kidCount = document.getData().get("kid_count").toString();
                                 boolean roundTrip = (boolean) document.getData().get("roundTrip");
@@ -102,7 +104,7 @@ public class FlightHistoryFragment extends Fragment {
                                                         String flightArrivalAt = document.getData().get("arrival_date_time").toString().replaceAll("T", " ");
 
 
-                                                        FlightHistoryModel flightHistoryModel = new FlightHistoryModel(flightBookingId, flightDepartureIata, flightDepartureName, flightDepartureAt, flightArrivalIata, flightArrivalName, flightArrivalAt, flightAirline, flightClass, flightCode, flightPrice, adultCount, kidCount, roundTrip);
+                                                        FlightHistoryModel flightHistoryModel = new FlightHistoryModel(flightBookingId, flightDepartureIata, flightDepartureName, flightDepartureAt, flightArrivalIata, flightArrivalName, flightArrivalAt, flightAirline, flightClass, flightCode, totalPrice, adultCount, kidCount, roundTrip);
 
                                                         flightHistoryArrayList.add(flightHistoryModel);
 

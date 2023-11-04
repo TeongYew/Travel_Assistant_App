@@ -20,10 +20,6 @@
             android:icon="@drawable/history"
             android:title="History" />
         <item
-            android:id="@+id/navReviews"
-            android:icon="@drawable/reviews"
-            android:title="Reviews" />
-        <item
             android:id="@+id/signOut"
             android:icon="@drawable/logout"
             android:title="Sign Out" />

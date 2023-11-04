@@ -9,6 +9,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -68,10 +69,23 @@ public class LoginFragment extends Fragment {
 
                 String email, password;
 
-                email = String.valueOf(emailET.getText());
-                password = String.valueOf(passwordET.getText());
+//                if (TextUtils.isEmpty(emailET.getText().toString()) || TextUtils.isEmpty(passwordET.getText().toString())){
+//                    Toast.makeText(getActivity(), "Please ensure the email and password field is filled in.", Toast.LENGTH_SHORT).show();
+//                }
+//                else{
+//                    email = String.valueOf(emailET.getText());
+//                    password = String.valueOf(passwordET.getText());
+//                    email = "test@test.com";
+//                    password = "test123";
+//
+//                    loginUser(email,password);
+//                }
+
+                email = "test@test.com";
+                password = "test123";
 
                 loginUser(email,password);
+
 
             }
         });

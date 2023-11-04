@@ -333,7 +333,7 @@ public class PaymentPage extends AppCompatActivity {
                                     Log.d(TAG, "onResponse: convertedHotelPrice: " + convertedHotelPrice);
 
                                     //set the new hotel price and update the hotel currency
-                                    hotelPrice = String.valueOf(convertedHotelPrice);
+                                    hotelPrice = String.format("%.2f", convertedHotelPrice);
                                     hotelCurrency = flightCurrency;
 
                                     //get the total price by adding the converted hotel price and the flight price
@@ -606,7 +606,7 @@ public class PaymentPage extends AppCompatActivity {
 
         //create new request and set the url
         RequestQueue queue = Volley.newRequestQueue(this);
-        String url ="http://192.168.0.4/stripeAPI/index.php";
+        String url ="http://192.168.0.6/stripeAPI/index.php";
 
         //initialise a new string request to call the stripe api
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url,

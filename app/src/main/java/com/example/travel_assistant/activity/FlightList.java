@@ -191,7 +191,6 @@ public class FlightList extends AppCompatActivity {
                         JsonArray flightItinerary = flightsData.get(i).getAsJsonObject().get("itineraries").getAsJsonArray();
 
 
-
                         Log.d(TAG, "run: this is itinerary first departure and final arrival: " + firstdepartureIata + ", " + lastArrivalIata);
 
                         //create a new flight list model to be added into the flightArrayList
@@ -199,39 +198,38 @@ public class FlightList extends AppCompatActivity {
 
                         flightArrayList.add(flight);
 
-                        //check and log the flight itinerary data
-                        for(int x = 0; x < itinerarySegments.size(); x++){
-
-                            String departureIata = itinerarySegments.get(x).getAsJsonObject().get("departure").getAsJsonObject().get("iataCode").toString();
-                            //String departureTerminal = itinerarySegments.get(x).getAsJsonObject().get("departure").getAsJsonObject().get("terminal").toString();
-                            String departureTime = itinerarySegments.get(x).getAsJsonObject().get("departure").getAsJsonObject().get("at").toString();
-                            String arrivalIata = itinerarySegments.get(x).getAsJsonObject().get("arrival").getAsJsonObject().get("iataCode").toString();
-                            String arrivalTime = itinerarySegments.get(x).getAsJsonObject().get("arrival").getAsJsonObject().get("at").toString();
-
-//                            String carrierCode = itinerarySegments.get(x).getAsJsonObject().get("carrierCode").toString();
-//                            String number = itinerarySegments.get(x).getAsJsonObject().get("number").toString();
-//                            String aircraftCode = itinerarySegments.get(x).getAsJsonObject().get("aircraft").getAsJsonObject().get("code").toString();
-
-
-
-//                            Location[] departure = amadeus.referenceData.locations.get(Params
-//                                    .with("keyword", departureIata)
-//                                    .and("subType", Locations.ANY));
+//                        //check and log the flight itinerary data
+//                        for(int x = 0; x < itinerarySegments.size(); x++){
 //
-//                            Location[] arrival = amadeus.referenceData.locations.get(Params
-//                                    .with("keyword", arrivalIata)
-//                                    .and("subType", Locations.ANY));
+//                            String departureIata = itinerarySegments.get(x).getAsJsonObject().get("departure").getAsJsonObject().get("iataCode").toString();
+//                            //String departureTerminal = itinerarySegments.get(x).getAsJsonObject().get("departure").getAsJsonObject().get("terminal").toString();
+//                            String departureTime = itinerarySegments.get(x).getAsJsonObject().get("departure").getAsJsonObject().get("at").toString();
+//                            String arrivalIata = itinerarySegments.get(x).getAsJsonObject().get("arrival").getAsJsonObject().get("iataCode").toString();
+//                            String arrivalTime = itinerarySegments.get(x).getAsJsonObject().get("arrival").getAsJsonObject().get("at").toString();
 //
-//                            String departureName = departure[0].getResponse().getResult().get("data").getAsJsonArray().get(0).getAsJsonObject().get("address").getAsJsonObject().get("cityName").toString();
-//                            String arrivalName = arrival[0].getResponse().getResult().get("data").getAsJsonArray().get(0).getAsJsonObject().get("address").getAsJsonObject().get("cityName").toString();
-
-                            Log.d(TAG, "run: this is itinerary departure plan " + x + ": " + departureIata + ", " + departureTime);
-                            Log.d(TAG, "run: this is itinerary arrival plan " + x + ": " + arrivalIata + ", " + arrivalTime);
-                            //Log.d(TAG, "run: this is itinerary carrier code + number + aircraft code: " + x + ": " + carrierCode + ", " + number + ", " + aircraftCode);
-                            //Log.d(TAG, "run: this is itinerary departure and arrival city name " + x + ": " + departureName + ", " + arrivalName);
-
-
-                        }
+////                            String carrierCode = itinerarySegments.get(x).getAsJsonObject().get("carrierCode").toString();
+////                            String number = itinerarySegments.get(x).getAsJsonObject().get("number").toString();
+////                            String aircraftCode = itinerarySegments.get(x).getAsJsonObject().get("aircraft").getAsJsonObject().get("code").toString();
+//
+//
+//
+////                            Location[] departure = amadeus.referenceData.locations.get(Params
+////                                    .with("keyword", departureIata)
+////                                    .and("subType", Locations.ANY));
+////
+////                            Location[] arrival = amadeus.referenceData.locations.get(Params
+////                                    .with("keyword", arrivalIata)
+////                                    .and("subType", Locations.ANY));
+////
+////                            String departureName = departure[0].getResponse().getResult().get("data").getAsJsonArray().get(0).getAsJsonObject().get("address").getAsJsonObject().get("cityName").toString();
+////                            String arrivalName = arrival[0].getResponse().getResult().get("data").getAsJsonArray().get(0).getAsJsonObject().get("address").getAsJsonObject().get("cityName").toString();
+//
+//                            Log.d(TAG, "run: this is itinerary departure plan " + x + ": " + departureIata + ", " + departureTime);
+//                            Log.d(TAG, "run: this is itinerary arrival plan " + x + ": " + arrivalIata + ", " + arrivalTime);
+//                            //Log.d(TAG, "run: this is itinerary carrier code + number + aircraft code: " + x + ": " + carrierCode + ", " + number + ", " + aircraftCode);
+//                            //Log.d(TAG, "run: this is itinerary departure and arrival city name " + x + ": " + departureName + ", " + arrivalName);
+//
+//                        }
 
                     }
 

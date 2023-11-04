@@ -156,45 +156,69 @@ public class CommonPhrases extends AppCompatActivity {
                 currentLanguage = languageSpinner.getSelectedItem().toString();
                 Log.d(TAG, "onItemClick: current language: " + currentLanguage);
 
-                //change the tts language accordingly
-                switch (currentLanguage){
-                    case "Malay":
-                        //textToSpeech.setLanguage(new Locale("ms", "MY"));
-
-                        //set the tts language to the currently selected language
-                        int malayResult = textToSpeech.setLanguage(new Locale("ms", "MY"));
-
-                        if (malayResult == TextToSpeech.LANG_MISSING_DATA || malayResult == TextToSpeech.LANG_NOT_SUPPORTED) {
-                            textToSpeech.setLanguage(new Locale("id", "ID"));
-                        } else {
-                            textToSpeech.setLanguage(new Locale("ms", "MY"));
-                        }
-                        break;
-                    case "Mandarin":
-                        //textToSpeech.setLanguage(new Locale("zh", "CN"));
-
-                        //set the tts language to the currently selected language
-                        int mandarinResult = textToSpeech.setLanguage(new Locale("zh", "CN"));
-
-                        if (mandarinResult == TextToSpeech.LANG_MISSING_DATA || mandarinResult == TextToSpeech.LANG_NOT_SUPPORTED) {
-                            textToSpeech.setLanguage(Locale.ENGLISH);
-                        } else {
-                            textToSpeech.setLanguage(new Locale("zh", "CN"));
-                        }
-                        break;
-                    case "Tamil":
-                        //textToSpeech.setLanguage(new Locale("ta", "IN"));
-
-                        //set the tts language to the currently selected language
-                        int tamilResult = textToSpeech.setLanguage(new Locale("ta", "IN"));
-
-                        if (tamilResult == TextToSpeech.LANG_MISSING_DATA || tamilResult == TextToSpeech.LANG_NOT_SUPPORTED) {
-                            textToSpeech.setLanguage(Locale.ENGLISH);
-                        } else {
-                            textToSpeech.setLanguage(new Locale("ta", "IN"));
-                        }
-                        break;
+                //since the current emulator does not have a language pack for the malaysian malay language
+                //if the malay language is selected, set the tts language to indonesian
+                //else proceed with getting the language code normally
+                if (currentLanguage.equals("Malay")){
+                    textToSpeech.setLanguage(new Locale("id", "ID"));
                 }
+                else{
+                    //get the language code of the current language from the strings.xml file
+                    int resourceId = getResources().getIdentifier(currentLanguage, "string", getPackageName());
+
+                    if (resourceId != 0) {
+                        //if the language code is found, set the language of the tts using the language code
+                        String resourceValue = getResources().getString(resourceId);
+                        textToSpeech.setLanguage(new Locale(resourceValue));
+                    } else {
+                        //if the language code is not found, set the language to english
+                        textToSpeech.setLanguage(Locale.ENGLISH);
+                        Log.d("languageSelected", "can't get language code");
+                    }
+                }
+
+
+
+
+//                //change the tts language accordingly
+//                switch (currentLanguage){
+//                    case "Malay":
+//                        //textToSpeech.setLanguage(new Locale("ms", "MY"));
+//
+//                        //set the tts language to the currently selected language
+//                        int malayResult = textToSpeech.setLanguage(new Locale("ms", "MY"));
+//
+//                        if (malayResult == TextToSpeech.LANG_MISSING_DATA || malayResult == TextToSpeech.LANG_NOT_SUPPORTED) {
+//                            textToSpeech.setLanguage(new Locale("id", "ID"));
+//                        } else {
+//                            textToSpeech.setLanguage(new Locale("ms", "MY"));
+//                        }
+//                        break;
+//                    case "Mandarin":
+//                        //textToSpeech.setLanguage(new Locale("zh", "CN"));
+//
+//                        //set the tts language to the currently selected language
+//                        int mandarinResult = textToSpeech.setLanguage(new Locale("zh", "CN"));
+//
+//                        if (mandarinResult == TextToSpeech.LANG_MISSING_DATA || mandarinResult == TextToSpeech.LANG_NOT_SUPPORTED) {
+//                            textToSpeech.setLanguage(Locale.ENGLISH);
+//                        } else {
+//                            textToSpeech.setLanguage(new Locale("zh", "CN"));
+//                        }
+//                        break;
+//                    case "Tamil":
+//                        //textToSpeech.setLanguage(new Locale("ta", "IN"));
+//
+//                        //set the tts language to the currently selected language
+//                        int tamilResult = textToSpeech.setLanguage(new Locale("ta", "IN"));
+//
+//                        if (tamilResult == TextToSpeech.LANG_MISSING_DATA || tamilResult == TextToSpeech.LANG_NOT_SUPPORTED) {
+//                            textToSpeech.setLanguage(Locale.ENGLISH);
+//                        } else {
+//                            textToSpeech.setLanguage(new Locale("ta", "IN"));
+//                        }
+//                        break;
+//                }
 
             }
 

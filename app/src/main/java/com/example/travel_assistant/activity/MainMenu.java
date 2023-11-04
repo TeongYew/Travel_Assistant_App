@@ -61,6 +61,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executor;
@@ -202,6 +203,10 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
                 //get the instance of calendar.
                 final Calendar c = Calendar.getInstance();
 
+                Calendar calendar = Calendar.getInstance();
+                final Date[] date1 = new Date[1];
+                final Date[] date2 = new Date[1];
+
                 //get current day, month and year.
                 year = c.get(Calendar.YEAR);
                 month = c.get(Calendar.MONTH);
@@ -233,6 +238,10 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
                                 //set the fromDate to the selected date
                                 fromDate = yearStr + "-" + monthStr + "-" + dayStr;
 
+                                // Setting dates
+                                calendar.set(year, monthOfYear, dayOfMonth);
+                                date1[0] = calendar.getTime();
+
                                 //create another date picker for toDate
                                 DatePickerDialog toDatePickerDialog = new DatePickerDialog(
                                         // on below line we are passing context.
@@ -259,8 +268,18 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
                                                 //set toDate to the selected date
                                                 toDate = yearStr + "-" + monthStr + "-" + dayStr;
 
-                                                //set the dateTV with fromDate and toDate
-                                                dateTV.setText(fromDate + " - " + toDate);
+                                                calendar.set(year, monthOfYear, dayOfMonth);
+                                                date2[0] = calendar.getTime();
+
+                                                // Comparing dates
+                                                if (date2[0].before(date1[0])) {
+                                                    Toast.makeText(MainMenu.this, "Please ensure the second date is after the first date.", Toast.LENGTH_SHORT).show();
+                                                } else {
+                                                    //set the dateTV with fromDate and toDate
+                                                    dateTV.setText(fromDate + " - " + toDate);
+                                                }
+
+
 
                                             }
                                         },
@@ -349,9 +368,6 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
         }
         else if (item.getItemId() == R.id.navHistory) {
             startActivity(new Intent(MainMenu.this, BookingHistory.class));
-        }
-        else if (item.getItemId() == R.id.navReviews) {
-
         }
         else if (item.getItemId() == R.id.signOut) {
             signOut();
@@ -515,8 +531,14 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
 
                         //minus the adult count
                         String adultCountStr = adultCountET.getText().toString();
-                        int updateCount = Integer.parseInt(adultCountStr) - 1;
-                        adultCountET.setText(String.valueOf(updateCount));
+
+                        //if the adult count is more than 0, allow the minus
+                        //if the adult count is equal or less than 0 then don't allow the minus since negative should not be allowed
+                        if(Integer.parseInt(adultCountStr) > 0){
+                            int updateCount = Integer.parseInt(adultCountStr) - 1;
+                            adultCountET.setText(String.valueOf(updateCount));
+                        }
+
                     }
                 });
 
@@ -537,8 +559,14 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
 
                         //minus the kid count
                         String kidCountStr = kidCountET.getText().toString();
-                        int updateCount = Integer.parseInt(kidCountStr) - 1;
-                        kidCountET.setText(String.valueOf(updateCount));
+
+                        //if the kid count is more than 0, allow the minus
+                        //if the kid count is equal or less than 0 then don't allow the minus since negative should not be allowed
+                        if(Integer.parseInt(kidCountStr) > 0){
+                            int updateCount = Integer.parseInt(kidCountStr) - 1;
+                            kidCountET.setText(String.valueOf(updateCount));
+                        }
+
                     }
                 });
 
@@ -564,175 +592,9 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
 
     }
 
-    public void getFlights(){
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-
-
-                try {
-
-                    FlightOfferSearch[] flightOffers = amadeus.shopping.flightOffersSearch.get(
-                            Params.with("originLocationCode","LON")
-                                    .and("destinationLocationCode", "NYC")
-                                    .and("departureDate", "2023-11-02")
-                                    .and("adults", 1)
-                                    .and("max", 5));
-
-                    Location[] locations = amadeus.referenceData.locations.get(Params
-                            .with("keyword", "LON")
-                            .and("subType", Locations.ANY));
-
-
-                    if (flightOffers[0].getResponse().getStatusCode() != 200) {
-                        Log.d(TAG, "run: got in error in calling flight");
-                        Log.d(TAG, "onCreate: Wrong status code for Flight Offers Search: " + flightOffers[0]
-                                .getResponse().getStatusCode());
-                    }
-                    else{
-                        Log.d(TAG, "run: got in success in calling flight");
-                        Log.d(TAG, "onCreate(flight results): " + flightOffers[0].getResponse().getResult());
-//                        Log.d(TAG, "run: flight offer count: " + Arrays.stream(flightOffers).count());
-//                        Log.d(TAG, "run: flight offer class: " + flightOffers.getClass());
-
-                        JsonObject jsonObject = flightOffers[0].getResponse().getResult();
-//                        Log.d(TAG, "run: json meta: " + jsonObject.get("meta").getAsJsonObject().get("count"));
-//                        Log.d(TAG, "run: json meta: " + jsonObject.get("data").getAsJsonArray().get(0).getAsJsonObject().get("itineraries").getAsJsonArray().get(0).getAsJsonObject().get("duration"));
-//                        Log.d(TAG, "run: json meta: " + jsonObject.get("data").getAsJsonArray().get(0).getAsJsonObject().get("itineraries").getAsJsonArray().get(0).getAsJsonObject().get("segments").getAsJsonArray().get(0).getAsJsonObject().get("departure").getAsJsonObject().get("iataCode"));
-
-                        JsonArray flightsData = flightOffers[0].getResponse().getResult().get("data").getAsJsonArray();
-
-                        //each data is a flight
-                        for(int i = 0; i < flightsData.size(); i++){
-
-                            String duration = flightsData.get(i).getAsJsonObject().get("itineraries").getAsJsonArray().get(0).getAsJsonObject().get("duration").toString();
-                            //each flight has its own itinerary
-                            //but itinerary only has one
-                            //different stops can get from the segment in the itinerary
-                            JsonArray itinerarySegments = flightsData.get(i).getAsJsonObject().get("itineraries").getAsJsonArray().get(0).getAsJsonObject().get("segments").getAsJsonArray();
-
-                            Log.d(TAG, "run: this is itinerary duration: " + duration);
-
-                            String firstdepartureIata = itinerarySegments.get(0).getAsJsonObject().get("departure").getAsJsonObject().get("iataCode").toString();
-                            String lastArrivalIata = itinerarySegments.get(itinerarySegments.size() - 1).getAsJsonObject().get("arrival").getAsJsonObject().get("iataCode").toString();
-
-
-
-                            Log.d(TAG, "run: this is itinerary first departure and final arrival: " + firstdepartureIata + ", " + lastArrivalIata);
-
-                            for(int x = 0; x < itinerarySegments.size(); x++){
-
-                                String departureIata = itinerarySegments.get(x).getAsJsonObject().get("departure").getAsJsonObject().get("iataCode").toString();
-                                //String departureTerminal = itinerarySegments.get(x).getAsJsonObject().get("departure").getAsJsonObject().get("terminal").toString();
-                                String departureTime = itinerarySegments.get(x).getAsJsonObject().get("departure").getAsJsonObject().get("at").toString();
-                                String arrivalIata = itinerarySegments.get(x).getAsJsonObject().get("arrival").getAsJsonObject().get("iataCode").toString();
-                                String arrivalTime = itinerarySegments.get(x).getAsJsonObject().get("arrival").getAsJsonObject().get("at").toString();
-
-                                String carrierCode = itinerarySegments.get(x).getAsJsonObject().get("carrierCode").toString();
-                                String number = itinerarySegments.get(x).getAsJsonObject().get("number").toString();
-                                String aircraftCode = itinerarySegments.get(x).getAsJsonObject().get("aircraft").getAsJsonObject().get("code").toString();
-
-                                Location[] departure = amadeus.referenceData.locations.get(Params
-                                        .with("keyword", departureIata)
-                                        .and("subType", Locations.ANY));
-
-                                Location[] arrival = amadeus.referenceData.locations.get(Params
-                                        .with("keyword", arrivalIata)
-                                        .and("subType", Locations.ANY));
-
-                                String departureName = departure[0].getResponse().getResult().get("data").getAsJsonArray().get(0).getAsJsonObject().get("address").getAsJsonObject().get("cityName").toString();
-                                String arrivalName = arrival[0].getResponse().getResult().get("data").getAsJsonArray().get(0).getAsJsonObject().get("address").getAsJsonObject().get("cityName").toString();
-
-                                Log.d(TAG, "run: this is itinerary departure plan " + x + ": " + departureIata + ", " + departureTime);
-                                Log.d(TAG, "run: this is itinerary arrival plan " + x + ": " + arrivalIata + ", " + arrivalTime);
-                                Log.d(TAG, "run: this is itinerary carrier code + number + aircraft code: " + x + ": " + carrierCode + ", " + number + ", " + aircraftCode);
-                                Log.d(TAG, "run: this is itinerary departure and arrival city name " + x + ": " + departureName + ", " + arrivalName);
-
-
-                            }
-
-                        }
-
-                        //itinerary data
-                        JsonArray itineraries = flightsData.get(0).getAsJsonObject().get("itineraries").getAsJsonArray();
-
-                        String duration = itineraries.get(0).getAsJsonObject().get("duration").toString();
-                        String departureIata = itineraries.get(0).getAsJsonObject().get("segments").getAsJsonArray().get(0).getAsJsonObject().get("departure").getAsJsonObject().get("iataCode").toString();
-                        String departureTerminal = itineraries.get(0).getAsJsonObject().get("segments").getAsJsonArray().get(0).getAsJsonObject().get("departure").getAsJsonObject().get("terminal").toString();
-                        String departureTime = itineraries.get(0).getAsJsonObject().get("segments").getAsJsonArray().get(0).getAsJsonObject().get("departure").getAsJsonObject().get("at").toString();
-                        String arrivalIata = itineraries.get(0).getAsJsonObject().get("segments").getAsJsonArray().get(0).getAsJsonObject().get("arrival").getAsJsonObject().get("iataCode").toString();
-                        String arrivalTime = itineraries.get(0).getAsJsonObject().get("segments").getAsJsonArray().get(0).getAsJsonObject().get("arrival").getAsJsonObject().get("at").toString();
-
-                        //departure to final arrival data
-                        JsonArray itinerarySegments = itineraries.get(0).getAsJsonObject().get("segments").getAsJsonArray();
-                        String firstdepartureIata = itinerarySegments.get(0).getAsJsonObject().get("departure").getAsJsonObject().get("iataCode").toString();
-                        String lastArrivalIata = itinerarySegments.get(itinerarySegments.size() - 1).getAsJsonObject().get("arrival").getAsJsonObject().get("iataCode").toString();
-
-
-                        //Log.d(TAG, "run: this is itinerary departure plan" + duration + ", " + departureIata + ", " + departureTerminal + ", " + departureTime);
-                        //Log.d(TAG, "run: this is itinerary arrival plan" + duration + ", " + arrivalIata + ", " + arrivalTime);
-
-//                        Log.d(TAG, "run: this is itinerary first departure and final arrival: " + firstdepartureIata + ", " + lastArrivalIata);
-
-                        String flightDuration = jsonObject.get("data").
-                                getAsJsonArray().get(0).getAsJsonObject().get("itineraries").
-                                getAsJsonArray().get(0).getAsJsonObject().get("duration").toString();
-
-                        String departureIata1 = jsonObject.get("data").
-                                getAsJsonArray().get(0).getAsJsonObject().get("itineraries").
-                                getAsJsonArray().get(0).getAsJsonObject().get("segments").
-                                getAsJsonArray().get(0).getAsJsonObject().get("departure").
-                                getAsJsonObject().get("iataCode").toString();
-
-
-                    }
-
-                }
-                catch (Exception e){
-                    Log.d(TAG, "onCreate: Exception(in flight call): " + e.getMessage());
-                }
-
-
-
-            }
-        });
-    }
-
-    public void getLocation2(String location, String popup){
-
-        RequestQueue queue = Volley.newRequestQueue(this);
-        String url ="http://api.aviationstack.com/v1/cities";
-
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-
-                        Toast.makeText(MainMenu.this, "got a response!", Toast.LENGTH_SHORT).show();
-
-                        Log.d(TAG, "onResponse: aviation: " + response);
-
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
-            }
-        }){
-            protected Map<String, String> getParams(){
-                Map<String, String> paramV = new HashMap<>();
-                paramV.put("access_key", aviationAK);
-                paramV.put("search", location);
-                return paramV;
-            }
-        };
-        queue.add(stringRequest);
-
-    }
-
     private void getLocation(String location, String popup){
 
-        //create a new location model to hold the location data
+        //create a new location model array list to hold the location data
         ArrayList<LocationModel> locationArrayList = new ArrayList<>();
 
         executor.execute(new Runnable() {
@@ -871,6 +733,14 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
                 catch (Exception e){
                     //stop loading animation
                     loadingDialog.cancel();
+
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(MainMenu.this, "Location not found. Please try the airport code or another name", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
                     Log.d(TAG, "getLocation: error: " + e);
                 }
 

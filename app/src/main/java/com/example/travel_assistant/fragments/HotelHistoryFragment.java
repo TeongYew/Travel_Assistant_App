@@ -74,7 +74,9 @@ public class HotelHistoryFragment extends Fragment {
                                 String offerId = document.getData().get("offer_id").toString();
                                 String hotelCheckIn = document.getData().get("check_in").toString();
                                 String hotelCheckOut = document.getData().get("check_out").toString();
+                                String hotelCurrency = document.getData().get("hotel_currency").toString();
                                 String hotelPrice = document.getData().get("hotel_price").toString();
+                                String totalPrice = hotelCurrency + " " + hotelPrice;
 
                                 String description = "";
 
@@ -88,7 +90,7 @@ public class HotelHistoryFragment extends Fragment {
 
 
 
-                                HotelHistoryModel hotelHistoryModel = new HotelHistoryModel(hotelBookingId, hotelId, hotelName, offerId, hotelCheckIn, hotelCheckOut, hotelPrice, description);
+                                HotelHistoryModel hotelHistoryModel = new HotelHistoryModel(hotelBookingId, hotelId, hotelName, offerId, hotelCheckIn, hotelCheckOut, totalPrice, description);
 
                                 hotelHistoryArrayList.add(hotelHistoryModel);
 

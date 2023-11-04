@@ -255,12 +255,11 @@ public class HotelList extends AppCompatActivity {
 
                                                         Log.d(TAG, "onResponse: imageURL: " + imageURL);
 
-                                                        try{
+                                                        //ensure that the hotel price is properly formatted
+                                                        double tempHotelPriceDouble = Double.parseDouble(hotelPrice);
+                                                        hotelPrice = String.format("%.2f", tempHotelPriceDouble);
 
-                                                        }
-                                                        catch (Exception e){
-
-                                                        }
+                                                        Log.d(TAG, "onResponse: hotel price formatted: " + hotelPrice);
 
                                                         //create a hotel list model to hold the hotel data received from the api
                                                         //add the hotel list model into the hotel array list
