@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.speech.tts.TextToSpeech;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -541,20 +542,6 @@ public class CommonPhrases extends AppCompatActivity {
 
                 try{
 
-//                    MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
-//                    //RequestBody body = RequestBody.create(mediaType, "q=" + phrasesURLEncoded + "&target=" + "ms" + "&source=en");
-//                    RequestBody body = RequestBody.create(mediaType, "q=Hello%2C%20world!&target=es&source=en");
-//                    Request request = new Request.Builder()
-//                            .url("https://google-translate1.p.rapidapi.com/language/translate/v2")
-//                            .post(body)
-//                            .addHeader("content-type", "application/x-www-form-urlencoded")
-//                            .addHeader("Accept-Encoding", "application/gzip")
-//                            .addHeader("X-RapidAPI-Key", "b34ecf7a0fmsh5cbb7c353f899abp1c8c15jsn43d3583a9734")
-//                            .addHeader("X-RapidAPI-Host", "google-translate1.p.rapidapi.com")
-//                            .build();
-//
-//                    //Response response = client.newCall(request).execute();
-
                     Request request = new Request.Builder()
                             .url("https://nlp-translation.p.rapidapi.com/v1/translate?text=" + urlEncodedPhrase + "&to=" + currentLanguageCode + "&from=en")
                             .get()
@@ -588,6 +575,12 @@ public class CommonPhrases extends AppCompatActivity {
                             }
                             catch (Exception e){
                                 Log.d(TAG, "onResponse: error parsing translation json: " + e);
+                                handler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(CommonPhrases.this, "Text could not be translated. Please ensure the text is in English.", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                             }
 
                         }
@@ -596,6 +589,12 @@ public class CommonPhrases extends AppCompatActivity {
                 }
                 catch (Exception e){
                     Log.d(TAG, "run: error calling google translate api: " + e);
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(CommonPhrases.this, "Text could not be translated. Please ensure the text is in English.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
 
 
@@ -709,16 +708,21 @@ public class CommonPhrases extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                //close the popup window
-                popupWindow.dismiss();
+                if (TextUtils.isEmpty(translateInputET.getText())){
+                    Toast.makeText(CommonPhrases.this, "Please input English text to be translated", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    //close the popup window
+                    popupWindow.dismiss();
 
-                //start the loading animation
-                loadingDialog.show();
+                    //start the loading animation
+                    loadingDialog.show();
 
-                String inputText = translateInputET.getText().toString();
-                String encodedText = urlEncodeString(inputText);
+                    String inputText = translateInputET.getText().toString();
+                    String encodedText = urlEncodeString(inputText);
 
-                translate(encodedText);
+                    translate(encodedText);
+                }
 
             }
         });

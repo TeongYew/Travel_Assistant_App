@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -183,6 +184,7 @@ public class HotelList extends AppCompatActivity {
                         @Override
                         public void onFailure(@NonNull Call call, @NonNull IOException e) {
                             Log.d(TAG, "onFailure: Failed to load response due to: " + e.getMessage());
+                            displayError();
                         }
 
                         @Override
@@ -218,6 +220,7 @@ public class HotelList extends AppCompatActivity {
                                         @Override
                                         public void onFailure(@NonNull Call call, @NonNull IOException e) {
                                             Log.d(TAG, "onFailure: Failed to load response due to: " + e.getMessage());
+                                            displayError();
                                         }
 
                                         @Override
@@ -383,10 +386,12 @@ public class HotelList extends AppCompatActivity {
                                                 }
                                                 catch (Exception e){
                                                     Log.d(TAG, "onResponse: parse 2nd response from str error: " + e);
+                                                    displayError();
                                                 }
 
                                             }else{
                                                 Log.d(TAG, "onResponseFailure: Failed to load response due to: " + response.body().string());
+                                                displayError();
                                             }
 
                                         }
@@ -395,11 +400,13 @@ public class HotelList extends AppCompatActivity {
                                 } catch (JSONException e) {
                                     //throw new RuntimeException(e);
                                     Log.d(TAG, "onResponse: parse response to json error: " + e);
+                                    displayError();
                                 }
 
 
                             }else{
                                 Log.d(TAG, "onResponseFailure: Failed to load response due to: " + response.body().string());
+                                displayError();
                             }
 
                         }
@@ -408,10 +415,25 @@ public class HotelList extends AppCompatActivity {
                 }
                 catch (Exception e){
                     Log.d(TAG, "run: rapidapi error: " + e);
+                    displayError();
                 }
 
             }
         });
+
+    }
+
+    private void displayError(){
+
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(HotelList.this, "Error getting list of hotels. Please ensure that the input is a city name.", Toast.LENGTH_SHORT).show();
+                loadingDialog.cancel();
+                setCityPopup();
+            }
+        });
+
 
     }
 
@@ -440,14 +462,20 @@ public class HotelList extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                //get the city that was inputted by the user and then close the popup window
-                city = cityET.getText().toString();
+                if(TextUtils.isEmpty(cityET.getText())){
+                    Toast.makeText(HotelList.this, "Please input a city name in the text field.", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    //get the city that was inputted by the user and then close the popup window
+                    city = cityET.getText().toString();
 
-                popupWindow.dismiss();
+                    popupWindow.dismiss();
 
-                //show the loading animation and get the hotel using the city input by the user
-                loadingDialog.show();
-                getHotel();
+                    //show the loading animation and get the hotel using the city input by the user
+                    loadingDialog.show();
+                    getHotel();
+                }
+
             }
         });
 

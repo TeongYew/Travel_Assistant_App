@@ -42,6 +42,8 @@
         android:layout_marginBottom="10dp"
         android:background="@drawable/custom_edittext2"
         android:hint="Full Name..."
+        android:textColorHint="@color/grey"
+        android:textColor="@color/black"
         android:padding="15dp" />
 
     <EditText
@@ -49,10 +51,13 @@
         android:layout_height="wrap_content"
         android:id="@+id/emailET"
         android:background="@drawable/custom_edittext2"
-        android:hint="Email..."
+        android:hint="Email Address..."
         android:padding="15dp"
         android:layout_margin="10dp"
-        android:layout_below="@+id/usernameET"/>
+        android:layout_below="@+id/usernameET"
+        android:inputType="textEmailAddress"
+        android:textColorHint="@color/grey"
+        android:textColor="@color/black"/>
 
     <EditText
         android:layout_width="match_parent"
@@ -62,7 +67,10 @@
         android:hint="Phone Number..."
         android:padding="15dp"
         android:layout_margin="10dp"
-        android:layout_below="@+id/emailET"/>
+        android:layout_below="@+id/emailET"
+        android:inputType="phone"
+        android:textColorHint="@color/grey"
+        android:textColor="@color/black"/>
 
 
 

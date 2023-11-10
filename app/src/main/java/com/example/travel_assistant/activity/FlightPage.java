@@ -203,7 +203,7 @@ public class FlightPage extends AppCompatActivity {
         if(noOfPassengers > 1){
             double flightPriceDouble = Double.parseDouble(flightPrice);
             double calculatedPrice = flightPriceDouble * noOfPassengers;
-            flightPrice = String.valueOf(calculatedPrice);
+            flightPrice = String.format("%.2f", calculatedPrice);
         }
 
     }

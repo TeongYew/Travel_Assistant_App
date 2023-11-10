@@ -203,7 +203,10 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
                 //get the instance of calendar.
                 final Calendar c = Calendar.getInstance();
 
+                //create a current date and 2 date variables
+                //to be used to check for the validity of the selected dates
                 Calendar calendar = Calendar.getInstance();
+                Date currentDate = calendar.getTime();
                 final Date[] date1 = new Date[1];
                 final Date[] date2 = new Date[1];
 
@@ -242,51 +245,60 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
                                 calendar.set(year, monthOfYear, dayOfMonth);
                                 date1[0] = calendar.getTime();
 
-                                //create another date picker for toDate
-                                DatePickerDialog toDatePickerDialog = new DatePickerDialog(
-                                        // on below line we are passing context.
-                                        MainMenu.this,
-                                        new DatePickerDialog.OnDateSetListener() {
-                                            @Override
-                                            public void onDateSet(DatePicker view, int year,
-                                                                  int monthOfYear, int dayOfMonth) {
+                                // Comparing dates
+                                if (date1[0].before(currentDate)) {
+                                    Toast.makeText(MainMenu.this, "Please ensure the first date is not before the current date.", Toast.LENGTH_SHORT).show();
+                                } else {
 
-                                                //check if the month and day string has only 1 number
-                                                // if only 1 number, add a 0 in front to avoid formatting errors
-                                                String yearStr = String.valueOf(year);
-                                                String monthStr = String.valueOf(monthOfYear + 1);
-                                                String dayStr = String.valueOf(dayOfMonth);
+                                    //create another date picker for toDate
+                                    DatePickerDialog toDatePickerDialog = new DatePickerDialog(
+                                            // on below line we are passing context.
+                                            MainMenu.this,
+                                            new DatePickerDialog.OnDateSetListener() {
+                                                @Override
+                                                public void onDateSet(DatePicker view, int year,
+                                                                      int monthOfYear, int dayOfMonth) {
 
-                                                if(monthStr.length() < 2){
-                                                    monthStr = "0" + monthStr;
+                                                    //check if the month and day string has only 1 number
+                                                    // if only 1 number, add a 0 in front to avoid formatting errors
+                                                    String yearStr = String.valueOf(year);
+                                                    String monthStr = String.valueOf(monthOfYear + 1);
+                                                    String dayStr = String.valueOf(dayOfMonth);
+
+                                                    if(monthStr.length() < 2){
+                                                        monthStr = "0" + monthStr;
+                                                    }
+
+                                                    if (dayStr.length() < 2){
+                                                        dayStr = "0" + dayStr;
+                                                    }
+
+                                                    //set toDate to the selected date
+                                                    toDate = yearStr + "-" + monthStr + "-" + dayStr;
+
+                                                    calendar.set(year, monthOfYear, dayOfMonth);
+                                                    date2[0] = calendar.getTime();
+
+                                                    // Comparing dates
+                                                    if (date2[0].before(date1[0])) {
+                                                        Toast.makeText(MainMenu.this, "Please ensure the second date is after the first date.", Toast.LENGTH_SHORT).show();
+                                                    } else {
+                                                        //set the dateTV with fromDate and toDate
+                                                        dateTV.setText(fromDate + " - " + toDate);
+                                                    }
+
+
+
                                                 }
+                                            },
+                                            //pass year, month, and day for selected date in our date picker.
+                                            year, monthOfYear, dayOfMonth);
 
-                                                if (dayStr.length() < 2){
-                                                    dayStr = "0" + dayStr;
-                                                }
+                                    toDatePickerDialog.show();
 
-                                                //set toDate to the selected date
-                                                toDate = yearStr + "-" + monthStr + "-" + dayStr;
-
-                                                calendar.set(year, monthOfYear, dayOfMonth);
-                                                date2[0] = calendar.getTime();
-
-                                                // Comparing dates
-                                                if (date2[0].before(date1[0])) {
-                                                    Toast.makeText(MainMenu.this, "Please ensure the second date is after the first date.", Toast.LENGTH_SHORT).show();
-                                                } else {
-                                                    //set the dateTV with fromDate and toDate
-                                                    dateTV.setText(fromDate + " - " + toDate);
-                                                }
+                                }
 
 
-
-                                            }
-                                        },
-                                        //pass year, month, and day for selected date in our date picker.
-                                        year, monthOfYear, dayOfMonth);
-
-                                toDatePickerDialog.show();
 
                             }
                         },

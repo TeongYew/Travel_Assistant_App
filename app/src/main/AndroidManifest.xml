@@ -37,10 +37,6 @@
             android:exported="false"
             android:theme="@style/Theme.AppCompat" />
         <activity
-            android:name=".activity.DestAnalyticsPage"
-            android:exported="false"
-            android:theme="@style/Theme.AppCompat" />
-        <activity
             android:name=".activity.HotelPage"
             android:exported="false"
             android:theme="@style/Theme.AppCompat" />

@@ -491,10 +491,16 @@ public class ItineraryList extends AppCompatActivity {
                     itineraryTitleStr += " - (Generating...)";
                 }
 
+
+
+
+
+
+
                 //check if the required fields are filled
                 //if not, display a toast message to notify the user
                 if(TextUtils.isEmpty(itineraryTitleStr) || TextUtils.isEmpty(itineraryLocationStr) || TextUtils.isEmpty(itineraryFromStr) || TextUtils.isEmpty(itineraryToStr)){
-                    Toast.makeText(ItineraryList.this, "Please make sure the all necessary fields are filled", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ItineraryList.this, "Please make sure all the necessary fields are filled", Toast.LENGTH_SHORT).show();
                 }
                 else {
 
@@ -506,22 +512,30 @@ public class ItineraryList extends AppCompatActivity {
                         Date itineraryFromDate = new SimpleDateFormat("dd/MM/yyyy").parse(itineraryFromStr);
                         Date itineraryToDate = new SimpleDateFormat("dd/MM/yyyy").parse(itineraryToStr);
 
-                        Log.d(TAG, "onClick: itinerary from date: " + itineraryFromDate.toString());
+                        if(itineraryToDate.before(itineraryFromDate)){
+                            Toast.makeText(ItineraryList.this, "The second date cannot be before the first date.", Toast.LENGTH_SHORT).show();
+                        }
+                        else{
 
-                        long difference = Math.abs(itineraryToDate.getTime() - itineraryFromDate.getTime());
-                        long differenceDates = difference / (24 * 60 * 60 * 1000);
-                        //add 1 more day as we want day count
-                        differenceDates++;
-                        String dayCount = Long.toString(differenceDates);
+                            Log.d(TAG, "onClick: itinerary from date: " + itineraryFromDate.toString());
 
-                        Log.d(TAG, "onClick: day count: " + dayCount);
+                            long difference = Math.abs(itineraryToDate.getTime() - itineraryFromDate.getTime());
+                            long differenceDates = difference / (24 * 60 * 60 * 1000);
 
-                        //create a new itinerary day model to be inserted into firestore
-                        ArrayList<ItineraryItemModel> itineraryDayArrayList = new ArrayList<>();
+                            //add 1 more day as we want day count
+                            differenceDates++;
+                            String dayCount = Long.toString(differenceDates);
 
-                        ItineraryModel itineraryModel = new ItineraryModel("", itineraryTitleStr, itineraryLocationStr, itineraryFromStr, itineraryToStr, Integer.parseInt(dayCount), itineraryDayArrayList);
+                            Log.d(TAG, "onClick: day count: " + dayCount);
 
-                        insertItinerary(itineraryModel, from);
+                            //create a new itinerary day model to be inserted into firestore
+                            ArrayList<ItineraryItemModel> itineraryDayArrayList = new ArrayList<>();
+
+                            ItineraryModel itineraryModel = new ItineraryModel("", itineraryTitleStr, itineraryLocationStr, itineraryFromStr, itineraryToStr, Integer.parseInt(dayCount), itineraryDayArrayList);
+
+                            insertItinerary(itineraryModel, from);
+
+                        }
 
 //                        popupWindow.dismiss();
 //                        getUserItinerary();
@@ -1013,12 +1027,12 @@ public class ItineraryList extends AppCompatActivity {
 //        });
 //
 //    }
-
-    // This method extracts the response expected from chatgpt and returns it.
-    public static String extractContentFromResponse(String response) {
-        int startMarker = response.indexOf("content")+11; // Marker for where the content starts.
-        int endMarker = response.indexOf("\"", startMarker); // Marker for where the content ends.
-        return response.substring(startMarker, endMarker); // Returns the substring containing only the response.
-    }
+//
+//    // This method extracts the response expected from chatgpt and returns it.
+//    public static String extractContentFromResponse(String response) {
+//        int startMarker = response.indexOf("content")+11; // Marker for where the content starts.
+//        int endMarker = response.indexOf("\"", startMarker); // Marker for where the content ends.
+//        return response.substring(startMarker, endMarker); // Returns the substring containing only the response.
+//    }
 
 }

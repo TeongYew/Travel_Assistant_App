@@ -69,22 +69,20 @@ public class LoginFragment extends Fragment {
 
                 String email, password;
 
-//                if (TextUtils.isEmpty(emailET.getText().toString()) || TextUtils.isEmpty(passwordET.getText().toString())){
-//                    Toast.makeText(getActivity(), "Please ensure the email and password field is filled in.", Toast.LENGTH_SHORT).show();
-//                }
-//                else{
-//                    email = String.valueOf(emailET.getText());
-//                    password = String.valueOf(passwordET.getText());
-//                    email = "test@test.com";
-//                    password = "test123";
+                if (TextUtils.isEmpty(emailET.getText()) || TextUtils.isEmpty(passwordET.getText().toString())){
+                    Toast.makeText(getActivity(), "Please ensure the email and password field is filled in.", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    email = String.valueOf(emailET.getText());
+                    password = String.valueOf(passwordET.getText());
+
+                    loginUser(email,password);
+                }
+
+//                email = "test@test.com";
+//                password = "test123";
 //
-//                    loginUser(email,password);
-//                }
-
-                email = "test@test.com";
-                password = "test123";
-
-                loginUser(email,password);
+//                loginUser(email,password);
 
 
             }

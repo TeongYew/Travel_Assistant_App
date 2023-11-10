@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -208,6 +209,8 @@ public class PaymentPage extends AppCompatActivity {
             totalPrice = String.format("%.2f", flightPriceDouble);
             totalPriceStripe = totalPrice.replace(".", "");
 
+            //start loading animation
+            loadingDialog.show();
             //fetch stripe api
             fetchStripeAPI();
 
@@ -223,6 +226,12 @@ public class PaymentPage extends AppCompatActivity {
                 //if not, then display a toast notifying the user to fill in the fields
                 if(TextUtils.isEmpty(nameET.getText()) || TextUtils.isEmpty(emailET.getText()) || TextUtils.isEmpty(phoneET.getText())){
                     Toast.makeText(PaymentPage.this, "Please make sure all the necessary fields are filled", Toast.LENGTH_SHORT).show();
+                }
+                else if (!Patterns.EMAIL_ADDRESS.matcher(emailET.getText()).matches()) {
+                    Toast.makeText(PaymentPage.this, "Please ensure that the email is proper.", Toast.LENGTH_SHORT).show();
+                }
+                else if (!Patterns.PHONE.matcher(phoneET.getText()).matches() || phoneET.getText().toString().length() < 7 || phoneET.getText().toString().length() > 15) {
+                    Toast.makeText(PaymentPage.this, "Please ensure that the phone number is proper.", Toast.LENGTH_SHORT).show();
                 }
                 else{
                     //check if a response can be received from the stripe api
