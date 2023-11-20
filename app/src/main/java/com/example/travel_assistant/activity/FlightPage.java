@@ -57,9 +57,9 @@ public class FlightPage extends AppCompatActivity {
     String arrAirportName = "-";
 
     //initialise the amadeus api
-    Amadeus amadeus = Amadeus
-            .builder("htHGvYM2OB3wmAqVykNHAbGPuTlSBV1m","0hiGWqr3KQSGXION")
-            .build();
+//    String amadeusApiKey = System.getenv("amadeus_api_key");
+//    String amadeusApiSecret = System.getenv("amadeus_api_secret");
+    Amadeus amadeus;
 
     //for async methods
     private Executor executor = Executors.newSingleThreadExecutor();
@@ -252,106 +252,5 @@ public class FlightPage extends AppCompatActivity {
 
     }
 
-    private void getLocation(String dep, String arr){
-
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-
-                //try to get departure location name
-                try {
-
-                    //location = "london";
-
-                    Location[] departure = amadeus.referenceData.locations.get(Params
-                            .with("keyword", dep)
-                            .and("subType", Locations.ANY));
-
-                    String depName = departure[0].getResponse().getResult()
-                            .getAsJsonObject().get("data")
-                            .getAsJsonArray().get(0)
-                            .getAsJsonObject().get("name")
-                            .toString()
-                            .replaceAll("\"", "");
-                    String depIata = departure[0].getResponse().getResult()
-                            .getAsJsonObject().get("data")
-                            .getAsJsonArray().get(0)
-                            .getAsJsonObject().get("iataCode")
-                            .toString()
-                            .replaceAll("\"", "");
-
-                    String depCityName = departure[0].getResponse().getResult()
-                            .getAsJsonObject().get("data")
-                            .getAsJsonArray().get(0)
-                            .getAsJsonObject().get("address")
-                            .getAsJsonObject().get("cityName")
-                            .toString()
-                            .replaceAll("\"", "");
-
-                    depLocation = new LocationModel(depIata, depName, depCityName);
-
-                }
-                catch (Exception e){
-                    Log.d(TAG, "getLocation: error: " + e);
-                    depLocation = new LocationModel(dep, "-", "-");
-                }
-
-                //try to get arrival location name
-                try {
-
-                    //location = "london";
-
-                    Location[] arrival = amadeus.referenceData.locations.get(Params
-                            .with("keyword", arr)
-                            .and("subType", Locations.ANY));
-
-
-                    String arrName = arrival[0].getResponse().getResult()
-                            .getAsJsonObject().get("data")
-                            .getAsJsonArray().get(0)
-                            .getAsJsonObject().get("name")
-                            .toString()
-                            .replaceAll("\"", "");
-                    String arrIata = arrival[0].getResponse().getResult()
-                            .getAsJsonObject().get("data")
-                            .getAsJsonArray().get(0)
-                            .getAsJsonObject().get("iataCode")
-                            .toString()
-                            .replaceAll("\"", "");
-
-                    String arrCityName = arrival[0].getResponse().getResult()
-                            .getAsJsonObject().get("data")
-                            .getAsJsonArray().get(0)
-                            .getAsJsonObject().get("address")
-                            .getAsJsonObject().get("cityName")
-                            .toString()
-                            .replaceAll("\"", "");
-
-                    arrLocation = new LocationModel(arrIata, arrName, arrCityName);
-
-                }
-                catch (Exception e){
-                    Log.d(TAG, "getLocation: error: " + e);
-                    arrLocation = new LocationModel(arr, "-", "-");
-                }
-
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        departureAirportTV.setText(depLocation.location);
-                        //departureLocationTV.setText(depLocation.cityName);
-                        arrivalAirportTV.setText(arrLocation.location);
-                        //arrivalLocationTV.setText(arrLocation.cityName);
-
-                    }
-                });
-
-            }
-        });
-
-
-
-    }
 
 }

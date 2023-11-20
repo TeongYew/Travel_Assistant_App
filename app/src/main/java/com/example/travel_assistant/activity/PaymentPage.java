@@ -28,11 +28,15 @@ import com.android.volley.toolbox.Volley;
 import com.example.travel_assistant.R;
 import com.example.travel_assistant.model.FlightItineraryListModel;
 import com.example.travel_assistant.others.LoadingDialog;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.stripe.android.PaymentConfiguration;
 import com.stripe.android.paymentsheet.PaymentSheet;
 import com.stripe.android.paymentsheet.PaymentSheetResult;
@@ -112,6 +116,7 @@ public class PaymentPage extends AppCompatActivity {
 
     //initialise okhttpclient
     OkHttpClient client = new OkHttpClient();
+    String rapidApiKey;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -177,8 +182,10 @@ public class PaymentPage extends AppCompatActivity {
 
             //start loading animation
             loadingDialog.show();
+            //get rapid api key
+            getAPIKeys();
             //convert hotel currency
-            convertCurrency();
+            //convertCurrency();
 
         } else if (paymentFor.equals("flightOnly")) {
 
@@ -272,6 +279,35 @@ public class PaymentPage extends AppCompatActivity {
 
     }
 
+    private void getAPIKeys(){
+
+        //get the user's travel itinerary using the user_uid
+        db.collection("api_keys")
+                .whereEqualTo("api_name", "rapid_api")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                Log.d(TAG, document.getId() + " => " + document.getData());
+
+                                //set the string variables to hold the data received from firestore
+                                rapidApiKey = document.getData().get("api_key").toString();
+
+                            }
+
+                            convertCurrency();
+
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
+
+    }
+
     private void convertCurrency(){
 
         executor.execute(new Runnable() {
@@ -284,7 +320,7 @@ public class PaymentPage extends AppCompatActivity {
                     okhttp3.Request request = new okhttp3.Request.Builder()
                             .url("https://apidojo-booking-v1.p.rapidapi.com/currency/get-exchange-rates?base_currency=" + flightCurrency + "&languagecode=en-us")
                             .get()
-                            .addHeader("X-RapidAPI-Key", "b34ecf7a0fmsh5cbb7c353f899abp1c8c15jsn43d3583a9734")
+                            .addHeader("X-RapidAPI-Key", rapidApiKey)
                             .addHeader("X-RapidAPI-Host", "apidojo-booking-v1.p.rapidapi.com")
                             .build();
 

@@ -30,6 +30,11 @@ import com.example.travel_assistant.adapter.HotelListAdapter;
 import com.example.travel_assistant.model.FlightItineraryListModel;
 import com.example.travel_assistant.model.HotelListModel;
 import com.example.travel_assistant.others.LoadingDialog;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
 
@@ -99,13 +104,11 @@ public class HotelList extends AppCompatActivity {
     private Executor executor = Executors.newSingleThreadExecutor();
     private Handler handler = new Handler(Looper.getMainLooper());
 
-    //initialise the amadeus api
-    Amadeus amadeus = Amadeus
-            .builder("htHGvYM2OB3wmAqVykNHAbGPuTlSBV1m","0hiGWqr3KQSGXION")
-            .build();
 
     //initialise the okhttpclient
     OkHttpClient client = new OkHttpClient();
+    String rapidApiKey;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -150,12 +153,42 @@ public class HotelList extends AppCompatActivity {
 
         Log.d(TAG, "onCreate: location: " + location);
 
+        //get the rapid api key
+        getAPIKeys();
+
 //        //start loading animation and getHotel
 //        loadingDialog.show();
 //        //getHotel();
 //        getHotel2();
         //display a popup window that will prompt the user to set the city of their accommodation
         setCityPopup();
+
+    }
+
+    private void getAPIKeys(){
+
+        //get the user's travel itinerary using the user_uid
+        db.collection("api_keys")
+                .whereEqualTo("api_name", "rapid_api")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                Log.d(TAG, document.getId() + " => " + document.getData());
+
+                                //set the string variables to hold the data received from firestore
+                                rapidApiKey = document.getData().get("api_key").toString();
+
+                            }
+
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
 
     }
 
@@ -173,7 +206,7 @@ public class HotelList extends AppCompatActivity {
                     Request request = new Request.Builder()
                             .url("https://apidojo-booking-v1.p.rapidapi.com/locations/auto-complete?text=" + city + "&languagecode=en-us")
                             .get()
-                            .addHeader("X-RapidAPI-Key", "b34ecf7a0fmsh5cbb7c353f899abp1c8c15jsn43d3583a9734")
+                            .addHeader("X-RapidAPI-Key", rapidApiKey)
                             .addHeader("X-RapidAPI-Host", "apidojo-booking-v1.p.rapidapi.com")
                             .build();
 
@@ -210,7 +243,7 @@ public class HotelList extends AppCompatActivity {
                                     Request request1 = new Request.Builder()
                                             .url("https://apidojo-booking-v1.p.rapidapi.com/properties/list?offset=0&arrival_date=" + fromDate +"&departure_date=" + toDate + "&guest_qty=" + adultCount +"&dest_ids=" + destID +"&room_qty=1&search_type=city&children_qty=" + kidCount + "&search_id=111&price_filter_currencycode=USD&order_by=popularity&languagecode=en-us&travel_purpose=leisure")
                                             .get()
-                                            .addHeader("X-RapidAPI-Key", "b34ecf7a0fmsh5cbb7c353f899abp1c8c15jsn43d3583a9734")
+                                            .addHeader("X-RapidAPI-Key", rapidApiKey)
                                             .addHeader("X-RapidAPI-Host", "apidojo-booking-v1.p.rapidapi.com")
                                             .build();
 
@@ -300,7 +333,7 @@ public class HotelList extends AppCompatActivity {
                                                                     Request request2 = new Request.Builder()
                                                                             .url("https://apidojo-booking-v1.p.rapidapi.com/properties/get-description?hotel_ids=" + hotelArrayList.get(i).hotelId + "&check_out=" + toDate + "&languagecode=en-us&check_in=" + fromDate)
                                                                             .get()
-                                                                            .addHeader("X-RapidAPI-Key", "b34ecf7a0fmsh5cbb7c353f899abp1c8c15jsn43d3583a9734")
+                                                                            .addHeader("X-RapidAPI-Key", rapidApiKey)
                                                                             .addHeader("X-RapidAPI-Host", "apidojo-booking-v1.p.rapidapi.com")
                                                                             .build();
 

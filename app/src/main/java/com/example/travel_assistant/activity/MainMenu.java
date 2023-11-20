@@ -7,7 +7,9 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -43,14 +45,23 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.travel_assistant.R;
 import com.example.travel_assistant.adapter.LocationSearchAdapter;
+import com.example.travel_assistant.adapter.TravelItineraryListAdapter;
 import com.example.travel_assistant.fragments.PreLoginFragment;
+import com.example.travel_assistant.model.ItineraryItemModel;
+import com.example.travel_assistant.model.ItineraryModel;
 import com.example.travel_assistant.model.LocationModel;
 import com.example.travel_assistant.others.LoadingDialog;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 
 import com.amadeus.Amadeus;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.stripe.android.PaymentConfiguration;
@@ -108,11 +119,11 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
     int year,month,day;
 
     //amadeus api
-    Amadeus amadeus = Amadeus
-            .builder("htHGvYM2OB3wmAqVykNHAbGPuTlSBV1m","0hiGWqr3KQSGXION")
-            .build();
-    String aviationAK = "2dc38c7582b03a9963f2fe39eeac574a";
+//    String amadeusApiKey = System.getenv("amadeus_api_key");
+//    String amadeusApiSecret = System.getenv("amadeus_api_secret");
+    Amadeus amadeus;
 
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,6 +148,9 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
 
         //initialise firebase auth
         auth = FirebaseAuth.getInstance();
+
+        //get the api keys from firestore and initialise amadeus api
+        getAPIKeys();
 
         //initialise toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -399,6 +413,37 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
             //if user back presses sign the user out
             signOut();
         }
+    }
+
+    private void getAPIKeys(){
+
+        //get the user's travel itinerary using the user_uid
+        db.collection("api_keys")
+                .whereEqualTo("api_name", "amadeus")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                Log.d(TAG, document.getId() + " => " + document.getData());
+
+                                //set the string variables to hold the data received from firestore
+                                String amadeusApiKey = document.getData().get("api_key").toString();
+                                String amadeusApiSecret = document.getData().get("api_secret").toString();
+
+                                amadeus = Amadeus
+                                        .builder(amadeusApiKey, amadeusApiSecret)
+                                        .build();
+                            }
+
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
+
     }
 
     private void signOut(){

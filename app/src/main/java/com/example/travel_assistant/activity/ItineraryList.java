@@ -1,5 +1,7 @@
 package com.example.travel_assistant.activity;
 
+import static android.content.ContentValues.TAG;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -107,6 +109,7 @@ public class ItineraryList extends AppCompatActivity {
 
     //intialise okhttpclient
     OkHttpClient client = new OkHttpClient();
+    String rapidApiKey;
 
     //initialise firebase auth and firestore
     FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -141,6 +144,10 @@ public class ItineraryList extends AppCompatActivity {
         catch (Exception e){
             throw new RuntimeException(e);
         }
+
+
+        //get rapid api key
+        getAPIKeys();
 
         //generateItinerary("Who are you?");
 
@@ -210,6 +217,33 @@ public class ItineraryList extends AppCompatActivity {
                 //generateItinerary();
             }
         });
+
+    }
+
+    private void getAPIKeys(){
+
+        //get the user's travel itinerary using the user_uid
+        db.collection("api_keys")
+                .whereEqualTo("api_name", "rapid_api")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                Log.d(TAG, document.getId() + " => " + document.getData());
+
+                                //set the string variables to hold the data received from firestore
+                                rapidApiKey = document.getData().get("api_key").toString();
+
+                            }
+
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
 
     }
 
@@ -486,16 +520,9 @@ public class ItineraryList extends AppCompatActivity {
                 String itineraryToStr = itineraryToET.getText().toString();
 
                 if (from.equals("generate")){
-                    generatingItineraryTitle = itineraryTitleStr;
+                    generatingItineraryTitle = itineraryTitleStr + " - (Generating...)";
                     generatingItineraryLocation = itineraryLocationStr;
-                    itineraryTitleStr += " - (Generating...)";
                 }
-
-
-
-
-
-
 
                 //check if the required fields are filled
                 //if not, display a toast message to notify the user
@@ -838,7 +865,7 @@ public class ItineraryList extends AppCompatActivity {
                     Request request = new Request.Builder()
                             .url("https://ai-trip-planner.p.rapidapi.com/?days=" + dayCount + "&destination=" + generatingItineraryLocation)
                             .get()
-                            .addHeader("X-RapidAPI-Key", "b34ecf7a0fmsh5cbb7c353f899abp1c8c15jsn43d3583a9734")
+                            .addHeader("X-RapidAPI-Key", rapidApiKey)
                             .addHeader("X-RapidAPI-Host", "ai-trip-planner.p.rapidapi.com")
                             .build();
 

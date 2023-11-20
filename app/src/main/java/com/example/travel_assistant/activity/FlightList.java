@@ -1,5 +1,6 @@
 package com.example.travel_assistant.activity;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -27,6 +28,11 @@ import com.example.travel_assistant.adapter.FlightListAdapter;
 import com.example.travel_assistant.model.FlightItineraryListModel;
 import com.example.travel_assistant.model.FlightListModel;
 import com.example.travel_assistant.others.LoadingDialog;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.gson.JsonArray;
 
 import java.util.ArrayList;
@@ -58,9 +64,10 @@ public class FlightList extends AppCompatActivity {
     private Handler handler = new Handler(Looper.getMainLooper());
 
     //initialise the amadeus api
-    Amadeus amadeus = Amadeus
-            .builder("htHGvYM2OB3wmAqVykNHAbGPuTlSBV1m","0hiGWqr3KQSGXION")
-            .build();
+//    String amadeusApiKey = System.getenv("amadeus_api_key");
+//    String amadeusApiSecret = System.getenv("amadeus_api_secret");
+    Amadeus amadeus;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     //layout variables for popup window
     LayoutInflater layoutInflater;
@@ -101,9 +108,44 @@ public class FlightList extends AppCompatActivity {
 
         Log.d(TAG, "flightlist, info before flight search: " + flightLocation + ", " + flightDestination + ", " + fromDate + ", " + toDate + ", " + adultCount + ", " + kidCount + ", " + directFlightsOnly + ", " + roundOrOneWayTrip);
 
-        //start the loading animation and getFlights
+        //start the loading animation and getApiKeys
         loadingDialog.show();
-        getFlights();
+        getAPIKeys();
+        //getFlights();
+
+    }
+
+    private void getAPIKeys(){
+
+        //get the user's travel itinerary using the user_uid
+        db.collection("api_keys")
+                .whereEqualTo("api_name", "amadeus")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                Log.d(TAG, document.getId() + " => " + document.getData());
+
+                                //set the string variables to hold the data received from firestore
+                                String amadeusApiKey = document.getData().get("api_key").toString();
+                                String amadeusApiSecret = document.getData().get("api_secret").toString();
+
+                                amadeus = Amadeus
+                                        .builder(amadeusApiKey, amadeusApiSecret)
+                                        .build();
+
+                            }
+
+                            getFlights();
+
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
 
     }
 

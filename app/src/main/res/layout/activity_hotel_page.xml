@@ -160,6 +160,8 @@
         android:id="@+id/toPaymentBtn"
         android:text="Make Booking"
         android:textSize="18sp"
-        android:background="@drawable/round_btn"/>
+        android:background="@drawable/round_btn"
+        android:textColor="@color/black"
+        android:layout_margin="5dp"/>
 
 </RelativeLayout>

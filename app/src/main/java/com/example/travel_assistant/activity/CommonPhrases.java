@@ -27,8 +27,13 @@ import android.widget.Toast;
 
 import com.example.travel_assistant.R;
 import com.example.travel_assistant.others.LoadingDialog;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.common.base.Charsets;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import org.json.JSONObject;
 
@@ -88,6 +93,8 @@ public class CommonPhrases extends AppCompatActivity {
 
     //initialise okhttpclient
     OkHttpClient client = new OkHttpClient();
+    String rapidApiKey;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     //initialise tts
     TextToSpeech textToSpeech;
@@ -121,6 +128,7 @@ public class CommonPhrases extends AppCompatActivity {
 
         //intialise the common phrases and questions array list
         initialiseArrayLists();
+        getAPIKeys();
 
 
         // create the TTS object
@@ -532,6 +540,33 @@ public class CommonPhrases extends AppCompatActivity {
         super.onDestroy();
     }
 
+    private void getAPIKeys(){
+
+        //get the user's travel itinerary using the user_uid
+        db.collection("api_keys")
+                .whereEqualTo("api_name", "rapid_api")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                Log.d(TAG, document.getId() + " => " + document.getData());
+
+                                //set the string variables to hold the data received from firestore
+                                rapidApiKey = document.getData().get("api_key").toString();
+
+                            }
+
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
+
+    }
+
     private void translate(String urlEncodedPhrase){
 
         String currentLanguageCode = getString(getResources().getIdentifier(currentLanguage, "string", getPackageName()));
@@ -545,7 +580,7 @@ public class CommonPhrases extends AppCompatActivity {
                     Request request = new Request.Builder()
                             .url("https://nlp-translation.p.rapidapi.com/v1/translate?text=" + urlEncodedPhrase + "&to=" + currentLanguageCode + "&from=en")
                             .get()
-                            .addHeader("X-RapidAPI-Key", "b34ecf7a0fmsh5cbb7c353f899abp1c8c15jsn43d3583a9734")
+                            .addHeader("X-RapidAPI-Key", rapidApiKey)
                             .addHeader("X-RapidAPI-Host", "nlp-translation.p.rapidapi.com")
                             .build();
 
